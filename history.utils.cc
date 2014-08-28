@@ -72,4 +72,28 @@ return true;
 
 
 
+        T soustraction[3] ;
+        T i_pos[3] ;
+        i_pos[0] = T(initial_position_[0]) ;
+        i_pos[1] = T(initial_position_[1]) ;
+        i_pos[2] = T(initial_position_[2]) ;
+        //i_pos =  (T) initial_position_ ;
+        vect_soustraction(n_i,i_pos, soustraction) ;
+        distance_to_axis[0] = vect_squaredNorm(soustraction) ;
+
+
+
+
+    template<typename T> inline
+    void vect_soustraction(const T x[3], T y[3], T x_minus_y[3]) {
+      x_minus_y[0] = x[0] - y[0]  ;
+      x_minus_y[1] = x[1] - y[1]  ;
+      x_minus_y[2] = x[2] - y[2]  ;
+    }
+    template<typename T> inline
+    T vect_squaredNorm(const T x[3] ) {
+      return x[0] * x[0] + x[1] * x[1] + x[2] * x[2]  ;
+    }
+
+
 */

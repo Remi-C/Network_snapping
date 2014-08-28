@@ -108,7 +108,7 @@ _ optimisation results :
 
 using ceres::NumericDiffCostFunction;
 using ceres::CENTRAL;
-using ceres::FORWARD;
+//using ceres::FORWARD;
 using ceres::AutoDiffCostFunction;
 using ceres::CostFunction;
 using ceres::Problem;
@@ -127,14 +127,22 @@ const double observation_position[] = {
   4, 2, 0,
   2, -1, 0
 };
+double node_initialisation[] = {
+  1, 1, 1,
+  5, -1, -1
+};
 double node_position[] = {
   0, 0, 0,
   6, 0, 0
 };
 
+///////////////////////PARAMETERS///////////////////////
+const double K_origin = 0.1 ; //! this parameter scale the distance to origin for a node
+
+////////////////////////////////////////////////////////
+
 
 /** functor to compute cost between one observation and the segment between 2 nodes
-
   */
 struct DistanceToProjectionResidual {
 
@@ -187,41 +195,28 @@ struct DistanceToInitialPosition {
     }
 
     //this is the operator computing the cost
-    bool operator()(const double* const n_i, /**< the current position of this node*/
-                      double* distance_to_origin) const /**< this is the cost to be optimised*/
-        {
-        //converting input double array to EIgen 3D vector, to be able to use poweerfull eigen functions
-        mcVec3 observation(initial_position_);
-        mcVec3 n_i_vect(n_i);
-        // note : eucl distance to the origin of this node.
-        distance_to_origin[0] = (observation-n_i_vect).squaredNorm()+1;
-        std::cout <<"\n : distance to origin : "<<distance_to_origin[0] <<"\n";
-      }
+//    bool operator()(const double* const n_i, /**< the current position of this node*/
+//                      double* distance_to_origin) const /**< this is the cost to be optimised*/
+//        {
+//        //converting input double array to EIgen 3D vector, to be able to use poweerfull eigen functions
+//        mcVec3 observation(initial_position_);
+//        mcVec3 n_i_vect(n_i);
+//        // note : eucl distance to the origin of this node.
+//        distance_to_origin[0] = (observation-n_i_vect).squaredNorm()+1;
+//        std::cout <<"\n : distance to origin : "<<distance_to_origin[0] <<"\n";
+//      }
 
+    //! distance computing function (eucl distance), this is templated.
+    template <typename T> bool operator()(const T* const n_i,
+                                        T* distance_to_origin) const {
+    T s[3] ;
+    s[0] =n_i[0]-T(initial_position_[0]);
+    s[1] =n_i[1]-T(initial_position_[1]);
+    s[2] =n_i[2]-T(initial_position_[2]);
+    distance_to_origin[0] = K_origin * (s[0]*s[0] + s[1]*s[1] + s[2]*s[2]);
 
-//    template<typename T> inline
-//    void vect_soustraction(const T x[3], const T y[3], T x_minus_y[3]) {
-//      x_minus_y[0] = x[0] - y[0]  ;
-//      x_minus_y[1] = x[1] - y[1]  ;
-//      x_minus_y[2] = x[2] - y[2]  ;
-//    }
-//    template<typename T> inline
-//    void vect_squaredNorm(const T x[3], T x_squared) {
-//      x_squared  = x[0] * x[0] + x[1] * x[1] + x[2] * x[2]  ;
-//    }
-//    template<typename T> inline
-//    T DotProduct(const T x[3], const T y[3]) {
-//      return (x[0] * y[0] + x[1] * y[1] + x[2] * y[2]);
-//    }
-
-
-//    //distance computing function, this is templated.
-//    template <typename T> bool operator()(const T* const n_i,
-//                                        T* distance_to_axis) const {
-
-//    }
-
-
+    return true;
+  }
  private:
     const double* initial_position_;
 };
@@ -239,19 +234,28 @@ int main(int argc, char** argv) {
   //filling the problem with constraints to be optimized
 
   //setting constraint on initial position for each node.
-
   for (int k = 0; k <jNumNodes; ++k ){
 
-        DistanceToInitialPosition* self_distance_functor = new DistanceToInitialPosition( &node_position[3 * k]) ;
-        CostFunction* distance_cost_function
-            = new NumericDiffCostFunction<DistanceToInitialPosition, FORWARD, 1, 3>(
-                self_distance_functor);
+      //        DistanceToInitialPosition* self_distance_functor = new DistanceToInitialPosition( &node_position[3 * k]) ;
+      //        CostFunction* distance_cost_function
+      //            = new NumericDiffCostFunction<DistanceToInitialPosition, FORWARD, 1, 3>(
+      //                self_distance_functor);
 
-          problem.AddResidualBlock(
-              distance_cost_function
-              ,NULL
-              ,&node_position[3 * k]
-              ); //note : both observations are referring to these nodes.
+      //          problem.AddResidualBlock(
+      //              distance_cost_function
+      //              ,NULL
+      //              ,&node_position[3 * k]
+      //              ); //note : both observations are referring to these nodes.
+
+      DistanceToInitialPosition* self_distance_functor = new DistanceToInitialPosition( &node_position[3 * k]) ;
+      CostFunction* distance_cost_function
+          = new AutoDiffCostFunction<DistanceToInitialPosition, 1,3>(
+              self_distance_functor);
+        problem.AddResidualBlock(
+            distance_cost_function
+            ,NULL
+            ,&node_position[3 * k]
+            );
   }
 
   for (int i = 0; i < kNumObservations; ++i) {
@@ -272,7 +276,7 @@ int main(int argc, char** argv) {
   }
 
   Solver::Options options;
-  options.max_num_iterations = 25;
+  options.max_num_iterations = 50;
   options.linear_solver_type = ceres::DENSE_QR;
   options.minimizer_progress_to_stdout = true;
 
@@ -290,7 +294,7 @@ int main(int argc, char** argv) {
                 << node_position[3 * k+2]
                << "\n ";
 
-    }
+   }
   return 0;
 }
 
