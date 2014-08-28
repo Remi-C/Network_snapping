@@ -1,0 +1,10 @@
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+
+PROJECT(simple_snapping)
+
+FIND_PACKAGE(Ceres REQUIRED)
+INCLUDE_DIRECTORIES(${CERES_INCLUDE_DIRS})
+
+# simple_snapping
+ADD_EXECUTABLE(simple_snapping.bin simple_snapping.cc)
+TARGET_LINK_LIBRARIES(simple_snapping.bin ${CERES_LIBRARIES})
