@@ -123,21 +123,23 @@ typedef Eigen::Map<const Eigen::Vector3d> mcVec3 ;
 
 const int kNumObservations = 2;
 const int jNumNodes = 2;
-const double observation_position[] = {
+const int uNumPairs =1 ;
+const double observation_position[] = { //! the initial position of observations . No change
   4, 2, 0,
   2, -1, 0
 };
-double node_initialisation[] = {
-  1, 1, 1,
-  5, -1, -1
-};
-double node_position[] = {
+double node_position[] = { //! the initial node position. This parameters are going to be optiized
   0, 0, 0,
   6, 0, 0
 };
+const int node_pair[1][2]={ //! the coupling between nodes to form segments
+    {0,1}
+};
 
 ///////////////////////PARAMETERS///////////////////////
-const double K_origin = 0.1 ; //! this parameter scale the distance to origin for a node
+const double K_origin = 0.0 ; //! this parameter scale the distance to origin for a node
+const double K_obs= 0.9 ; //! this parameter scale the measure of distance between observation and line (n_i,n_j)
+const double K_spacing= 1 ; //! this parameter scale the measure of similarity between [n_i,n_j] original and current
 
 ////////////////////////////////////////////////////////
 
@@ -145,7 +147,6 @@ const double K_origin = 0.1 ; //! this parameter scale the distance to origin fo
 /** functor to compute cost between one observation and the segment between 2 nodes
   */
 struct DistanceToProjectionResidual {
-
    //! this is the constructor, it expects an array of at least 3 doubles.
     DistanceToProjectionResidual(const double* input_vect)
         :position_(input_vect) {}
@@ -170,7 +171,7 @@ struct DistanceToProjectionResidual {
 
         //here is the distance to axis (n_i, n_j) following (n_i,n_j normal)
             //Note that there is an offset that is the road width.
-        distance_to_axis[0] = (observation-n_i_vect).cross(observation-n_j_vect).squaredNorm()
+        distance_to_axis[0] = K_obs * (observation-n_i_vect).cross(observation-n_j_vect).squaredNorm()
                /  (n_i_vect-n_j_vect).squaredNorm() -1;
 
         // @TEST : test distance : sum of distance to both nodes. Simpler distance for test purpose.
@@ -194,18 +195,6 @@ struct DistanceToInitialPosition {
         :initial_position_(input_vect) {
     }
 
-    //this is the operator computing the cost
-//    bool operator()(const double* const n_i, /**< the current position of this node*/
-//                      double* distance_to_origin) const /**< this is the cost to be optimised*/
-//        {
-//        //converting input double array to EIgen 3D vector, to be able to use poweerfull eigen functions
-//        mcVec3 observation(initial_position_);
-//        mcVec3 n_i_vect(n_i);
-//        // note : eucl distance to the origin of this node.
-//        distance_to_origin[0] = (observation-n_i_vect).squaredNorm()+1;
-//        std::cout <<"\n : distance to origin : "<<distance_to_origin[0] <<"\n";
-//      }
-
     //! distance computing function (eucl distance), this is templated.
     template <typename T> bool operator()(const T* const n_i,
                                         T* distance_to_origin) const {
@@ -222,6 +211,33 @@ struct DistanceToInitialPosition {
 };
 
 
+
+/** functor to compute cost between 2 nodes ; they should keep about the same direction/distance
+  */
+struct DistanceToInitialSpacing{
+   //! this is the constructor, it expects an array of at least 3 doubles.
+    DistanceToInitialSpacing(const double* input_vect)
+        :initial_spacing_(input_vect) {}
+
+    //! this is the operator computing the cost, that is the difference to the original spacing
+    template <typename T> bool operator()(const T* const n_i,/**< the first node */
+                                          const T* const n_j,/**< the second node */
+                                        T* distance_to_original_spacing) const {/**< this is the cost to be optimised*/
+
+        //compute the difference with original spacing:
+        distance_to_original_spacing[0] = K_spacing * T(initial_spacing_[0]) - (n_i[0] - n_j[0])  ;
+        distance_to_original_spacing[1] = K_spacing * T(initial_spacing_[1]) - (n_i[1] - n_j[1])  ;
+        distance_to_original_spacing[2] = K_spacing * T(initial_spacing_[2]) - (n_i[2] - n_j[2])  ;
+
+        return true;
+
+      }
+ private:
+    const double* initial_spacing_; /**< store the original 3D vector between the 2 nodes*/
+};
+
+
+
 int main(int argc, char** argv) {
   google::InitGoogleLogging(argv[0]);
 
@@ -236,17 +252,6 @@ int main(int argc, char** argv) {
   //setting constraint on initial position for each node.
   for (int k = 0; k <jNumNodes; ++k ){
 
-      //        DistanceToInitialPosition* self_distance_functor = new DistanceToInitialPosition( &node_position[3 * k]) ;
-      //        CostFunction* distance_cost_function
-      //            = new NumericDiffCostFunction<DistanceToInitialPosition, FORWARD, 1, 3>(
-      //                self_distance_functor);
-
-      //          problem.AddResidualBlock(
-      //              distance_cost_function
-      //              ,NULL
-      //              ,&node_position[3 * k]
-      //              ); //note : both observations are referring to these nodes.
-
       DistanceToInitialPosition* self_distance_functor = new DistanceToInitialPosition( &node_position[3 * k]) ;
       CostFunction* distance_cost_function
           = new AutoDiffCostFunction<DistanceToInitialPosition, 1,3>(
@@ -255,6 +260,25 @@ int main(int argc, char** argv) {
             distance_cost_function
             ,NULL
             ,&node_position[3 * k]
+            );
+  }
+
+  //setting constraint on initial spacing between nodes for each pair of node.
+  for (int u = 0; u <uNumPairs; ++u ){
+      double o_s[3] = {
+          node_position[3 * node_pair[u][0]]  - node_position[3 * node_pair[u][1]]
+          , node_position[3 * node_pair[u][0]+1]  - node_position[3 * node_pair[u][1]+1]
+          ,  node_position[3 * node_pair[u][0]+2]  - node_position[3 * node_pair[u][1]+2]};
+      DistanceToInitialSpacing* original_spacing_distance_functor = new DistanceToInitialSpacing( o_s) ;
+
+      CostFunction* original_spacing_distance_cost_function
+          = new AutoDiffCostFunction<DistanceToInitialSpacing, 3,3,3>(
+              original_spacing_distance_functor);
+        problem.AddResidualBlock(
+            original_spacing_distance_cost_function
+            ,NULL
+            ,&node_position[3 * node_pair[u][0]]
+            , &node_position[3 * node_pair[u][1]]
             );
   }
 
