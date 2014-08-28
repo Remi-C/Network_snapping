@@ -29,3 +29,6 @@ MakeFile
 
 #executable :
 *.bin
+
+#test of compile :
+test_forum*
