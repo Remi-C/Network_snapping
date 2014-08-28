@@ -108,7 +108,8 @@ _ optimisation results :
 
 using ceres::NumericDiffCostFunction;
 using ceres::CENTRAL;
-//using ceres::AutoDiffCostFunction;
+using ceres::FORWARD;
+using ceres::AutoDiffCostFunction;
 using ceres::CostFunction;
 using ceres::Problem;
 using ceres::Solver;
@@ -121,14 +122,23 @@ typedef Eigen::Map<const Eigen::Vector3d> mcVec3 ;
 //typedef Eigen::Map<const Eigen::Vector3f> ConstVectorRef;
 
 const int kNumObservations = 2;
-const double data[] = {
+const int jNumNodes = 2;
+const double observation_position[] = {
   4, 2, 0,
-  2, -1, 0,
+  2, -1, 0
+};
+double node_position[] = {
+  0, 0, 0,
+  6, 0, 0
 };
 
+
+/** functor to compute cost between one observation and the segment between 2 nodes
+
+  */
 struct DistanceToProjectionResidual {
 
-   //this is the constructor, it expects an array of at least 3 doubles.
+   //! this is the constructor, it expects an array of at least 3 doubles.
     DistanceToProjectionResidual(const double* input_vect)
         :position_(input_vect) {}
 
@@ -139,10 +149,11 @@ struct DistanceToProjectionResidual {
    //}
 
 
-    //this is the operator computing the cost
-    bool operator()(const double* const n_i,
-                      const double* const n_j,
-                      double* distance_to_axis) const {
+    //! this is the operator computing the cost, ie the distance projeted on normal of (n_i,n_j)
+    bool operator()(const double* const n_i, /**< the first node of the network*/
+                      const double* const n_j,/**< the second node of the network*/
+                      double* distance_to_axis) const /**< this is the cost to be optimised*/
+        {
 
         //converting input double array to EIgen 3D vector, to be able to use poweerfull eigen functions
         mcVec3 observation(position_);
@@ -162,7 +173,57 @@ struct DistanceToProjectionResidual {
 
 
  private:
-    const double* position_;
+    const double* position_; /**< store the 3D position of the observation point */
+};
+
+
+/** functor to compute cost between one node position and this node original position
+  */
+
+struct DistanceToInitialPosition {
+   //! this is the constructor, it expects an array of 3 doubles to fill the original position
+    DistanceToInitialPosition(const double* input_vect)
+        :initial_position_(input_vect) {
+    }
+
+    //this is the operator computing the cost
+    bool operator()(const double* const n_i, /**< the current position of this node*/
+                      double* distance_to_origin) const /**< this is the cost to be optimised*/
+        {
+        //converting input double array to EIgen 3D vector, to be able to use poweerfull eigen functions
+        mcVec3 observation(initial_position_);
+        mcVec3 n_i_vect(n_i);
+        // note : eucl distance to the origin of this node.
+        distance_to_origin[0] = (observation-n_i_vect).squaredNorm()+1;
+        std::cout <<"\n : distance to origin : "<<distance_to_origin[0] <<"\n";
+      }
+
+
+//    template<typename T> inline
+//    void vect_soustraction(const T x[3], const T y[3], T x_minus_y[3]) {
+//      x_minus_y[0] = x[0] - y[0]  ;
+//      x_minus_y[1] = x[1] - y[1]  ;
+//      x_minus_y[2] = x[2] - y[2]  ;
+//    }
+//    template<typename T> inline
+//    void vect_squaredNorm(const T x[3], T x_squared) {
+//      x_squared  = x[0] * x[0] + x[1] * x[1] + x[2] * x[2]  ;
+//    }
+//    template<typename T> inline
+//    T DotProduct(const T x[3], const T y[3]) {
+//      return (x[0] * y[0] + x[1] * y[1] + x[2] * y[2]);
+//    }
+
+
+//    //distance computing function, this is templated.
+//    template <typename T> bool operator()(const T* const n_i,
+//                                        T* distance_to_axis) const {
+
+//    }
+
+
+ private:
+    const double* initial_position_;
 };
 
 
@@ -170,29 +231,44 @@ int main(int argc, char** argv) {
   google::InitGoogleLogging(argv[0]);
 
 
-  // the node of the network
-  Vec3 n_1 ; n_1 << 0,0,0 ;
-  Vec3 n_2 ; n_2 << 6,0,0 ;
-  Vec3 initial_n_1 = n_1;
-  Vec3 initial_n_2 = n_2;
+  // the node of the network : it should be an nput, this is just a test case
 
-
+  //creating the problem to be solved
   Problem problem;
+
+  //filling the problem with constraints to be optimized
+
+  //setting constraint on initial position for each node.
+
+  for (int k = 0; k <jNumNodes; ++k ){
+
+        DistanceToInitialPosition* self_distance_functor = new DistanceToInitialPosition( &node_position[3 * k]) ;
+        CostFunction* distance_cost_function
+            = new NumericDiffCostFunction<DistanceToInitialPosition, FORWARD, 1, 3>(
+                self_distance_functor);
+
+          problem.AddResidualBlock(
+              distance_cost_function
+              ,NULL
+              ,&node_position[3 * k]
+              ); //note : both observations are referring to these nodes.
+  }
+
   for (int i = 0; i < kNumObservations; ++i) {
 
 
-  DistanceToProjectionResidual* distance_functor = new DistanceToProjectionResidual( &data[3 * i]) ;
+      DistanceToProjectionResidual* distance_functor = new DistanceToProjectionResidual( &observation_position[3 * i]) ;
 
-  CostFunction* distance_cost_function
-      = new NumericDiffCostFunction<DistanceToProjectionResidual, CENTRAL, 1, 3, 3>(
-          distance_functor);
+      CostFunction* distance_cost_function
+          = new NumericDiffCostFunction<DistanceToProjectionResidual, CENTRAL, 1, 3, 3>(
+              distance_functor);
 
-    problem.AddResidualBlock(
-        distance_cost_function
-        ,NULL
-        ,( double * ) n_1.data()
-        ,( double * ) n_2.data()
-        ); //note : both observations are referring to these nodes.
+        problem.AddResidualBlock(
+            distance_cost_function
+            ,NULL
+            ,&node_position[0]
+            ,&node_position[3]
+            ); //note : both observations are referring to these nodes.
   }
 
   Solver::Options options;
@@ -202,11 +278,19 @@ int main(int argc, char** argv) {
 
   Solver::Summary summary;
   Solve(options, &problem, &summary);
+
   std::cout << summary.BriefReport() << "\n";
   std::cout << summary.FullReport() << "\n";
   std::cout << summary.IsSolutionUsable() << "\n";
-  std::cout << "Initial n1: \n" << initial_n_1 << "\n n2: \n" << initial_n_2 << "\n";
-  std::cout << "Final   n1: \n" << n_1 << "\n _n n2: \n" << n_2 << "\n";
+
+    for (int k = 0; k <jNumNodes; ++k ){
+     std::cout << "NEw n_"<<k<<": \n"
+                 << node_position[3 * k] <<": \n"
+                << node_position[3 * k+1]  <<": \n"
+                << node_position[3 * k+2]
+               << "\n ";
+
+    }
   return 0;
 }
 
