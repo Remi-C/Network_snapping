@@ -56,6 +56,7 @@ const int node_pair[1][2]={ //! the coupling between nodes to form segments
 //! @TODO @WARNING very ugly : should be set in a "parameter class"
 ///////////////////////PARAMETERS///////////////////////
 const string output_file_path("/media/sf_E_RemiCura/PROJETS/snapping/visu/visu_inqgis_timemanager/simple_test.csv") ;
+const string input_file_path("/media/sf_E_RemiCura/PROJETS/snapping/using_ceres/data/simple_example.csv") ;
 
 const double K_origin = 1 ; //! this parameter scale the distance to origin for a node
 const double K_obs= 1 ; //! this parameter scale the measure of distance between observation and line (n_i,n_j)
@@ -67,10 +68,9 @@ const double K_spacing= 1 ; //! this parameter scale the measure of similarity b
 
 
 int main(int argc, char** argv) {
-  google::InitGoogleLogging(argv[0]);
 
-
-  // the node of the network : it should be an nput, this is just a test case
+  //getting the data ;
+    DataStorage * data = new DataStorage('toto','titi');//input_file_path,output_file_path) ;
 
   //creating the problem to be solved
   Problem problem;

@@ -14,7 +14,7 @@
   @param name of the file containing the input data : the format is very specific
   @param name of the file where to write the temporary result for each iteration
   */
-DataStorage::DataStorage(const std::string& i_filename, const std::string& o_filename ) {
+DataStorage::DataStorage(const string i_filename, const string o_filename ) {
     readData(i_filename);
     }
 

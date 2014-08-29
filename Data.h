@@ -19,8 +19,11 @@
   ...
   obs_id::int;X::double;Y::double;Z::double;confidence::double;weight::double
   */
-
+#include <string>
 #include <iostream>
+
+using std::string;
+using std::basic_string;
 
 
 //! a simple structure to hold observation data : that is a point with some attributes
@@ -56,11 +59,11 @@ void FscanfOrDie(FILE* fptr, const char* format, T* value) {
 
 class DataStorage {
 public:
-    explicit DataStorage(const std::string&, const std::string&);
+    DataStorage(const  string, const  string );
 
     ~DataStorage();
 
-    void WriteToFile(const std::string& filename) const;
+    void WriteToFile(const string filename) const;
 
     int num_nodes()             { return num_nodes_;  }
     int num_edges()             { return num_edges_;    }
