@@ -1,3 +1,98 @@
+
+/**
+  Abstract : snapping a street axis to observations
+
+  _ Original Data :
+    street axis, along with width information
+    observations of sidewalk, along with confidence and weight information
+
+  _ Input data :
+    street axis node (n_i)
+    connectivity information, along with width w_i_j of the part of the axis (e_i_j)
+
+    observations of sidewalk, related to 2 nodes ; points o_k(n_i, n_j )
+
+  _ optimisation model data
+    n_i(X,Y,Z)
+    w_i_j(n_i, n_j)
+
+  _ optimisation constraints (K are normalised weight,Sum(K)=1, so that we can parametrize importance of constraints)
+    _ K_n * intial position of n_i
+    _ K_n_n * initial direction between n_i, n_j
+    _ K_w * initial value of w_i_j
+    _ K_d * distance of o_k to line (n_i,n_j)
+
+  _ optimisation cost function
+    _ a straightforward euclidian distance function (we can use the squared euclidian distance for faster computation) d_eucl(R_3,R_3)->R
+    _ a
+
+_ optimisation results :
+
+  */
+    /*
+  simple file to put together all the idea about how to use ceres
+
+  */
+
+/*
+
+
+  */
+
+//////// creating the variables to be optimized : setting ParametterBlock
+
+    /*
+      //from bundle_adjuster.cc
+
+      ceres::ParameterBlockOrdering* ordering =
+          new ceres::ParameterBlockOrdering;
+
+          //add the position of p_i
+            for (int i = 0; i < num_points; ++i) {
+              ordering->AddElementToGroup(points + point_block_size * i, 0);
+
+          //add the width of the axis
+            for (int i = 0; i < num_edges; ++i) {
+              ordering->AddElementToGroup( 1 * i, 0);
+
+
+       options->linear_solver_ordering.reset(ordering);
+    }
+    */
+
+
+/*
+
+  ///////////////PSEUDO CODE  :
+
+  _ Structure of the model
+    _ define Loss function
+          // Configure the loss function.
+          LossFunction* loss = NULL;
+          if (FLAGS_robust_threshold) {
+            loss = new CauchyLoss(FLAGS_robust_threshold);
+          }
+
+
+    _ Functor : class performing the error computation in a function and old some values
+        create functor
+
+    _ Cost function
+        create cost function using functor
+
+
+
+    add residual block (function on parameters)
+
+  */
+
+
+///////// creating a fist constraint on n_i_j : it shouldn't go too far away from it's original position
+    /*
+
+
+    */
+
 /*
 
 
