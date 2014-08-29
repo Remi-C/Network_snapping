@@ -1,4 +1,10 @@
-/media/sf_E_RemiCura/PROJETS/snapping/using_ceres/CMakeLists.txt
-/media/sf_E_RemiCura/PROJETS/snapping/using_ceres/simple_snapping.cc
+CMakeLists.txt
+simple_snapping.cc
 history.utils.cc
 utils_function.h
+iteration_callback.cc
+main.cpp
+WritingTempResultCallback.h
+Data.h
+Data.cc
+Constraints.h
