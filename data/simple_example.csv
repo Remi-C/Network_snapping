@@ -1,0 +1,10 @@
+#num nodes, num edge, num 
+2;1;2
+#node_id::int;X::double;Yi_filename::double;Z::double;is_in_intersection::int
+1;0;0;0;1
+2;6;0;0;1
+#edge_id::int;start_node::int;end_node::int;width::double
+1;1;2;1
+#obs_id::int;X::double;Y::double;Z::double;confidence::double;weight::double
+1;4;2;0;1;1
+2;2;-1;0;1;1
