@@ -21,6 +21,7 @@
   */
 #include <string>
 #include <iostream>
+#include <fstream>
 
 using std::string;
 using std::basic_string;
@@ -30,8 +31,10 @@ using std::basic_string;
 struct node{
   int node_id;            //! unique id per node
   double * position;      //! 3 coordinates X,Y,Z. Will be changed upon optimization
-  bool is_in_intersection;//! is this node part of an intersection, or is this an intermediary node?
+  short is_in_intersection;//! is this node part of an intersection, or is this an intermediary node?
 };
+
+
 
 struct edge{
   int edge_id;      //! unique id per edge
@@ -46,31 +49,22 @@ struct observation{
   double confidence;    //! confidence between 0 and 1. 0-> very unlikely ; 1-> certain
   double weight;        //! statistical weight of this observation (observation are points extracted from lines, weight = length of the 2 lines/2)
 };
-
-//! a function to try to read a value
-template<typename T>
-void FscanfOrDie(FILE* fptr, const char* format, T* value) {
-  int num_scanned = fscanf(fptr, format, value);
-  if (num_scanned != 1) {
-    std::cerr << "Invalid UW data file.";
-    exit("invalid data file structure");
-  }
-}
+ 
 
 class DataStorage {
 public:
     DataStorage(const  string, const  string );
 
     ~DataStorage();
-
+	void readData(const string);
     void WriteToFile(const string filename) const;
 
     int num_nodes()             { return num_nodes_;  }
     int num_edges()             { return num_edges_;    }
     int num_observations()       { return num_observations_;  }
-    node* nodes()                { return nodes_;}
-    edge* edges()                { return edges_;}
-    observation* observations()  { return observations_;}
+    node** nodes()                { return nodes_;}
+    edge** edges()                { return edges_;}
+    observation** observations()  { return observations_;}
 
 
 private:
@@ -78,9 +72,9 @@ private:
     int num_edges_;
     int num_observations_;
 
-    node* nodes_;
-    edge* edges_;
-    observation* observations_;
+    node* nodes_[];
+    edge* edges_[];
+    observation* observations_[];
 };
 
 #endif // DATA_H
