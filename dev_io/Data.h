@@ -10,18 +10,35 @@
 
 
   format of the file to be read
+""""""""""""""""""""""""""""""""""""" 
+  #header
   num_nodes
   num_edges
   num_observations
+  #header node
   node_id::int;X::double;Yi_filename::double;Z::double;is_in_intersection::int
   ...
+  #header edge
   edge_id::int;start_node::int;end_node::int;width::double
   ...
+  #header observations
   obs_id::int;X::double;Y::double;Z::double;confidence::double;weight::double
+"""""""""""""""""""""""""""""""""""""  
+
+  format of the file to be written
+""""""""""""""""""""""""""""""""""""" 
+	#geom;cost;start_time;end_time
+	LINESTRINGZ(X1 Y1 Z1, X2 Y2 Z2);12.98;YYYY-MM-DD HH:MM:SS.ssssss;YYYY-MM-DD HH:MM:SS.ssssss
+	LINESTRINGZ(X1 Y1 Z1, X2 Y2 Z2);12.98;YYYY-MM-DD HH:MM:SS.ssssss;YYYY-MM-DD HH:MM:SS.ssssss
+	...
+"""""""""""""""""""""""""""""""""""""  
+  
   */
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <sstream>
+
 
 using std::string;
 using std::basic_string;
@@ -56,8 +73,11 @@ public:
     DataStorage(const  string, const  string );
 
     ~DataStorage();
-	void readData(const string);
+	void readData();
+	void writeData(int);
     void WriteToFile(const string filename) const;
+
+
 
     int num_nodes()             { return num_nodes_;  }
     int num_edges()             { return num_edges_;    }
@@ -75,6 +95,9 @@ private:
     node* nodes_[];
     edge* edges_[];
     observation* observations_[];
+    
+    const string input_file_path_;
+    const string output_file_path_;
 };
 
 #endif // DATA_H
