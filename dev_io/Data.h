@@ -50,6 +50,23 @@ struct node{
   double position[3];      //! 3 coordinates X,Y,Z. Will be changed upon optimization
   short is_in_intersection;//! is this node part of an intersection, or is this an intermediary node?
   
+  
+  node(int id,double X,double Y,double Z,bool in_inter) {
+		node_id = id;
+		position[0] = X ;
+		position[1] = Y ;
+		position[2] = Z;
+		is_in_intersection = in_inter ;
+  }
+
+  node() {
+        node_id = 0;
+        position[0] = 0.0 ;
+        position[1] = 0.0 ;
+        position[2] = 0.0 ;
+        is_in_intersection = false ;
+  }
+
   string nodeToString(){ 
 	//#node_id::int;X::double;Yi_filename::double;Z::double;is_in_intersection::int
 	 
@@ -117,9 +134,9 @@ public:
     int num_nodes()             { return num_nodes_;  }
     int num_edges()             { return num_edges_;    }
     int num_observations()       { return num_observations_;  }
-    node** nodes()                { return nodes_;}
-    edge** edges()                { return edges_;}
-    observation** observations()  { return observations_;}
+    node* nodes()                { return nodes_;}
+    edge* edges()                { return edges_;}
+    observation* observations()  { return observations_;}
 
 
 private:
@@ -127,9 +144,9 @@ private:
     int num_edges_;
     int num_observations_;
 
-    node** nodes_;
-    edge** edges_;
-    observation** observations_;
+    node* nodes_;
+    edge* edges_;
+    observation* observations_;
     
     const string input_file_path_;
     const string output_file_path_;
