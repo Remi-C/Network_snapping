@@ -78,8 +78,8 @@ void DataStorage::readData(){
     }
 
 	//skipping the first line of comment
-	fgets(line, sizeof line, i_fptr);
-    
+    fgets(line, sizeof line, i_fptr);
+    //std::cout << "header1 : "<< line ;
     //reading data parameter : how much we have to read after this.
     fgets(line, sizeof line, i_fptr);
     if (	sscanf(line, "%d;%d;%d",&num_nodes_,&num_edges_,&num_observations_) != 3) {
@@ -87,73 +87,69 @@ void DataStorage::readData(){
         }
     
     //some debug output
-    std::cout << "num nodes : " << num_nodes() << ","
-		<< "num edges : " << num_edges() << ","
-        << "num observations : " << num_observations() << "\n";
+    //std::cout << "num nodes : " << num_nodes() << "," << "num edges : " << num_edges() << ","<< "num observations : " << num_observations() << "\n";
 
 	//reading node data: 
     //reading the nodes commentary :
     fgets(line, sizeof line, i_fptr);
-	
+    //std::cout << "header2 : "<< line ;
 	//allocating nodes memory
     nodes_ = new node[num_nodes_];  //! @TODO : do alligned memory allocation it's better
 	
 	//we try to write the following line format : 
     //node_id::int;X::double;Yi_filename::double;Z::double;is_in_intersection::int
     for (int i = 0; i < num_nodes_; ++i) {  
-        if (fscanf(i_fptr, "%d;%lG;%lG;%lG;%hd",&nodes_[i].node_id,&nodes_[i].position[0],&nodes_[i].position[1],&nodes_[i].position[2],&nodes_[i].is_in_intersection) != 5) {
+        fgets(line, sizeof line, i_fptr);
+        if (sscanf(line, "%d;%lG;%lG;%lG;%hd",&nodes_[i].node_id,&nodes_[i].position[0],&nodes_[i].position[1],&nodes_[i].position[2],&nodes_[i].is_in_intersection) != 5) {
             std::cerr<< "error when trying ot read the nodes, wrong format\n" ;
         } else {
 			 
 			//std::copy(t_node.position, t_node.position + 3, coor); 
             //nodes_[i] = &t_node; 
-            std::cout << "node readed : " << nodes_[i].nodeToString().c_str() << " \n"  ;
+            //std::cout << "node readed : " << nodes_[i].nodeToString().c_str() << " \n"  ;
             
         }
     }
     //reading the edge data :
     //reading the edge commentary :
     fgets(line, sizeof line, i_fptr);
-    fgets(line, sizeof line, i_fptr);
-    std::cout << line ;
+    //std::cout << "header3 : "<< line ;
 
     //allocating the memory for edges
     edges_ = new edge[num_edges_];  //! @TODO : do alligned memory allocation it's better
     //#edge_id::int;start_node::int;end_node::int;width::double 
     for (int i = 0; i < num_edges_; ++i) {
-
-        if (fscanf(i_fptr, "%d;%d;%d;%lG",&edges_[i].edge_id,&edges_[i].start_node,&edges_[i].end_node ,&edges_[i].width) != 4) {
+        fgets(line, sizeof line, i_fptr);
+        if (sscanf(line, "%d;%d;%d;%lG",&edges_[i].edge_id,&edges_[i].start_node,&edges_[i].end_node ,&edges_[i].width) != 4) {
             std::cerr<< "error when trying ot read the edges, wrong format\n" ;
         } else {
-            std::cout << "edge readed : " << edges_[i].edgeToString().c_str() << " \n" ;
+            //std::cout << "edge readed : " << edges_[i].edgeToString().c_str() << " \n" ;
         }
     }
     
     //reading the commentary for observation
     fgets(line, sizeof line, i_fptr);
-    fgets(line, sizeof line, i_fptr);
-    std::cout << line ;
+    //std::cout << "header4 : " <<line ;
 
     //alocating hte memory for observations
     observations_ = new observation[num_observations()];//! @TOOO
 
     //#obs_id::int;X::double;Y::double;Z::double;confidence::double;weight::double
     for (int i = 0; i < num_observations_ ; ++i) {
-        
-        if (fscanf(i_fptr, "%d;%lG;%lG;%lG;%lG;%lG",&observations_[i].obs_id
+        fgets(line, sizeof line, i_fptr);
+        if (sscanf(line, "%d;%lG;%lG;%lG;%lG;%lG",&observations_[i].obs_id
                 ,&observations_[i].position[0],&observations_[i].position[1],&observations_[i].position[2]
                 ,&observations_[i].confidence, &observations_[i].weight) != 6) {
             std::cerr<< "error when trying to read the observations, wrong format\n" ;
         } else {
             //std::copy(t_observation->position, t_observation->position + 3, coor);
-            std::cout << "observation readed : " << observations_[i].observationToString().c_str() << " \n"  ;
+            //std::cout << "observation readed : " << observations_[i].observationToString().c_str() << " \n"  ;
             
         }
     } 
-    
 
-    
-    std::cout << fclose(i_fptr); 
+    std::cout << num_nodes() <<" nodes, " << num_edges() << " edges, " << num_observations() << " observations readed from file " << output_file_path << " \n" ;
+    fclose(i_fptr);
     return;
  }
 
@@ -168,11 +164,10 @@ void DataStorage::writeData(int iteration){
       return;
     }
 	
-	//writing the header :
+    //writing the header if needed :
+    if(iteration == 1){ // no need to wirte the heaer each time
     fprintf(o_fptr, "#geom;cost;start_time;end_time\n") ;
-    
-    std::cout << "#geom;cost;start_time;end_time\n" ;
-    std::cout << "\nbeggingn writting the rest \n";
+    }
 
     //writing data . Example of what we want : 
     //LINESTRINGZ(X1 Y1 Z1, X2 Y2 Z2);12.98;YYYY-MM-DD HH:MM:SS.ssssss;YYYY-MM-DD HH:MM:SS.ssssss
@@ -192,7 +187,7 @@ void DataStorage::writeData(int iteration){
             , (iteration+1)
             );
     }
-    
+    std::cout << num_edges() <<" edges written to file : " << output_file_path << "\n";
     std::cout << fclose(o_fptr); 
     return;
  }
@@ -202,8 +197,10 @@ void DataStorage::writeData(int iteration){
 int main(int argc, char** argv) { 
 	
 	//getting the data ;
-	DataStorage * data = new DataStorage(input_file_path,output_file_path) ;
+    DataStorage * data = new DataStorage(input_file_path,output_file_path) ;
+    std::cout << "  \E[34;1mReading data\E[m \n" ;
 	data->readData();
+    std::cout << "  \E[34;1mWriting data\E[m \n" ;
 	data->writeData(1);
   return 0;
 }
