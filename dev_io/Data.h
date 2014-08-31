@@ -47,8 +47,20 @@ using std::basic_string;
 //! a simple structure to hold observation data : that is a point with some attributes
 struct node{
   int node_id;            //! unique id per node
-  double * position;      //! 3 coordinates X,Y,Z. Will be changed upon optimization
+  double position[3];      //! 3 coordinates X,Y,Z. Will be changed upon optimization
   short is_in_intersection;//! is this node part of an intersection, or is this an intermediary node?
+  
+  string nodeToString(){ 
+	//#node_id::int;X::double;Yi_filename::double;Z::double;is_in_intersection::int
+	 
+	std::ostringstream nstring;
+	nstring << "(node_id : " << node_id  
+		<< " , position : (" << position[0] << "," << position[1] <<"," << position[2] 
+		<< "), is_in_intersection : "<< is_in_intersection << ")";  
+	//return nstring ;
+	return nstring.str() ;
+}
+
 };
 
 
@@ -58,13 +70,36 @@ struct edge{
   int start_node;   //! link to the id of the node that starts this edge
   int end_node;     //! link to the id of the node that ends this edge
   double width;     //! width of the edge, in meters.
+  
+  //! function to get an idea of what is in the edge
+string edgeToString(){ 
+	//#edge_id::int;start_node::int;end_node::int;width::double
+	 
+	std::ostringstream nstring;
+	nstring << "(edge_id : " << edge_id  
+		<< " , start_node : " << start_node << ", end_node : " << end_node <<", width : " << width <<")"; 
+	return nstring.str() ;
+}
+
 };
 
 struct observation{
   int obs_id;           //! unique id per observations
-  double * position;    //! 3 coordinates X,Y,Z
+  double position[3];    //! 3 coordinates X,Y,Z
   double confidence;    //! confidence between 0 and 1. 0-> very unlikely ; 1-> certain
   double weight;        //! statistical weight of this observation (observation are points extracted from lines, weight = length of the 2 lines/2)
+  
+  //! function to get an idea of what is in the observation
+string observationToString(){ 
+	//#obs_id::int;X::double;Y::double;Z::double;confidence::double;weight::double
+	 
+	std::ostringstream nstring;
+	nstring << "(obs_id : " << obs_id  
+		<< " , position : (" << position[0] << "," << position[1] <<"," << position[2] 
+		<< "), confidence : " << confidence << ", weight : " << weight <<")"; 
+	return nstring.str() ;
+}
+
 };
  
 
@@ -92,9 +127,9 @@ private:
     int num_edges_;
     int num_observations_;
 
-    node* nodes_[];
-    edge* edges_[];
-    observation* observations_[];
+    node** nodes_;
+    edge** edges_;
+    observation** observations_;
     
     const string input_file_path_;
     const string output_file_path_;
