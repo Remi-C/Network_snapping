@@ -18,8 +18,8 @@ extern const double K_spacing;
   */
 struct DistanceToProjectionResidual {
    //! this is the constructor, it expects an array of at least 3 doubles.
-    DistanceToProjectionResidual(const double* input_vect)
-        :position_(input_vect) {}
+    DistanceToProjectionResidual(const double* input_vect,const double * input_w)
+        :position_(input_vect), w_i_j_(input_w) {}
 
     //! this is the operator computing the cost, ie the distance projeted on normal of (n_i,n_j)
         template <typename T> bool operator()(const T* const n_i,/**< the first node */
@@ -34,12 +34,13 @@ struct DistanceToProjectionResidual {
         soustraction(n_i,n_j,n_i_minus_n_j);
         T cross[3];
         ceres::CrossProduct(n_i_minus_obs,n_i_minus_n_j,cross);
-        distance_to_original_spacing[0] =   squaredNorm(cross)/squaredNorm(n_i_minus_n_j) -T(1.0)/*width of this edge*/ ;
+        distance_to_original_spacing[0] =   squaredNorm(cross)/squaredNorm(n_i_minus_n_j) -T(w_i_j_[0]) ;
 
         return true;
       }
  private:
     const double* position_; /**< store the 3D position of the observation point */
+    const double* w_i_j_;//! the width of the edge, in meter
 };
 
 

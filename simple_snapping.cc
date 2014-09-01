@@ -130,7 +130,7 @@ int main(int argc, char** argv) {
       node * end_node = data->nbn(relativ_edge->end_node)  ;
 
       DistanceToProjectionResidual* distance_functor =
-                new DistanceToProjectionResidual( data->observations(i)->position  ) ;
+                new DistanceToProjectionResidual( data->observations(i)->position, &relativ_edge->width  ) ;
       CostFunction* distance_cost_function
           = new AutoDiffCostFunction<DistanceToProjectionResidual, 1, 3, 3>(
               distance_functor);
