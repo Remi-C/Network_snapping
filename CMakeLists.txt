@@ -8,5 +8,5 @@ INCLUDE_DIRECTORIES(${CERES_INCLUDE_DIRS})
 # simple_snapping
 ADD_EXECUTABLE(simple_snapping.bin 
     simple_snapping.cc
-    )
+    Data.cc)
 TARGET_LINK_LIBRARIES(simple_snapping.bin ${CERES_LIBRARIES})
