@@ -69,6 +69,9 @@ const double K_spacing= 1 ; //! this parameter scale the measure of similarity b
 
 int main(int argc, char** argv) {
 
+  std::cout << "  \E[34;1mReading data\E[m \n" ;
+
+
   //getting the data ;
   DataStorage * data = new DataStorage(  input_file_path,output_file_path) ;
   data->readData();
@@ -76,11 +79,8 @@ int main(int argc, char** argv) {
   std::cout << "mapping between node_id and node *" <<"\n";
   data->setMap();
 
-   std::cout << data->nbn(2)->nodeToString() <<endl;
+  std::cout << data->nbn(2)->nodeToString() <<endl;
 
-  std::cout << "size_of_the mapping : " << data->nodes_by_node_id().size() << "\n";
-
-  return 0;
   //creating the problem to be solved
   Problem problem;
 
@@ -90,23 +90,25 @@ int main(int argc, char** argv) {
   for (int k = 0; k <jNumNodes; ++k ){
 
       DistanceToInitialPosition* self_distance_functor =
-                new DistanceToInitialPosition( &node_position[3 * k]) ;
+                new DistanceToInitialPosition( data->nodes(k)->position) ;
       CostFunction* distance_cost_function
           = new AutoDiffCostFunction<DistanceToInitialPosition, 1,3>(
               self_distance_functor);
         problem.AddResidualBlock(
             distance_cost_function
             ,NULL
-            ,&node_position[3 * k]
+            ,data->nodes(k)->position
             );
   }
 
   //setting constraint on initial spacing between nodes for each pair of node.
   for (int u = 0; u <uNumPairs; ++u ){
+      node * start_node =  data->nbn(data->edges(u)->start_node);
+      node * end_node =  data->nbn(data->edges(u)->end_node);
       double o_s[3] = {
-          node_position[3 * node_pair[u][0]]  - node_position[3 * node_pair[u][1]]
-          , node_position[3 * node_pair[u][0]+1]  - node_position[3 * node_pair[u][1]+1]
-          ,  node_position[3 * node_pair[u][0]+2]  - node_position[3 * node_pair[u][1]+2]};
+          start_node->position[0]  - end_node->position[0]
+          ,start_node->position[1]  - end_node->position[1]
+          ,start_node->position[2]  - end_node->position[2]};
       DistanceToInitialSpacing* original_spacing_distance_functor = new DistanceToInitialSpacing( o_s) ;
 
       CostFunction* original_spacing_distance_cost_function
@@ -115,22 +117,23 @@ int main(int argc, char** argv) {
         problem.AddResidualBlock(
             original_spacing_distance_cost_function
             ,NULL
-            ,&node_position[3 * node_pair[u][0]]
-            , &node_position[3 * node_pair[u][1]]
+            , start_node->position
+            , end_node->position
             );
   }
 
   for (int i = 0; i < kNumObservations; ++i) {
 
-      DistanceToProjectionResidual* distance_functor = new DistanceToProjectionResidual( &observation_position[3 * i]) ;
+      DistanceToProjectionResidual* distance_functor =
+                new DistanceToProjectionResidual( data->observations(i)->position  ) ;
       CostFunction* distance_cost_function
           = new AutoDiffCostFunction<DistanceToProjectionResidual, 1, 3, 3>(
               distance_functor);
         problem.AddResidualBlock(
             distance_cost_function
             ,NULL
-            ,&node_position[0]
-            ,&node_position[3]
+            ,data->nodes(0)->position
+            ,data->nodes(1)->position
             ); //note : both observations are referring to these nodes.
   }
 
@@ -152,13 +155,13 @@ int main(int argc, char** argv) {
   std::cout << summary.IsSolutionUsable() << "\n";
 
     for (int k = 0; k <jNumNodes; ++k ){
-     std::cout << "NEw n_"<<k<<": \n"
-                 << node_position[3 * k] <<": \n"
-                << node_position[3 * k+1]  <<": \n"
-                << node_position[3 * k+2]
-               << "\n ";
+        std::cout << "result :"<<endl
+          << data->nodes(k)->nodeToString() <<endl;
 
    }
+
+
+
   return 0;
 }
 

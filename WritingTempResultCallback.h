@@ -44,6 +44,7 @@ class WritingTempResultCallback : public ceres::IterationCallback {
           ) {
     //writing edge with updated node position in the file :
       ++i;
+      std::cout << "  \E[34;1mWriting data for loop \E[m"<< i << endl ;
       file << " i : " << i << "some values : "<<"\n" ;
 //      for (int k = 0; k <jNumNodes; ++k ){
 //       std::cout << "NEw n_"<<k<<": \n"

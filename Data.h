@@ -104,6 +104,7 @@ string edgeToString(){
 struct observation{
   int obs_id;           //! unique id per observations
   double position[3];    //! 3 coordinates X,Y,Z
+  //int edge_id;          //! this edge should be snapped to this observation
   double confidence;    //! confidence between 0 and 1. 0-> very unlikely ; 1-> certain
   double weight;        //! statistical weight of this observation (observation are points extracted from lines, weight = length of the 2 lines/2)
   
@@ -134,8 +135,11 @@ public:
     int num_edges()             { return num_edges_;    }
     int num_observations()       { return num_observations_;  }
     node* nodes()                { return nodes_;}
+    node* nodes(int i)           { return &nodes_[i];}
     edge* edges()                { return edges_;}
+    edge* edges(int i)                { return &edges_[i];}
     observation* observations()  { return observations_;}
+    observation* observations(int i)  { return &observations_[i];}
     node* nbn(int i ) { return nodes_by_node_id_.at(i); }
     std::unordered_map <int /*node_id*/, node *> nodes_by_node_id() {return nodes_by_node_id_;}
 
