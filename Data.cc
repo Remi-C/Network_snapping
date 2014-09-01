@@ -10,16 +10,13 @@
 
 #include "Data.h"
 
-///////////////// 	  PARAMETER     ////////////////////////////
-const string input_file_path("../../data/simple_example.csv") ;
-const string output_file_path("../../data/optimisation_output.csv") ;
-////////////////////////////////////////////////////////////////
 
 /** Constructor for data input/storage
   @param name of the file containing the input data : the format is very specific
   @param name of the file where to write the temporary result for each iteration
   */
-DataStorage::DataStorage(const string i_filename, const string o_filename ) : input_file_path_(i_filename), output_file_path_(o_filename) {
+DataStorage::DataStorage(const string i_filename, const string o_filename )
+    : input_file_path_(i_filename), output_file_path_(o_filename) {
     //this->readData(i_filename);
     nodes_ = 0x0;
     edges_ = 0x0;
@@ -148,7 +145,7 @@ void DataStorage::readData(){
         }
     } 
 
-    std::cout << num_nodes() <<" nodes, " << num_edges() << " edges, " << num_observations() << " observations readed from file " << output_file_path << " \n" ;
+    std::cout << num_nodes() <<" nodes, " << num_edges() << " edges, " << num_observations() << " observations readed from file " << output_file_path_ << " \n" ;
     fclose(i_fptr);
     return;
  }
@@ -187,23 +184,34 @@ void DataStorage::writeData(int iteration){
             , (iteration+1)
             );
     }
-    std::cout << num_edges() <<" edges written to file : " << output_file_path << "\n";
+    std::cout << num_edges() <<" edges written to file : " << output_file_path_ << "\n";
     std::cout << fclose(o_fptr); 
     return;
  }
 
 
 
-int main(int argc, char** argv) { 
-	
-	//getting the data ;
-    DataStorage * data = new DataStorage(input_file_path,output_file_path) ;
-    std::cout << "  \E[34;1mReading data\E[m \n" ;
-	data->readData();
-    std::cout << "  \E[34;1mWriting data\E[m \n" ;
-	data->writeData(1);
-  return 0;
-}
+void DataStorage::setMap(){
+
+    return;
+ }
+
+
+
+//! testing data IO
+
+//int main(int argc, char** argv) {
+//const string output_file_path("/media/sf_E_RemiCura/PROJETS/snapping/visu/visu_inqgis_timemanager/simple_test.csv") ;
+//const string input_file_path("/media/sf_E_RemiCura/PROJETS/snapping/using_ceres/data/simple_example.csv") ;
+
+//	//getting the data ;
+//    DataStorage * data = new DataStorage(input_file_path,output_file_path) ;
+//    std::cout << "  \E[34;1mReading data\E[m \n" ;
+//	data->readData();
+//    std::cout << "  \E[34;1mWriting data\E[m \n" ;
+//	data->writeData(1);
+//  return 0;
+//}
 
 
 

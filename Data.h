@@ -38,6 +38,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <unordered_map> //the hash_table
 
 
 using std::string;
@@ -53,7 +54,7 @@ struct node{
   
   node(int id,double X,double Y,double Z,bool in_inter) {
 		node_id = id;
-		position[0] = X ;
+        position[0] = X ;
 		position[1] = Y ;
 		position[2] = Z;
 		is_in_intersection = in_inter ;
@@ -122,14 +123,12 @@ string observationToString(){
 
 class DataStorage {
 public:
-    DataStorage(const  string, const  string );
+    DataStorage(const string, const string );
 
     ~DataStorage();
 	void readData();
 	void writeData(int);
-    void WriteToFile(const string filename) const;
-
-
+    void setMap();
 
     int num_nodes()             { return num_nodes_;  }
     int num_edges()             { return num_edges_;    }
@@ -140,16 +139,20 @@ public:
 
 
 private:
-    int num_nodes_;
-    int num_edges_;
-    int num_observations_;
+    int num_nodes_; //! total num of nodes we are going to read
+    int num_edges_; //! total num of edges we are going to read
+    int num_observations_;//! total num of observations we are going to read
 
-    node* nodes_;
-    edge* edges_;
-    observation* observations_;
+    node* nodes_;//! an array of node
+    edge* edges_;//! an array og edges
+    observation* observations_;//! an array of observations
     
-    const string input_file_path_;
-    const string output_file_path_;
+    const string input_file_path_;//! name of the file containing the input data
+    const string output_file_path_;//! name of the file where to write results
+
+    //! a hads table
+    std::unordered_map <int /*node_id*/, node *> nodes_by_node_id;
+
 };
 
 #endif // DATA_H
