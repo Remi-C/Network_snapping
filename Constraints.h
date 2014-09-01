@@ -34,7 +34,7 @@ struct DistanceToProjectionResidual {
         soustraction(n_i,n_j,n_i_minus_n_j);
         T cross[3];
         ceres::CrossProduct(n_i_minus_obs,n_i_minus_n_j,cross);
-        distance_to_original_spacing[0] =   squaredNorm(cross)/squaredNorm(n_i_minus_n_j)  ;
+        distance_to_original_spacing[0] =   squaredNorm(cross)/squaredNorm(n_i_minus_n_j) -T(1.0)/*width of this edge*/ ;
 
         return true;
       }

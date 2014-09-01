@@ -64,6 +64,9 @@ const double K_spacing= 1 ; //! this parameter scale the measure of similarity b
 
 ////////////////////////////////////////////////////////
 
+//////////////// gloable variable. Should use a singleton instead
+DataStorage * data_pointer ;
+////////////////
 
 
 
@@ -74,6 +77,7 @@ int main(int argc, char** argv) {
 
   //getting the data ;
   DataStorage * data = new DataStorage(  input_file_path,output_file_path) ;
+  data_pointer = data;
   data->readData();
   //setting the mapping beetween node_id and node*
   std::cout << "mapping between node_id and node *" <<"\n";

@@ -154,15 +154,21 @@ void DataStorage::readData(){
 
 void DataStorage::writeData(int iteration){
     //opening files
-    FILE* o_fptr = fopen(output_file_path_.c_str(), "w");
+    FILE* o_fptr ;
 
+    if(iteration == 1){ //we clean the file at first writting, after we append
+       o_fptr = fopen(output_file_path_.c_str(), "w");
+    }
+    else {
+       o_fptr = fopen(output_file_path_.c_str(), "a+");
+    }
     if (o_fptr == NULL) {
       std::cerr << "Error: unable to open file " << output_file_path_;
       return;
     }
 	
     //writing the header if needed :
-    if(iteration == 1){ // no need to wirte the heaer each time
+    if(iteration == 1){ // no need to write the header each time
     fprintf(o_fptr, "#geom;cost;start_time;end_time\n") ;
     }
 
@@ -172,7 +178,7 @@ void DataStorage::writeData(int iteration){
     
     for (int i = 0; i < num_edges_; ++i) { 
 		double cost = 10.0 ; 
-        fprintf(o_fptr,"LINESTRINGZ(%lG %lG %lG, %lG %lG %lG);%lG;2014-08-30 00:00:00.%06d;2014-08-30 00:00:00.%06d"
+        fprintf(o_fptr,"LINESTRINGZ(%lG %lG %lG, %lG %lG %lG);%lG;2014-08-30 00:00:00.%06d;2014-08-30 00:00:00.%06d\n"
             , nodes_[edges_[i].start_node-1].position[0]
             , nodes_[edges_[i].start_node-1].position[1]
             , nodes_[edges_[i].start_node-1].position[2]
