@@ -136,7 +136,8 @@ public:
     node* nodes()                { return nodes_;}
     edge* edges()                { return edges_;}
     observation* observations()  { return observations_;}
-
+    node* nbn(int i ) { return nodes_by_node_id_.at(i); }
+    std::unordered_map <int /*node_id*/, node *> nodes_by_node_id() {return nodes_by_node_id_;}
 
 private:
     int num_nodes_; //! total num of nodes we are going to read
@@ -151,7 +152,7 @@ private:
     const string output_file_path_;//! name of the file where to write results
 
     //! a hads table
-    std::unordered_map <int /*node_id*/, node *> nodes_by_node_id;
+    std::unordered_map <int /*node_id*/, node *> nodes_by_node_id_;
 
 };
 

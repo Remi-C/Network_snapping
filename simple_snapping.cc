@@ -72,6 +72,15 @@ int main(int argc, char** argv) {
   //getting the data ;
   DataStorage * data = new DataStorage(  input_file_path,output_file_path) ;
   data->readData();
+  //setting the mapping beetween node_id and node*
+  std::cout << "mapping between node_id and node *" <<"\n";
+  data->setMap();
+
+   std::cout << data->nbn(2)->nodeToString() <<endl;
+
+  std::cout << "size_of_the mapping : " << data->nodes_by_node_id().size() << "\n";
+
+  return 0;
   //creating the problem to be solved
   Problem problem;
 

@@ -190,10 +190,18 @@ void DataStorage::writeData(int iteration){
  }
 
 
-
+/** fill the hash_table that allow to reference node by node_id rather than by
+  index in nodes_
+  */
 void DataStorage::setMap(){
 
-    return;
+   //for loop on all values in nodes_
+   for (int i = 0; i < num_nodes_; ++i) {
+       nodes_by_node_id_[nodes_[i].node_id] = new node() ;
+       nodes_by_node_id_[nodes_[i].node_id] = &nodes_[i] ;
+       //std::cout << "\n" <<this->nodes_by_node_id_[i]->nodeToString() << "\n" ;
+    }//loop on all node from nodes_
+   return;
  }
 
 
