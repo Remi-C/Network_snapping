@@ -36,7 +36,7 @@ struct DistanceToProjectionResidual {
         ceres::CrossProduct(n_i_minus_obs,n_i_minus_n_j,cross);
         distance_to_original_spacing[0] =
                     T(K_obs) * T(obs_->confidence) * T(obs_->weight) *
-                (squaredNorm(cross)/squaredNorm(n_i_minus_n_j) -T(w_i_j_[0])) ;
+                (ceres::sqrt( squaredNorm(cross)/squaredNorm(n_i_minus_n_j)+0.00001) -T(w_i_j_[0])) ;
 
         return true;
       }
@@ -60,10 +60,10 @@ struct DistanceToInitialPosition {
     template <typename T> bool operator()(const T* const n_i,
                                         T* distance_to_origin) const {
     T s[3] ;
-    s[0] =n_i[0]-T(initial_position_[0]);
-    s[1] =n_i[1]-T(initial_position_[1]);
-    s[2] =n_i[2]-T(initial_position_[2]);
-    distance_to_origin[0] = T(K_origin) *  ceres::sqrt(s[0]*s[0] + s[1]*s[1] + s[2]*s[2] + 0.000001);
+    distance_to_origin[0] =T(K_origin) * (n_i[0]-T(initial_position_[0]) );
+    distance_to_origin[1] =T(K_origin) * (n_i[1]-T(initial_position_[1]) );
+    distance_to_origin[2] =T(K_origin) * (n_i[2]-T(initial_position_[2]) );
+    //distance_to_origin[0] = T(K_origin) *  ceres::sqrt(s[0]*s[0] + s[1]*s[1] + s[2]*s[2] + 0.000001);
 
     return true;
   }

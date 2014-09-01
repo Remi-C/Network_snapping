@@ -58,8 +58,8 @@ const int node_pair[1][2]={ //! the coupling between nodes to form segments
 const string output_file_path("/media/sf_E_RemiCura/PROJETS/snapping/visu/visu_inqgis_timemanager/simple_test.csv") ;
 const string input_file_path("/media/sf_E_RemiCura/PROJETS/snapping/using_ceres/data/simple_example.csv") ;
 
-const double K_origin = 1 ; //! this parameter scale the distance to origin for a node
-const double K_obs= 1 ; //! this parameter scale the measure of distance between observation and line (n_i,n_j)
+const double K_origin = 0.5 ; //! this parameter scale the distance to origin for a node
+const double K_obs= 5 ; //! this parameter scale the measure of distance between observation and line (n_i,n_j)
 const double K_spacing= 1 ; //! this parameter scale the measure of similarity between [n_i,n_j] original and current
 
 ////////////////////////////////////////////////////////
@@ -97,7 +97,7 @@ int main(int argc, char** argv) {
       DistanceToInitialPosition* self_distance_functor =
                 new DistanceToInitialPosition( data->nodes(k)->position) ;
       CostFunction* distance_cost_function
-          = new AutoDiffCostFunction<DistanceToInitialPosition, 1,3>(
+          = new AutoDiffCostFunction<DistanceToInitialPosition, 3,3>(
               self_distance_functor);
         problem.AddResidualBlock(
             distance_cost_function
