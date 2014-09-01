@@ -34,9 +34,15 @@ struct DistanceToProjectionResidual {
         soustraction(n_i,n_j,n_i_minus_n_j);
         T cross[3];
         ceres::CrossProduct(n_i_minus_obs,n_i_minus_n_j,cross);
+//        distance_to_original_spacing[0] =
+//                    T(K_obs) * T(obs_->confidence) * T(obs_->weight) *
+//                (ceres::sqrt( squaredNorm(cross)/squaredNorm(n_i_minus_n_j)+0.00001) -T(w_i_j_[0])) ;
         distance_to_original_spacing[0] =
-                    T(K_obs) * T(obs_->confidence) * T(obs_->weight) *
-                (ceres::sqrt( squaredNorm(cross)/squaredNorm(n_i_minus_n_j)+0.00001) -T(w_i_j_[0])) ;
+                ceres::sqrt(  T(K_obs) * T(obs_->confidence) * T(obs_->weight) * cross[0] * cross[0]/ squaredNorm(n_i_minus_n_j)+0.00001) ;
+        distance_to_original_spacing[1] =
+                ceres::sqrt(T(K_obs) * T(obs_->confidence) * T(obs_->weight)* cross[1]* cross[1] / squaredNorm(n_i_minus_n_j)+0.00001) ;
+        distance_to_original_spacing[2] =
+               ceres::sqrt( T(K_obs) * T(obs_->confidence) * T(obs_->weight) *cross[2]* cross[2] / squaredNorm(n_i_minus_n_j)+0.000001) ;
 
         return true;
       }

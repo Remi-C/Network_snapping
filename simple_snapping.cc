@@ -137,7 +137,7 @@ int main(int argc, char** argv) {
       DistanceToProjectionResidual* distance_functor =
               new DistanceToProjectionResidual( data->observations(i)->position, &relativ_edge->width, data->observations(i)  ) ;
       CostFunction* distance_cost_function
-          = new AutoDiffCostFunction<DistanceToProjectionResidual, 1, 3, 3>(
+          = new AutoDiffCostFunction<DistanceToProjectionResidual, 3, 3, 3>(
               distance_functor);
         problem.AddResidualBlock(
             distance_cost_function
