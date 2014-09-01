@@ -103,6 +103,7 @@ string edgeToString(){
 
 struct observation{
   int obs_id;           //! unique id per observations
+  int edge_id;          //! id of the edge that shoud be snapped to this observation
   double position[3];    //! 3 coordinates X,Y,Z
   //int edge_id;          //! this edge should be snapped to this observation
   double confidence;    //! confidence between 0 and 1. 0-> very unlikely ; 1-> certain
@@ -113,7 +114,7 @@ string observationToString(){
 	//#obs_id::int;X::double;Y::double;Z::double;confidence::double;weight::double
 	 
 	std::ostringstream nstring;
-	nstring << "(obs_id : " << obs_id  
+    nstring << "(obs_id : " << obs_id  << " , edge_id : (" << edge_id
 		<< " , position : (" << position[0] << "," << position[1] <<"," << position[2] 
 		<< "), confidence : " << confidence << ", weight : " << weight <<")"; 
 	return nstring.str() ;
@@ -142,6 +143,9 @@ public:
     observation* observations(int i)  { return &observations_[i];}
     node* nbn(int i ) { return nodes_by_node_id_.at(i); }
     std::unordered_map <int /*node_id*/, node *> nodes_by_node_id() {return nodes_by_node_id_;}
+    edge* ebe(int i ) { return edges_by_edge_id_.at(i); }
+    std::unordered_map <int /*edge_id*/, edge *> edges_by_edge_id()
+        {return edges_by_edge_id_;}
 
 private:
     int num_nodes_; //! total num of nodes we are going to read
@@ -155,9 +159,9 @@ private:
     const string input_file_path_;//! name of the file containing the input data
     const string output_file_path_;//! name of the file where to write results
 
-    //! a hads table
+    //! a hash table
     std::unordered_map <int /*node_id*/, node *> nodes_by_node_id_;
-
+    std::unordered_map <int /*edge_id*/, edge *> edges_by_edge_id_;
 };
 
 #endif // DATA_H

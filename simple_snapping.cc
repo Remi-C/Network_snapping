@@ -82,9 +82,6 @@ int main(int argc, char** argv) {
   //setting the mapping beetween node_id and node*
   std::cout << "mapping between node_id and node *" <<"\n";
   data->setMap();
-
-  std::cout << data->nbn(2)->nodeToString() <<endl;
-
   //creating the problem to be solved
   Problem problem;
 
@@ -109,7 +106,7 @@ int main(int argc, char** argv) {
   for (int u = 0; u <uNumPairs; ++u ){
       node * start_node =  data->nbn(data->edges(u)->start_node);
       node * end_node =  data->nbn(data->edges(u)->end_node);
-      double o_s[3] = {
+      double o_s[3] = { //! @todo : use eighen to hide this ugliness!
           start_node->position[0]  - end_node->position[0]
           ,start_node->position[1]  - end_node->position[1]
           ,start_node->position[2]  - end_node->position[2]};
@@ -127,6 +124,10 @@ int main(int argc, char** argv) {
   }
 
   for (int i = 0; i < kNumObservations; ++i) {
+       //finding the 2 nodes concerned by this observations
+      edge * relativ_edge = data->ebe(data->observations(i)->edge_id) ;
+      node * start_node = data->nbn(relativ_edge->start_node)  ;
+      node * end_node = data->nbn(relativ_edge->end_node)  ;
 
       DistanceToProjectionResidual* distance_functor =
                 new DistanceToProjectionResidual( data->observations(i)->position  ) ;
@@ -136,8 +137,8 @@ int main(int argc, char** argv) {
         problem.AddResidualBlock(
             distance_cost_function
             ,NULL
-            ,data->nodes(0)->position
-            ,data->nodes(1)->position
+            ,start_node->position
+            ,end_node->position
             ); //note : both observations are referring to these nodes.
   }
 

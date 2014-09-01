@@ -131,13 +131,17 @@ void DataStorage::readData(){
     //alocating hte memory for observations
     observations_ = new observation[num_observations()];//! @TOOO
 
-    //#obs_id::int;X::double;Y::double;Z::double;confidence::double;weight::double
+    //#obs_id::int;edge_id::int;X::double;Y::double;Z::double;confidence::double;weight::double
     for (int i = 0; i < num_observations_ ; ++i) {
         fgets(line, sizeof line, i_fptr);
-        if (sscanf(line, "%d;%lG;%lG;%lG;%lG;%lG",&observations_[i].obs_id
+        //std::cout << line  << "\n";
+        if (sscanf(line, "%d;%d;%lG;%lG;%lG;%lG;%lG"
+                ,&observations_[i].obs_id
+                ,&observations_[i].edge_id
                 ,&observations_[i].position[0],&observations_[i].position[1],&observations_[i].position[2]
-                ,&observations_[i].confidence, &observations_[i].weight) != 6) {
+                ,&observations_[i].confidence, &observations_[i].weight) != 7) {
             std::cerr<< "error when trying to read the observations, wrong format\n" ;
+            std::cerr<< "was expecting : obs_id::int;edge_id::int;X::double;Y::double;Z::double;confidence::double;weight::double, \n recevied : " << line ;
         } else {
             //std::copy(t_observation->position, t_observation->position + 3, coor);
             //std::cout << "observation readed : " << observations_[i].observationToString().c_str() << " \n"  ;
@@ -145,7 +149,7 @@ void DataStorage::readData(){
         }
     } 
 
-    std::cout << num_nodes() <<" nodes, " << num_edges() << " edges, " << num_observations() << " observations readed from file " << output_file_path_ << " \n" ;
+    std::cout << num_nodes() <<" nodes, " << num_edges() << " edges, " << num_observations() << " observations readed from file " << input_file_path_ << " \n" ;
     fclose(i_fptr);
     return;
  }
@@ -201,12 +205,15 @@ void DataStorage::writeData(int iteration){
   */
 void DataStorage::setMap(){
 
-   //for loop on all values in nodes_
    for (int i = 0; i < num_nodes_; ++i) {
-       nodes_by_node_id_[nodes_[i].node_id] = new node() ;
+//       nodes_by_node_id_[nodes_[i].node_id] = new node() ;
        nodes_by_node_id_[nodes_[i].node_id] = &nodes_[i] ;
-       //std::cout << "\n" <<this->nodes_by_node_id_[i]->nodeToString() << "\n" ;
     }//loop on all node from nodes_
+
+   for (int i = 0; i < num_edges(); ++i) {
+//       edges_by_edge_id_[edges_[i].edge_id] = new edge() ;
+       edges_by_edge_id_[edges_[i].edge_id] = &edges_[i] ;
+    }//loop on all edge from edges_
    return;
  }
 
