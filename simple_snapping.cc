@@ -70,8 +70,8 @@ const double K_spacing= 1 ; //! this parameter scale the measure of similarity b
 int main(int argc, char** argv) {
 
   //getting the data ;
-    DataStorage * data = new DataStorage('toto','titi');//input_file_path,output_file_path) ;
-
+  DataStorage * data = new DataStorage(  input_file_path,output_file_path) ;
+  data->readData();
   //creating the problem to be solved
   Problem problem;
 
@@ -80,7 +80,8 @@ int main(int argc, char** argv) {
   //setting constraint on initial position for each node.
   for (int k = 0; k <jNumNodes; ++k ){
 
-      DistanceToInitialPosition* self_distance_functor = new DistanceToInitialPosition( &node_position[3 * k]) ;
+      DistanceToInitialPosition* self_distance_functor =
+                new DistanceToInitialPosition( &node_position[3 * k]) ;
       CostFunction* distance_cost_function
           = new AutoDiffCostFunction<DistanceToInitialPosition, 1,3>(
               self_distance_functor);
