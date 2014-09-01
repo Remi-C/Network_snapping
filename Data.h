@@ -22,7 +22,7 @@
   edge_id::int;start_node::int;end_node::int;width::double
   ...
   #header observations
-  obs_id::int;X::double;Y::double;Z::double;confidence::double;weight::double
+  obs_id::int;edge_id::int;X::double;Y::double;Z::double;confidence::double;weight::double
 """""""""""""""""""""""""""""""""""""  
 
   format of the file to be written
