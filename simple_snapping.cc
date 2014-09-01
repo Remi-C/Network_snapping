@@ -89,7 +89,11 @@ int main(int argc, char** argv) {
 
   //setting constraint on initial position for each node.
   for (int k = 0; k <jNumNodes; ++k ){
-
+      double n_p[3] = { //! @todo : use eighen to hide this ugliness!
+                        //! @note : we slighty pertubate the original position to try to improve initial solution
+          data->nodes(k)->position[0] +0.001
+          ,data->nodes(k)->position[1]+0.001
+          ,data->nodes(k)->position[2]+0.001};
       DistanceToInitialPosition* self_distance_functor =
                 new DistanceToInitialPosition( data->nodes(k)->position) ;
       CostFunction* distance_cost_function
@@ -107,9 +111,10 @@ int main(int argc, char** argv) {
       node * start_node =  data->nbn(data->edges(u)->start_node);
       node * end_node =  data->nbn(data->edges(u)->end_node);
       double o_s[3] = { //! @todo : use eighen to hide this ugliness!
-          start_node->position[0]  - end_node->position[0]
-          ,start_node->position[1]  - end_node->position[1]
-          ,start_node->position[2]  - end_node->position[2]};
+                //! @note : we slighty pertubate the original position to try to improve initial solution
+          start_node->position[0]  - end_node->position[0] +0.001
+          ,start_node->position[1]  - end_node->position[1]+0.001
+          ,start_node->position[2]  - end_node->position[2]+0.001};
       DistanceToInitialSpacing* original_spacing_distance_functor = new DistanceToInitialSpacing( o_s) ;
 
       CostFunction* original_spacing_distance_cost_function
