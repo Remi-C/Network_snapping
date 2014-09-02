@@ -39,6 +39,7 @@
 #include <fstream>
 #include <sstream>
 #include <unordered_map> //the hash_table
+#include <math.h> //for
 
 
 using std::string;

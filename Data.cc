@@ -182,7 +182,7 @@ void DataStorage::writeData(int iteration){
     
     for (int i = 0; i < num_edges_; ++i) { 
 		double cost = 10.0 ; 
-        fprintf(o_fptr,"LINESTRINGZ(%lG %lG %lG, %lG %lG %lG);%lG;2014-08-30 00:00:00.%06d;2014-08-30 00:00:00.%06d\n"
+        fprintf(o_fptr,"LINESTRINGZ(%lG %lG %lG, %lG %lG %lG);%lG;2014-08-30 00:%02d:%02d;2014-08-30 00:%02d:%02d\n"
             , nodes_[edges_[i].start_node-1].position[0]
             , nodes_[edges_[i].start_node-1].position[1]
             , nodes_[edges_[i].start_node-1].position[2]
@@ -190,8 +190,10 @@ void DataStorage::writeData(int iteration){
             , nodes_[edges_[i].end_node-1].position[1]
             , nodes_[edges_[i].end_node-1].position[2]
             , cost
-            , iteration
-            , (iteration+1)
+            , int(floor(iteration/60))
+            , iteration%60
+            , int(floor((iteration+1)/60))
+            , (iteration+1)%60
             );
     }
     std::cout << num_edges() <<" edges written to file : " << output_file_path_ << "\n";
