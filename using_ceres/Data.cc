@@ -173,7 +173,7 @@ void DataStorage::writeData(int iteration){
 	
     //writing the header if needed :
     if(iteration == 1){ // no need to write the header each time
-    fprintf(o_fptr, "#geom;cost;start_time;end_time;iteration\n") ;
+    fprintf(o_fptr, "#geom;width;cost;start_time;end_time;iteration\n") ;
     }
 
     //writing data . Example of what we want : 
@@ -196,13 +196,14 @@ void DataStorage::writeData(int iteration){
         node * start_node = nbn(edge_to_output->start_node) ;
         node * end_node = nbn(edge_to_output->end_node) ;
 		double cost = 10.0 ; 
-        fprintf(o_fptr,"LINESTRINGZ(%lG %lG %lG, %lG %lG %lG);%lG;2014-08-30 %02d:%02d:%02d;2014-08-30 %02d:%02d:%02d;%d\n"
+        fprintf(o_fptr,"LINESTRINGZ(%lG %lG %lG, %lG %lG %lG);%lG;%lG;2014-08-30 %02d:%02d:%02d;2014-08-30 %02d:%02d:%02d;%d\n"
             , start_node->position[0]
             , start_node->position[1]
             , start_node->position[2]
             , end_node->position[0]
             , end_node->position[1]
             , end_node->position[2]
+            , edge_to_output->width
             , cost
             , hours_c
             , minutes_c
