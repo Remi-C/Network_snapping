@@ -62,6 +62,9 @@ const double K_origin = 0.5 ; //! this parameter scale the distance to origin fo
 const double K_obs= 5 ; //! this parameter scale the measure of distance between observation and line (n_i,n_j)
 const double K_spacing= 1 ; //! this parameter scale the measure of similarity between [n_i,n_j] original and current
 
+const bool use_initial_position_constraint = false;
+const bool use_initial_spacing_constraint = false;
+const bool use_distance_to_proj_constraint = true;
 ////////////////////////////////////////////////////////
 
 //////////////// gloable variable. Should use a singleton instead
@@ -86,7 +89,7 @@ int main(int argc, char** argv) {
   Problem problem;
 
   //filling the problem with constraints to be optimized
-
+  if (use_initial_position_constraint == true) {
   //setting constraint on initial position for each node.
   for (int k = 0; k <jNumNodes; ++k ){
       double n_p[3] = { //! @todo : use eighen to hide this ugliness!
@@ -105,7 +108,9 @@ int main(int argc, char** argv) {
             ,data->nodes(k)->position
             );
   }
+    }
 
+  if(use_initial_spacing_constraint==true){
   //setting constraint on initial spacing between nodes for each pair of node.
   for (int u = 0; u <uNumPairs; ++u ){
       node * start_node =  data->nbn(data->edges(u)->start_node);
@@ -127,7 +132,8 @@ int main(int argc, char** argv) {
             , end_node->position
             );
   }
-
+  }
+  if(use_distance_to_proj_constraint == true){
   for (int i = 0; i < kNumObservations; ++i) {
        //finding the 2 nodes concerned by this observations
       edge * relativ_edge = data->ebe(data->observations(i)->edge_id) ;
@@ -146,6 +152,7 @@ int main(int argc, char** argv) {
             ,end_node->position
             ); //note : both observations are referring to these nodes.
   }
+  }
 
   Solver::Options options;
   options.max_num_iterations = 50;
@@ -153,10 +160,10 @@ int main(int argc, char** argv) {
   options.minimizer_progress_to_stdout = true;
 
   ////output writing option
-  //options.update_state_every_iteration= true ;
-  //WritingTempResultCallback callback(output_file_path,0);
-  //options.callbacks.push_back(&callback);
-  //
+  options.update_state_every_iteration= true ;
+  WritingTempResultCallback callback(output_file_path,0);
+  options.callbacks.push_back(&callback);
+
   Solver::Summary summary;
   Solve(options, &problem, &summary);
 

@@ -178,29 +178,54 @@ void DataStorage::writeData(int iteration){
 
     //writing data . Example of what we want : 
     //LINESTRINGZ(X1 Y1 Z1, X2 Y2 Z2);12.98;YYYY-MM-DD HH:MM:SS.ssssss;YYYY-MM-DD HH:MM:SS.ssssss
-    
-    
-    for (int i = 0; i < num_edges_; ++i) { 
+
+    //this allows to represent 60*60*60 iterations
+    //we compute the H:M:S based on number of iteration.
+    //Note : we rely on cast to int : int(A/B) is going to return rest of euclidian div.
+    int hours_c = int( iteration/(60*60) ) ;
+    int minutes_c = int( iteration/(60) ) ;
+    int seconds_c = iteration%60 ;
+    //same based on iteration+1, for next time.
+    int hours_n = int( (iteration+1)/(60*60) ) ;
+    int minutes_n = int( (iteration+1)/(60) ) ;
+    int seconds_n = (iteration+1)%60 ;
+
+    std::cout <<  hours_c << " " << minutes_c << " " << seconds_c << std::endl;
+    std::cout << this->num_nodes() << " "<< num_edges() << " " << num_observations() << std::endl;
+    std::cout << "num of items before entering writting loop " << std::endl;
+     for(const auto& element : this->edges_by_edge_id_){
+         std::cout << element.second->edgeToString() << std::endl;
+     }
+
+    for(const auto& element : this->edges_by_edge_id_){
+        //std::cout << element.second->end_node << std::endl;
+        edge * edge_to_output = element.second;
+        node * start_node = nbn(edge_to_output->start_node) ;
+        node * end_node = nbn(edge_to_output->end_node) ;
+        std::cout << "start node: " << start_node->nodeToString() << std::endl;
+        std::cout << "end node: "<< end_node->nodeToString() << std::endl;
+
 		double cost = 10.0 ; 
-        fprintf(o_fptr,"LINESTRINGZ(%lG %lG %lG, %lG %lG %lG);%lG;2014-08-30 00:%02d:%02d;2014-08-30 00:%02d:%02d\n"
-            , nodes_[edges_[i].start_node-1].position[0]
-            , nodes_[edges_[i].start_node-1].position[1]
-            , nodes_[edges_[i].start_node-1].position[2]
-            , nodes_[edges_[i].end_node-1].position[0]
-            , nodes_[edges_[i].end_node-1].position[1]
-            , nodes_[edges_[i].end_node-1].position[2]
+        fprintf(o_fptr,"LINESTRINGZ(%lG %lG %lG, %lG %lG %lG);%lG;2014-08-30 %02d:%02d:%02d;2014-08-30 %02d:%02d:%02d\n"
+            , start_node->position[0]
+            , start_node->position[1]
+            , start_node->position[2]
+            , end_node->position[0]
+            , end_node->position[1]
+            , end_node->position[2]
             , cost
-            , int(floor(iteration/60))
-            , iteration%60
-            , int(floor((iteration+1)/60))
-            , (iteration+1)%60
+            , hours_c
+            , minutes_c
+            , seconds_c
+            , hours_n
+            , minutes_n
+            , seconds_n
             );
     }
     std::cout << num_edges() <<" edges written to file : " << output_file_path_ << "\n";
     std::cout << fclose(o_fptr); 
     return;
  }
-
 
 /** fill the hash_table that allow to reference node by node_id rather than by
   index in nodes_

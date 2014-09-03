@@ -24,7 +24,7 @@ using namespace std; //maybe we could limit the visibility?
 
 #include "Data.h"
 
-//! @todo @fixe-me : should not use global but singleton. Bit ov overkill tough.
+//! @todo @fixe-me : should not use global but singleton. Bit of overkill tough.
 extern DataStorage * data_pointer ;
 
 class WritingTempResultCallback : public ceres::IterationCallback {
@@ -43,7 +43,7 @@ class WritingTempResultCallback : public ceres::IterationCallback {
   virtual ceres::CallbackReturnType operator(
     )(
           const ceres::IterationSummary& summary
-     //arg for the functor. none needed.
+     //arg for the functor. needed because it is the prototype of this functor
           ) {
     //writing edge with updated node position in the file :
       ++i;
