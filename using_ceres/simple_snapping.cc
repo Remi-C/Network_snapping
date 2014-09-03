@@ -38,32 +38,18 @@ typedef Eigen::Map<const Eigen::Vector3d> mcVec3 ;
 //typedef Eigen::Map<Eigen::Vector3f> VectorRef;
 //typedef Eigen::Map<const Eigen::Vector3f> ConstVectorRef;
 
-const int kNumObservations = 2;
-const int jNumNodes = 2;
-const int uNumPairs =1 ;
-const double observation_position[] = { //! the initial position of observations . No change
-  4, 2, 0,
-  2, -1, 0
-};
-double node_position[] = { //! the initial node position. This parameters are going to be optiized
-  0, 0, 0,
-  6, 0, 0
-};
-const int node_pair[1][2]={ //! the coupling between nodes to form segments
-    {0,1}
-};
 
 //! @TODO @WARNING very ugly : should be set in a "parameter class"
 ///////////////////////PARAMETERS///////////////////////
-const string input_file_path("../data/data_in_reduced_export_area//reduced_area.csv");
-const string  output_file_path("../data/data_in_reduced_export_area//snapping_output.csv");
+const string input_file_path("../data/data_in_reduced_export_area/reduced_area_2.csv");
+const string  output_file_path("../data/data_in_reduced_export_area/snapping_output.csv");
 
-const double K_origin = 1 ; //! this parameter scale the distance to origin for a node
-const double K_obs= 100 ; //! this parameter scale the measure of distance between observation and line (n_i,n_j)
-const double K_spacing= 1 ; //! this parameter scale the measure of similarity between [n_i,n_j] original and current
+const double K_origin = 1  ; //! this parameter scale the distance to origin for a node
+const double K_obs= 1 ; //! this parameter scale the measure of distance between observation and line (n_i,n_j)
+const double K_spacing=  1 ; //! this parameter scale the measure of similarity between [n_i,n_j] original and current
 
 const bool use_initial_position_constraint = false;
-const bool use_initial_spacing_constraint = true;
+const bool use_initial_spacing_constraint = false;
 const bool use_distance_to_proj_constraint = true;
 ////////////////////////////////////////////////////////
 
@@ -91,7 +77,7 @@ int main(int argc, char** argv) {
   //filling the problem with constraints to be optimized
   if (use_initial_position_constraint == true) {
   //setting constraint on initial position for each node.
-  for (int k = 0; k <jNumNodes; ++k ){
+  for (int k = 0; k <data->num_nodes(); ++k ){
       double n_p[3] = { //! @todo : use eighen to hide this ugliness!
                         //! @note : we slighty pertubate the original position to try to improve initial solution
           data->nodes(k)->position[0] +0.001
@@ -100,7 +86,7 @@ int main(int argc, char** argv) {
       DistanceToInitialPosition* self_distance_functor =
                 new DistanceToInitialPosition( data->nodes(k)->position) ;
       CostFunction* distance_cost_function
-          = new AutoDiffCostFunction<DistanceToInitialPosition, 3,3>(
+          = new AutoDiffCostFunction<DistanceToInitialPosition, 1,3>(
               self_distance_functor);
         problem.AddResidualBlock(
             distance_cost_function
@@ -112,7 +98,7 @@ int main(int argc, char** argv) {
 
   if(use_initial_spacing_constraint==true){
   //setting constraint on initial spacing between nodes for each pair of node.
-  for (int u = 0; u <uNumPairs; ++u ){
+  for (int u = 0; u <data->num_edges(); ++u ){
       node * start_node =  data->nbn(data->edges(u)->start_node);
       node * end_node =  data->nbn(data->edges(u)->end_node);
       double o_s[3] = { //! @todo : use eighen to hide this ugliness!
@@ -136,7 +122,7 @@ int main(int argc, char** argv) {
 
   //! constraint based on observation
   if(use_distance_to_proj_constraint == true){
-  for (int i = 0; i < kNumObservations; ++i) {
+  for (int i = 0; i < data->num_observations(); ++i) {
        //finding the 2 nodes concerned by this observations
       edge * relativ_edge = data->ebe(data->observations(i)->edge_id) ;
       node * start_node = data->nbn(relativ_edge->start_node)  ;
@@ -145,7 +131,7 @@ int main(int argc, char** argv) {
       DistanceToProjectionResidual* distance_functor =
               new DistanceToProjectionResidual( data->observations(i)->position, &relativ_edge->width, data->observations(i)  ) ;
       CostFunction* distance_cost_function
-          = new AutoDiffCostFunction<DistanceToProjectionResidual, 1, 3, 3>(
+          = new AutoDiffCostFunction<DistanceToProjectionResidual, 2, 3, 3>(
               distance_functor);
         problem.AddResidualBlock(
             distance_cost_function
@@ -153,6 +139,8 @@ int main(int argc, char** argv) {
             ,start_node->position
             ,end_node->position
             ); //note : both observations are referring to these nodes.
+
+        std::cout << "coucou" << std::endl;
   }
   }
 
@@ -172,14 +160,6 @@ int main(int argc, char** argv) {
   std::cout << summary.BriefReport() << "\n";
   std::cout << summary.FullReport() << "\n";
   std::cout << summary.IsSolutionUsable() << "\n";
-
-    for (int k = 0; k <jNumNodes; ++k ){
-        std::cout << "result :"<<endl
-          << data->nodes(k)->nodeToString() <<endl;
-
-   }
-
-
 
   return 0;
 }

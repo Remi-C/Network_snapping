@@ -37,8 +37,8 @@ struct DistanceToProjectionResidual {
         T cross[3];
         ceres::CrossProduct(n_i_minus_obs,n_i_minus_n_j,cross);
 
-//        distance_to_proj[0] =
-//                ceres::sqrt( squaredNorm(n_i_minus_obs) + squaredNorm(n_j_minus_obs) +0.00001)  ;
+        distance_to_proj[0] =     ceres::sqrt(squaredNorm(n_i_minus_obs)) - T(w_i_j_[0])   ;
+        distance_to_proj[1] =   ceres::sqrt(squaredNorm(n_j_minus_obs)) -T(w_i_j_[0])  ;
 
 
 //        distance_to_proj[0] =
@@ -47,10 +47,14 @@ struct DistanceToProjectionResidual {
 //                    T(K_obs) * T(obs_->confidence) * T(obs_->weight) *
 //                (  squaredNorm(cross)/squaredNorm(n_i_minus_n_j)
 //                 -T(1)/T(2.0)) ;
-        distance_to_proj[0] =
-                    T(K_obs) * T(obs_->confidence) * T(obs_->weight) *
-                ( (  squaredNorm(cross)/squaredNorm(n_i_minus_n_j)
-                 -T(w_i_j_[0] )*T(w_i_j_[0] )  ) ) ;
+
+
+//        distance_to_proj[0] =
+//                    T(K_obs) * T(obs_->confidence) * T(obs_->weight) *
+//                (
+//                 ceres::sqrt(squaredNorm(cross)/squaredNorm(n_i_minus_n_j) )
+//                 -T(w_i_j_[0])
+//                ) ;
 
 //        distance_to_proj[0] =
 //                ceres::sqrt(
@@ -84,9 +88,10 @@ struct DistanceToInitialPosition {
     template <typename T> bool operator()(const T* const n_i,
                                         T* distance_to_origin) const {
     T s[3] ;
-    distance_to_origin[0] =T(K_origin) * (n_i[0]-T(initial_position_[0]) );
-    distance_to_origin[1] =T(K_origin) * (n_i[1]-T(initial_position_[1]) );
-    distance_to_origin[2] =T(K_origin) * (n_i[2]-T(initial_position_[2]) );
+    s[0] = (n_i[0]-T(initial_position_[0]) );
+    s[1] = (n_i[1]-T(initial_position_[1]) );
+    s[2] = (n_i[2]-T(initial_position_[2]) );
+    distance_to_origin[0] = T(K_origin) * ceres::sqrt(squaredNorm(s)+0.0001) ;
     //distance_to_origin[0] = T(K_origin) *  ceres::sqrt(s[0]*s[0] + s[1]*s[1] + s[2]*s[2] + 0.000001);
 
     return true;
@@ -112,7 +117,7 @@ struct DistanceToInitialSpacing{
         T n_i_minus_n_j[3] ;
         soustraction(n_i,n_j,n_i_minus_n_j);
 
-         distance_to_original_spacing[0]= squaredNorm(n_i_minus_n_j)-squaredNorm(spac) ;
+         distance_to_original_spacing[0]= T(K_spacing) * (squaredNorm(n_i_minus_n_j)-squaredNorm(spac)) ;
 //        //compute the difference with original spacing:
 //        distance_to_original_spacing[0] = T(K_spacing) * ( T(initial_spacing_[0]) - (n_i[0] - n_j[0]) ) ;
 //        distance_to_original_spacing[1] = T(K_spacing) * ( T(initial_spacing_[1]) - (n_i[1] - n_j[1]) );

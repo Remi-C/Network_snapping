@@ -114,7 +114,8 @@ struct observation{
 string observationToString(){ 
 	//#obs_id::int;X::double;Y::double;Z::double;confidence::double;weight::double
 	 
-	std::ostringstream nstring;
+    std::ostringstream nstring;
+    //nstring.precision(10);
     nstring << "(obs_id : " << obs_id  << " , edge_id : (" << edge_id
 		<< " , position : (" << position[0] << "," << position[1] <<"," << position[2] 
 		<< "), confidence : " << confidence << ", weight : " << weight <<")"; 
