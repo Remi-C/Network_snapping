@@ -190,21 +190,11 @@ void DataStorage::writeData(int iteration){
     int minutes_n = int( (iteration+1)/(60) ) ;
     int seconds_n = (iteration+1)%60 ;
 
-    std::cout <<  hours_c << " " << minutes_c << " " << seconds_c << std::endl;
-    std::cout << this->num_nodes() << " "<< num_edges() << " " << num_observations() << std::endl;
-    std::cout << "num of items before entering writting loop " << std::endl;
-     for(const auto& element : this->edges_by_edge_id_){
-         std::cout << element.second->edgeToString() << std::endl;
-     }
-
     for(const auto& element : this->edges_by_edge_id_){
         //std::cout << element.second->end_node << std::endl;
         edge * edge_to_output = element.second;
         node * start_node = nbn(edge_to_output->start_node) ;
         node * end_node = nbn(edge_to_output->end_node) ;
-        std::cout << "start node: " << start_node->nodeToString() << std::endl;
-        std::cout << "end node: "<< end_node->nodeToString() << std::endl;
-
 		double cost = 10.0 ; 
         fprintf(o_fptr,"LINESTRINGZ(%lG %lG %lG, %lG %lG %lG);%lG;2014-08-30 %02d:%02d:%02d;2014-08-30 %02d:%02d:%02d\n"
             , start_node->position[0]
