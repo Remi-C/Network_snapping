@@ -24,25 +24,43 @@ struct DistanceToProjectionResidual {
     //! this is the operator computing the cost, ie the distance projeted on normal of (n_i,n_j)
         template <typename T> bool operator()(const T* const n_i,/**< the first node */
                                               const T* const n_j,/**< the second node */
-                                            T* distance_to_original_spacing) const {/**< this is the cost to be optimised*/
+                                            T* distance_to_proj) const {/**< this is the cost to be optimised*/
 
         //computting soustraction
         T obs[3] = {T(position_[0]),T(position_[1]),T(position_[2])};
         T n_i_minus_obs[3] ;
+        T n_j_minus_obs[3] ;
         T n_i_minus_n_j[3] ;
         soustraction(n_i,obs,n_i_minus_obs);
+        soustraction(n_j,obs,n_j_minus_obs);
         soustraction(n_i,n_j,n_i_minus_n_j);
         T cross[3];
         ceres::CrossProduct(n_i_minus_obs,n_i_minus_n_j,cross);
-//        distance_to_original_spacing[0] =
+
+//        distance_to_proj[0] =
+//                ceres::sqrt( squaredNorm(n_i_minus_obs) + squaredNorm(n_j_minus_obs) +0.00001)  ;
+
+
+//        distance_to_proj[0] =
+//                ceres::sqrt( squaredNorm(n_i_minus_obs) + squaredNorm(n_j_minus_obs) +0.00001)  ;
+//        distance_to_proj[0] =
 //                    T(K_obs) * T(obs_->confidence) * T(obs_->weight) *
-//                (ceres::sqrt( squaredNorm(cross)/squaredNorm(n_i_minus_n_j)+0.00001) -T(w_i_j_[0])) ;
-        distance_to_original_spacing[0] =
-                ceres::sqrt(  T(K_obs) * T(obs_->confidence) * T(obs_->weight) * cross[0] * cross[0]/ squaredNorm(n_i_minus_n_j)+0.00001) ;
-        distance_to_original_spacing[1] =
-                ceres::sqrt(T(K_obs) * T(obs_->confidence) * T(obs_->weight)* cross[1]* cross[1] / squaredNorm(n_i_minus_n_j)+0.00001) ;
-        distance_to_original_spacing[2] =
-               ceres::sqrt( T(K_obs) * T(obs_->confidence) * T(obs_->weight) *cross[2]* cross[2] / squaredNorm(n_i_minus_n_j)+0.000001) ;
+//                (  squaredNorm(cross)/squaredNorm(n_i_minus_n_j)
+//                 -T(1)/T(2.0)) ;
+        distance_to_proj[0] =
+                    T(K_obs) * T(obs_->confidence) * T(obs_->weight) *
+                ( (  squaredNorm(cross)/squaredNorm(n_i_minus_n_j)
+                 -T(w_i_j_[0] )*T(w_i_j_[0] )  ) ) ;
+
+//        distance_to_proj[0] =
+//                ceres::sqrt(
+//                    T(K_obs) * T(obs_->confidence) * T(obs_->weight) *
+//                    (cross[0] * cross[0]/ squaredNorm(n_i_minus_n_j)-T(w_i_j_[0])/T(2.0) )
+//                 +T(0.00001)) ;
+//        distance_to_proj[1] =
+//                ceres::sqrt(T(K_obs) * T(obs_->confidence) * T(obs_->weight)* (cross[1]* cross[1] / squaredNorm(n_i_minus_n_j)-T(w_i_j_[0])/T(2.0) )+T(0.00001)) ;
+//        distance_to_proj[2] =
+//                ceres::sqrt( T(K_obs) * T(obs_->confidence) * T(obs_->weight) * ( cross[2]* cross[2] / squaredNorm(n_i_minus_n_j)-T(w_i_j_[0])/T(2.0) )+ T(0.000001)) ;
 
         return true;
       }
@@ -90,11 +108,15 @@ struct DistanceToInitialSpacing{
     template <typename T> bool operator()(const T* const n_i,/**< the first node */
                                           const T* const n_j,/**< the second node */
                                         T* distance_to_original_spacing) const {/**< this is the cost to be optimised*/
+        T spac[3] = {T(initial_spacing_[0]),T(initial_spacing_[1]),T(initial_spacing_[2])};
+        T n_i_minus_n_j[3] ;
+        soustraction(n_i,n_j,n_i_minus_n_j);
 
-        //compute the difference with original spacing:
-        distance_to_original_spacing[0] = T(K_spacing) * T(initial_spacing_[0]) - (n_i[0] - n_j[0])  ;
-        distance_to_original_spacing[1] = T(K_spacing) * T(initial_spacing_[1]) - (n_i[1] - n_j[1])  ;
-        distance_to_original_spacing[2] = T(K_spacing) * T(initial_spacing_[2]) - (n_i[2] - n_j[2])  ;
+         distance_to_original_spacing[0]= squaredNorm(n_i_minus_n_j)-squaredNorm(spac) ;
+//        //compute the difference with original spacing:
+//        distance_to_original_spacing[0] = T(K_spacing) * ( T(initial_spacing_[0]) - (n_i[0] - n_j[0]) ) ;
+//        distance_to_original_spacing[1] = T(K_spacing) * ( T(initial_spacing_[1]) - (n_i[1] - n_j[1]) );
+//        distance_to_original_spacing[2] = T(K_spacing) * ( T(initial_spacing_[2]) - (n_i[2] - n_j[2]) );
 
         return true;
       }
