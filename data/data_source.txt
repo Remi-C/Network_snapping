@@ -1,0 +1,10 @@
+
+
+--sources of observations :
+ on database terramobilita, schema CMM
+ 
+--sources of axes : 
+on data base street_gen_3 , in schema bdtopo, table road
+
+--sources of automatically generated surfaces :
+on data base street_gen_3 , in schema street_amp, table result_*
