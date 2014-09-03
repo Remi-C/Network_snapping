@@ -152,10 +152,10 @@ int main(int argc, char** argv) {
   options.linear_solver_type = ceres::DENSE_QR;
   options.minimizer_progress_to_stdout = true;
 
-  //output writing option
-  options.update_state_every_iteration= true ;
-  WritingTempResultCallback callback(output_file_path,0);
-  options.callbacks.push_back(&callback);
+  ////output writing option
+  //options.update_state_every_iteration= true ;
+  //WritingTempResultCallback callback(output_file_path,0);
+  //options.callbacks.push_back(&callback);
   //
   Solver::Summary summary;
   Solve(options, &problem, &summary);
