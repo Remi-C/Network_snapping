@@ -32,3 +32,9 @@ MakeFile
 
 #test of compile :
 test_forum*
+
+#csv files
+*.csv
+
+#qgis file
+*.qgs
