@@ -10,6 +10,7 @@
   relevant to the problem
   */
 
+#include "Data.h"
 extern const double K_origin;
 extern const double K_obs;
 extern const double K_spacing;

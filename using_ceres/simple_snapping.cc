@@ -48,13 +48,16 @@ const double K_origin = 1  ; //! this parameter scale the distance to origin for
 const double K_obs= 1 ; //! this parameter scale the measure of distance between observation and line (n_i,n_j)
 const double K_spacing=  1 ; //! this parameter scale the measure of similarity between [n_i,n_j] original and current
 
-const bool use_initial_position_constraint = false;
-const bool use_initial_spacing_constraint = true;
+const bool use_initial_position_constraint = true;
+const bool use_initial_spacing_constraint = false;
 const bool use_distance_to_proj_constraint = true;
 ////////////////////////////////////////////////////////
 
 //////////////// gloable variable. Should use a singleton instead
 DataStorage * data_pointer ;
+int addConstraintsOnInitialPosition(DataStorage *, Problem * );
+int addConstraintsOnInitialspacing( DataStorage *, Problem * );
+int addConstraintsOnOrthDistToObservation(DataStorage * , Problem * ) ;
 ////////////////
 
 
@@ -77,54 +80,12 @@ int main(int argc, char** argv) {
 
     //setting constraint on initial position for each node.
   if (use_initial_position_constraint == true) {
-      for(const auto& element : data->nodes_by_node_id()){
-      //std::cout << element.second->end_node << std::endl;
-     node * n = element.second;
-
-      double n_p[3] = { //! @todo : use eighen to hide this ugliness!
-                        //! @note : we slighty pertubate the original position to try to improve initial solution
-          n->position[0] +0.001
-          ,n->position[1]+0.001
-          ,n->position[2]+0.001};
-      DistanceToInitialPosition* self_distance_functor =
-                new DistanceToInitialPosition( n->position) ;
-      CostFunction* distance_cost_function
-          = new AutoDiffCostFunction<DistanceToInitialPosition, 1,3>(
-              self_distance_functor);
-        problem.AddResidualBlock(
-            distance_cost_function
-            ,NULL
-            ,n->position
-            );
-    }
+    addConstraintsOnInitialPosition( data, &problem) ;
   }
 
 //setting constraint on initial spacing between nodes for each pair of node.
   if(use_initial_spacing_constraint==true){
-      for(const auto& element : data->edges_by_edge_id()){
-      //std::cout << element.second->end_node << std::endl;
-      edge * edge_to_output = element.second;
-      node * start_node = data->nbn(edge_to_output->start_node) ;
-      node * end_node = data->nbn(edge_to_output->end_node) ;
-
-
-      double o_s[3] = { //! @todo : use eighen to hide this ugliness!
-                //! @note : we slighty pertubate the original position to try to improve initial solution
-          start_node->position[0]   - end_node->position[0] +0.001
-          ,start_node->position[1]  - end_node->position[1]+0.001
-          ,start_node->position[2]  - end_node->position[2]+0.001};
-      DistanceToInitialSpacing* original_spacing_distance_functor = new DistanceToInitialSpacing( o_s) ;
-
-      CostFunction* original_spacing_distance_cost_function
-          = new AutoDiffCostFunction<DistanceToInitialSpacing, 1,3,3>(
-              original_spacing_distance_functor);
-        problem.AddResidualBlock(
-            original_spacing_distance_cost_function
-            ,NULL
-            , start_node->position
-            , end_node->position
-            );
-  }
+      addConstraintsOnInitialspacing( data, &problem) ;
   }
 
   //! constraint based on observation
