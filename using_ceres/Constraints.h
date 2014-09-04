@@ -37,8 +37,12 @@ struct DistanceToProjectionResidual {
         T cross[3];
         ceres::CrossProduct(n_i_minus_obs,n_i_minus_n_j,cross);
 
-        distance_to_proj[0] =     ceres::sqrt(squaredNorm(n_i_minus_obs)) - T(w_i_j_[0])   ;
-        distance_to_proj[1] =   ceres::sqrt(squaredNorm(n_j_minus_obs)) -T(w_i_j_[0])  ;
+
+//        distance_to_proj[0] =   T(K_obs) * ceres::sqrt(squaredNorm(n_i_minus_obs)) - T(w_i_j_[0])/2.0 ;
+//        distance_to_proj[1] =   T(K_obs) * ceres::sqrt(squaredNorm(n_j_minus_obs)) -T(w_i_j_[0])/2.0 ;
+
+//        distance_to_proj[0] =   1.0 / T(2.0) * ( ceres::sqrt(squaredNorm(n_i_minus_obs)) - T(w_i_j_[0])/2.0  )  ;
+//        distance_to_proj[1] =  1.0 /T(2.0) * ( ceres::sqrt(squaredNorm(n_j_minus_obs)) -T(w_i_j_[0])/2.0)  ;
 
 
 //        distance_to_proj[0] =
@@ -49,12 +53,12 @@ struct DistanceToProjectionResidual {
 //                 -T(1)/T(2.0)) ;
 
 
-//        distance_to_proj[0] =
-//                    T(K_obs) * T(obs_->confidence) * T(obs_->weight) *
-//                (
-//                 ceres::sqrt(squaredNorm(cross)/squaredNorm(n_i_minus_n_j) )
-//                 -T(w_i_j_[0])
-//                ) ;
+        distance_to_proj[0] =
+                    T(K_obs) * T(obs_->confidence) * T(obs_->weight) *
+                (
+                 ceres::sqrt(squaredNorm(cross)/squaredNorm(n_i_minus_n_j) )
+                 -T(w_i_j_[0])/2.0
+                ) ;
 
 //        distance_to_proj[0] =
 //                ceres::sqrt(
