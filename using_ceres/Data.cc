@@ -215,7 +215,7 @@ void DataStorage::writeData(int iteration){
             );
     }
     std::cout << num_edges() <<" edges written to file : " << output_file_path_ << "\n";
-    std::cout << fclose(o_fptr); 
+    fclose(o_fptr);
     return;
  }
 

@@ -12,9 +12,7 @@
   format of the file to be read
 """"""""""""""""""""""""""""""""""""" 
   #header
-  num_nodes
-  num_edges
-  num_observations
+  num_nodes;num_edges;num_observations
   #header node
   node_id::int;X::double;Yi_filename::double;Z::double;is_in_intersection::int
   ...
@@ -27,9 +25,9 @@
 
   format of the file to be written
 """"""""""""""""""""""""""""""""""""" 
-	#geom;cost;start_time;end_time
-	LINESTRINGZ(X1 Y1 Z1, X2 Y2 Z2);12.98;YYYY-MM-DD HH:MM:SS.ssssss;YYYY-MM-DD HH:MM:SS.ssssss
-	LINESTRINGZ(X1 Y1 Z1, X2 Y2 Z2);12.98;YYYY-MM-DD HH:MM:SS.ssssss;YYYY-MM-DD HH:MM:SS.ssssss
+    #geom;width;cost;start_time;end_time;iteration
+    LINESTRINGZ(X1 Y1 Z1, X2 Y2 Z2);2.25;12.98;YYYY-MM-DD HH:MM:SS.ssssss;YYYY-MM-DD HH:MM:SS.ssssss;1
+    LINESTRINGZ(X1 Y1 Z1, X2 Y2 Z2);2.25;12.98;YYYY-MM-DD HH:MM:SS.ssssss;YYYY-MM-DD HH:MM:SS.ssssss;2
 	...
 """""""""""""""""""""""""""""""""""""  
   
@@ -137,6 +135,7 @@ public:
     int num_nodes()             { return num_nodes_;  }
     int num_edges()             { return num_edges_;    }
     int num_observations()       { return num_observations_;  }
+    const std::string output_file_path()     { return output_file_path_;  }
     node* nodes()                { return nodes_;}
     node* nodes(int i)           { return &nodes_[i];}
     edge* edges()                { return edges_;}

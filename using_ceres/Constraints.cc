@@ -6,16 +6,11 @@
 /** File to create constraint block from cost function
 
   */
-#include "ceres/ceres.h"
-#include "ceres/rotation.h"
-
 #include "Constraints.h" //the header for constraint inclusion
-#include "Data.h"
-#include "utils_function.h"
 
-using ceres::AutoDiffCostFunction;
-using ceres::CostFunction;
-using ceres::Problem;
+
+extern Parameter* g_param;
+
 
 
 //setting constraint on initial position for each node.
@@ -23,7 +18,6 @@ int addConstraintsOnInitialPosition(DataStorage * data, Problem * problem){
     for(const auto& element : data->nodes_by_node_id()){
         //std::cout << element.second->end_node << std::endl;
         node * n = element.second;
-
         double n_p[3] = { //! @todo : use eighen to hide this ugliness!
                           //! @note : we slighty pertubate the original position to try to improve initial solution
                           n->position[0] +0.001
@@ -34,9 +28,16 @@ int addConstraintsOnInitialPosition(DataStorage * data, Problem * problem){
         CostFunction* distance_cost_function
                 = new AutoDiffCostFunction<DistanceToInitialPosition, 1,3>(
                     self_distance_functor);
+
+        //untill 2.0 meters of distance, normal behavior. after that outliers behavior (not square)
+        LossFunction* loss = NULL;
+        loss = new ceres::ScaledLoss(
+                    g_param->useLoss?(new ceres::SoftLOneLoss(g_param->lossScale)):NULL
+                    ,g_param->K_origin,ceres::DO_NOT_TAKE_OWNERSHIP) ;
+
         problem->AddResidualBlock(
                     distance_cost_function
-                    ,NULL
+                    ,loss
                     ,n->position
                     );
     }
@@ -48,6 +49,7 @@ int addConstraintsOnInitialPosition(DataStorage * data, Problem * problem){
 int addConstraintsOnInitialspacing(DataStorage * data, Problem * problem){
     for(const auto& element : data->edges_by_edge_id()){
         //std::cout << element.second->end_node << std::endl;
+
         edge * edge_to_output = element.second;
         node * start_node = data->nbn(edge_to_output->start_node) ;
         node * end_node = data->nbn(edge_to_output->end_node) ;
@@ -63,9 +65,16 @@ int addConstraintsOnInitialspacing(DataStorage * data, Problem * problem){
         CostFunction* original_spacing_distance_cost_function
                 = new AutoDiffCostFunction<DistanceToInitialSpacing, 1,3,3>(
                     original_spacing_distance_functor);
+
+        //untill 2.0 meters of distance, normal behavior. after that outliers behavior (not square)
+        LossFunction* loss = NULL;
+        loss = new ceres::ScaledLoss( g_param->useLoss?(new ceres::SoftLOneLoss(g_param->lossScale)):NULL
+                                        ,g_param->K_spacing,ceres::DO_NOT_TAKE_OWNERSHIP) ;
+
+
         problem->AddResidualBlock(
                     original_spacing_distance_cost_function
-                    ,NULL
+                    ,loss
                     , start_node->position
                     , end_node->position
                     );
@@ -75,6 +84,7 @@ int addConstraintsOnInitialspacing(DataStorage * data, Problem * problem){
 //! constraint based on observation
 int addConstraintsOnOrthDistToObservation(DataStorage * data, Problem * problem){
     for (int i = 0; i < data->num_observations(); ++i) {
+
         //finding the 2 nodes concerned by this observations
         edge * relativ_edge = data->ebe(data->observations(i)->edge_id) ;
         node * start_node = data->nbn(relativ_edge->start_node)  ;
@@ -85,14 +95,18 @@ int addConstraintsOnOrthDistToObservation(DataStorage * data, Problem * problem)
         CostFunction* distance_cost_function
                 = new AutoDiffCostFunction<DistanceToProjectionResidual, 1, 3, 3>(
                     distance_functor);
+
+        //untill 2.0 meters of distance, normal behavior. after that outliers behavior (not square)
+        LossFunction* loss = NULL;
+        loss = new ceres::ScaledLoss( g_param->useLoss?(new ceres::SoftLOneLoss(g_param->lossScale)):NULL
+                                        ,g_param->K_obs,ceres::DO_NOT_TAKE_OWNERSHIP) ;
+
         problem->AddResidualBlock(
                     distance_cost_function
-                    ,NULL
+                    ,loss
                     ,start_node->position
                     ,end_node->position
                     ); //note : both observations are referring to these nodes.
-
-
     }
 }
 

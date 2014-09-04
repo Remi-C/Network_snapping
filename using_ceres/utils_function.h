@@ -1,5 +1,10 @@
-// Author: Rémi Cura
-
+#ifndef UTILS_FUNCTION_H
+#define UTILS_FUNCTION_H
+//////////////////////////////////////////////////////////
+//      Rémi Cura , Thales IGN, 08/2014                 //
+//          Street Gen snapping                         //
+//                                                      //
+//////////////////////////////////////////////////////////
 
 
 //! fucntion to perform soustraction on double[3] vector
@@ -15,3 +20,10 @@ template<typename T> inline
 T squaredNorm(const T x[3] ) {
   return (x[0] * x[0] + x[1] * x[1] + x[2] * x[2]);
 }
+
+
+
+
+
+
+#endif //UTILS_FUNCTION_H

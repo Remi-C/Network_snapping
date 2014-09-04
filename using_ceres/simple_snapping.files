@@ -8,3 +8,6 @@ WritingTempResultCallback.h
 Constraints.h
 Data.h
 Data.cc
+Constraints.cc
+Parameters.cc
+Parameters.h

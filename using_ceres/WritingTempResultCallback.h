@@ -24,8 +24,7 @@ using namespace std; //maybe we could limit the visibility?
 
 #include "Data.h"
 
-//! @todo @fixe-me : should not use global but singleton. Bit of overkill tough.
-extern DataStorage * data_pointer ;
+extern DataStorage * g_data_pointer ;
 
 class WritingTempResultCallback : public ceres::IterationCallback {
  public:
@@ -47,7 +46,7 @@ class WritingTempResultCallback : public ceres::IterationCallback {
           ) {
     //writing edge with updated node position in the file :
       ++i;
-      data_pointer->writeData(i);
+      g_data_pointer->writeData(i);
       //std::cout << "  \E[34;1mWriting data for loop \E[m"<< i << endl ;
       //file << " i : " << i << "some values : "<<"\n" ;
 
