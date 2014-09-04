@@ -26,10 +26,14 @@ SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, p
 
 	DROP TABLE IF EXISTS new_successive_points; 
 	CREATE TABLE new_successive_points AS 
-	WITH input_data AS ( --getting all the edges we are going to break into segments .
+	WITH  segmentize AS (
+		SELECT  edge_id, ST_Segmentize(geom,4) AS geom, start_node, end_node, ST_NumPoints(geom)  AS num_points
+		 FROM edge_data 
+	)
+	,input_data AS ( --getting all the edges we are going to break into segments .
 		--no need to break edge if edge is already a segment and not a polyline!  (hence the tetst on point number)
-		SELECT  * , ST_NumPoints(geom)  AS num_points
-		 FROM edge_data
+		SELECT  edge_id, geom , start_node, end_node, ST_NumPoints(geom)  AS num_points
+		 FROM segmentize
 		 WHERE ST_NumPoints(geom) >2 
 		--LIMIT  100 
 	)
@@ -96,6 +100,7 @@ SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, p
 		 SELECT ed.edge_id, ed.start_node, ed.end_node, r.largeur AS width
 		FROM edge_data AS ed
 		LEFT OUTER JOIN road AS  r ON (ed.ign_id = r.id)
+		WHERE ST_NumPoints(ST_Segmentize(ed.geom,4))<=2
 	UNION --should be union all , security against duplicates.
 		SELECT  edge_id
 				, start_node
@@ -164,13 +169,13 @@ SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, p
 			LEFT JOIN nodes_for_output_in_export_area AS nfo2 ON (efo.end_node = nfo2.node_id)
 	)
 	,map AS (--for each edge, we get observation closer than 5 meters
-		SELECT DISTINCT ON (oia.qgis_id, eg.edge_id) oia.*, eg.edge_id
+		SELECT DISTINCT ON (oia.qgis_id) oia.*, eg.edge_id
 		FROM obs_in_area  AS oia ,edge_geom AS eg
-		WHERE ST_DWithin( ST_Transform(oia.geom,932011), eg.edge_geom,5)=TRUE
-		ORDER BY oia.qgis_id ASC, eg.edge_id ASC, ST_Distance(ST_Transform(oia.geom,932011),eg.edge_geom ) ASC
+		WHERE ST_DWithin( ST_Transform(oia.geom,932011), eg.edge_geom,10)=TRUE
+		ORDER BY oia.qgis_id ASC, ST_Distance(ST_Transform(oia.geom,932011),eg.edge_geom ) ASC
 			
 	)
-	SELECT qgis_id AS obs_id , edge_id, ST_X(tgeom) AS X, ST_Y(tgeom) AS Y, COALESCE(ST_Z(tgeom),0) AS Z , 1::float AS confidence, COALESCE(weight,0) AS weight
+	SELECT row_number() over() AS obs_id , edge_id, ST_X(tgeom) AS X, ST_Y(tgeom) AS Y, COALESCE(ST_Z(tgeom),0) AS Z , 1::float AS confidence, COALESCE(weight,0) AS weight
 	FROM map, ST_Transform( geom,932011) As tgeom ; 
 
 
@@ -185,4 +190,35 @@ SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, p
 	
 
 	
+--visualization
+	--we want to visualize edges, nodes and observations alongs with pairings
+
+	--visaulize node
+	DROP TABLE IF EXISTS nodes_for_visu_in_export_area; 
+	CREATE TABLE nodes_for_visu_in_export_area AS 
+	SELECT node_id, ST_SetSRID(ST_MakePoint(X::float,Y::float,Z::float),932011) AS geom, is_in_intersection
+	FROM nodes_for_output_in_export_area;  
+
+	CREATE INDEX ON nodes_for_visu_in_export_area USING GIST(geom);
+	CREATE INDEX ON nodes_for_visu_in_export_area (node_id);
+
+	--visualize edges :
+	DROP TABLE IF EXISTS edges_for_visu_in_export_area; 
+	CREATE TABLE edges_for_visu_in_export_area AS 
+	SELECT edge_id, ST_MakeLine(n1.geom,n2.geom) AS geom, width
+	FROM edges_for_output_in_export_area AS ed
+		LEFT OUTER JOIN nodes_for_visu_in_export_area AS n1 ON (n1.node_id = ed.start_node)
+		LEFT OUTER JOIN nodes_for_visu_in_export_area AS n2 ON (n2.node_id = ed.end_node);
+
+	--visualize observations :
+	DROP TABLE IF EXISTS obs_for_visu_in_export_area; 
+	CREATE TABLE obs_for_visu_in_export_area AS 
+	SELECT obs_id, obf.edge_id, sgeom AS geom
+		, confidence, weight
+		, ST_SHortestLine(sgeom, ed.geom) AS sline_to_edge
+	FROM obs_for_output_in_export_area AS obf
+		LEFT JOIN edges_for_visu_in_export_area AS ed USING(edge_id)
+		,ST_SetSRID(ST_MakePoint(X::float,Y::float,Z::float),932011) AS sgeom;  
+
+
 	
