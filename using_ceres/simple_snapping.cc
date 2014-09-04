@@ -41,7 +41,7 @@ typedef Eigen::Map<const Eigen::Vector3d> mcVec3 ;
 
 //! @TODO @WARNING very ugly : should be set in a "parameter class"
 ///////////////////////PARAMETERS///////////////////////
-const string input_file_path("../data/data_in_reduced_export_area/reduced_area_2.csv");
+const string input_file_path("../data/data_in_reduced_export_area/reduced_area.csv");
 const string  output_file_path("../data/data_in_reduced_export_area/snapping_output.csv");
 
 const double K_origin = 1  ; //! this parameter scale the distance to origin for a node
@@ -49,7 +49,7 @@ const double K_obs= 1 ; //! this parameter scale the measure of distance between
 const double K_spacing=  1 ; //! this parameter scale the measure of similarity between [n_i,n_j] original and current
 
 const bool use_initial_position_constraint = false;
-const bool use_initial_spacing_constraint = false;
+const bool use_initial_spacing_constraint = true;
 const bool use_distance_to_proj_constraint = true;
 ////////////////////////////////////////////////////////
 
@@ -74,33 +74,40 @@ int main(int argc, char** argv) {
   //creating the problem to be solved
   Problem problem;
 
-  //filling the problem with constraints to be optimized
+
+    //setting constraint on initial position for each node.
   if (use_initial_position_constraint == true) {
-  //setting constraint on initial position for each node.
-  for (int k = 0; k <data->num_nodes(); ++k ){
+      for(const auto& element : data->nodes_by_node_id()){
+      //std::cout << element.second->end_node << std::endl;
+     node * n = element.second;
+
       double n_p[3] = { //! @todo : use eighen to hide this ugliness!
                         //! @note : we slighty pertubate the original position to try to improve initial solution
-          data->nodes(k)->position[0] +0.001
-          ,data->nodes(k)->position[1]+0.001
-          ,data->nodes(k)->position[2]+0.001};
+          n->position[0] +0.001
+          ,n->position[1]+0.001
+          ,n->position[2]+0.001};
       DistanceToInitialPosition* self_distance_functor =
-                new DistanceToInitialPosition( data->nodes(k)->position) ;
+                new DistanceToInitialPosition( n->position) ;
       CostFunction* distance_cost_function
           = new AutoDiffCostFunction<DistanceToInitialPosition, 1,3>(
               self_distance_functor);
         problem.AddResidualBlock(
             distance_cost_function
             ,NULL
-            ,data->nodes(k)->position
+            ,n->position
             );
-  }
     }
+  }
 
+//setting constraint on initial spacing between nodes for each pair of node.
   if(use_initial_spacing_constraint==true){
-  //setting constraint on initial spacing between nodes for each pair of node.
-  for (int u = 0; u <data->num_edges(); ++u ){
-      node * start_node =  data->nbn(data->edges(u)->start_node);
-      node * end_node =  data->nbn(data->edges(u)->end_node);
+      for(const auto& element : data->edges_by_edge_id()){
+      //std::cout << element.second->end_node << std::endl;
+      edge * edge_to_output = element.second;
+      node * start_node = data->nbn(edge_to_output->start_node) ;
+      node * end_node = data->nbn(edge_to_output->end_node) ;
+
+
       double o_s[3] = { //! @todo : use eighen to hide this ugliness!
                 //! @note : we slighty pertubate the original position to try to improve initial solution
           start_node->position[0]   - end_node->position[0] +0.001
@@ -131,7 +138,7 @@ int main(int argc, char** argv) {
       DistanceToProjectionResidual* distance_functor =
               new DistanceToProjectionResidual( data->observations(i)->position, &relativ_edge->width, data->observations(i)  ) ;
       CostFunction* distance_cost_function
-          = new AutoDiffCostFunction<DistanceToProjectionResidual, 2, 3, 3>(
+          = new AutoDiffCostFunction<DistanceToProjectionResidual, 1, 3, 3>(
               distance_functor);
         problem.AddResidualBlock(
             distance_cost_function
@@ -140,7 +147,7 @@ int main(int argc, char** argv) {
             ,end_node->position
             ); //note : both observations are referring to these nodes.
 
-        std::cout << "coucou" << std::endl;
+
   }
   }
 
