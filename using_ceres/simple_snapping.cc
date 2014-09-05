@@ -5,9 +5,16 @@
 //////////////////////////////////////////////////////////
 /**
   @todo
-    _ use Eigen to perfom all geometrical computation, in the autodiff functor. (seelibmv_homeography)
-    _ real using of id of element (not just index in array)
+    _ use Eigen to perfom all geometrical computation ( in the autodiff functor, seelibmv_homeography))
+    DONE _ real using of id of element (not just index in array)
     _ serious parameter reading
+    _ use LocalParameterization instead of what I use now : should greatly improve quality, robustness and speed
+        _ distance from origin : we really optimize on the line going from node to node_origin (1D)
+        _ original spacing : we really otpimize on the line going between n_i and n_j (1D)
+        _ distance to observation  : we really optimize on the line orth to n_i,n_j and passing by observation (1D)
+
+    _ use a 2D cost function output for orthogonal distance, put a term penalyzing being inside an observation width zone
+    _ add a constraint on distance to orginal angles between segements.
 
   */
 
@@ -76,10 +83,29 @@ int main(int argc, char** argv) {
     addConstraintsOnOrthDistToObservation(data , &problem) ;
   }
 
+  // constraints based on observation : oth distance from observation to segment
+   if(g_param->use_manual_distance_to_proj_constraint == true){
+     addManualConstraintsOnOrthDistToObservation(data, &problem);
+   }
+
   Solver::Options options;
   options.max_num_iterations = 500;
   options.linear_solver_type = ceres::DENSE_QR;
   options.minimizer_progress_to_stdout = true;
+
+  options.minimizer_type = ceres::LINE_SEARCH ;
+  //options.num_threads = 2; /// @todo : handy for speed, but makes it hard to understand cout
+
+  //options.trust_region_strategy_type = ceres::DOGLEG ;
+  //options.dogleg_type = ceres::SUBSPACE_DOGLEG ;
+  //options.use_inner_iterations =true ;
+  //options.use_approximate_eigenvalue_bfgs_scaling = true;
+
+  //when stop the solver :
+
+  //options.function_tolerance = 0.1;
+  //options.gradient_tolerance= 0.001*0.001 ;
+  //options.parameter_tolerance = 0.005;//std::pow(10,-10) ; // stop when the improvment is less than a millimeter
 
   ////output writing
   options.update_state_every_iteration= true ;

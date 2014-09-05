@@ -22,12 +22,13 @@ struct Parameter{
     Parameter(){
         input_file_path = "../data/data_in_reduced_export_area/reduced_area.csv";
         output_file_path =  "../data/data_in_reduced_export_area/snapping_output.csv" ;
-        K_origin = 1;
+        K_origin = 100;
         K_obs= 1 ;
         K_spacing=  1 ;
         use_initial_position_constraint = false;
-        use_initial_spacing_constraint = false;
-        use_distance_to_proj_constraint = true;
+        use_initial_spacing_constraint = true;
+        use_distance_to_proj_constraint = false;
+        use_manual_distance_to_proj_constraint = true;
 
          useLoss = true;
          lossScale = 3.0;
@@ -44,6 +45,7 @@ struct Parameter{
     bool use_initial_position_constraint;
     bool use_initial_spacing_constraint;
     bool use_distance_to_proj_constraint;
+    bool use_manual_distance_to_proj_constraint;
 
     bool useLoss  ;//! shall we use a loss function to reduce outliers weight
     double lossScale ; //! what shall be the loss function scale (after this scale, outliers mode)

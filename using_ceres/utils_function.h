@@ -23,7 +23,4 @@ T squaredNorm(const T x[3] ) {
 
 
 
-
-
-
 #endif //UTILS_FUNCTION_H

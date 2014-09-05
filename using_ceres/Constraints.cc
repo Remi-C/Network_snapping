@@ -110,3 +110,29 @@ int addConstraintsOnOrthDistToObservation(DataStorage * data, Problem * problem)
     }
 }
 
+
+
+//! manual constraint based on observation
+int addManualConstraintsOnOrthDistToObservation(DataStorage * data, Problem * problem){
+    for (int i = 0; i < data->num_observations(); ++i) {
+
+        //finding the 2 nodes concerned by this observations
+        edge * relativ_edge = data->ebe(data->observations(i)->edge_id) ;
+        node * start_node = data->nbn(relativ_edge->start_node)  ;
+        node * end_node = data->nbn(relativ_edge->end_node)  ;
+
+        CostFunction* distance_cost_function=
+            new  ManualOrthDistanceToObservation( data->observations(i)->position, &relativ_edge->width, data->observations(i)  ) ;
+        //untill 2.0 meters of distance, normal behavior. after that outliers behavior (not square)
+        LossFunction* loss = NULL;
+        loss = new ceres::ScaledLoss( g_param->useLoss?(new ceres::SoftLOneLoss(g_param->lossScale)):NULL
+                                        ,g_param->K_obs,ceres::DO_NOT_TAKE_OWNERSHIP) ;
+
+        problem->AddResidualBlock(
+                    distance_cost_function
+                    ,loss
+                    ,start_node->position
+                    ,end_node->position
+                    ); //note : both observations are referring to these nodes.
+    }
+}
