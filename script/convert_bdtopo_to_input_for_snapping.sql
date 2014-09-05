@@ -75,7 +75,8 @@ SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, p
 			FROM new_successive_points
 			WHERE node_in_intersection = FALSE;
 			--60 k lines
- 
+
+	CREATE INDEX ON  nodes_for_output USING GIST(ST_SetSRID(ST_MakePoint(X,Y,Z),932011));
 
 	DROP TABLE IF EXISTS edges_for_output ; 
 	CREATE TABLE edges_for_output AS  
@@ -118,16 +119,22 @@ SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, p
 	( 	gid SERIAL PRIMARY KEY
 		,id bigint
 		,geom geometry(POLYGON,931008)
+		, center_in_RGF93 geometry(POINT,932011)
 	);   
 	INSERT INTO def_zone_export (id, geom) 
 		VALUES( 1
 			, ST_GeomFromText('POLYGON((650907.6  6860870.6 ,650956.9  6860895.8 ,651036.0  6860757.1 ,650983.7  6860736.6 ,650907.6  6860870.6 ))',931008) );
 
+	UPDATE def_zone_export SET center_in_RGF93 = ST_Centroid(ST_Transform(geom,932011)) ;
 
 	DROP TABLE IF EXISTS nodes_for_output_in_export_area; 
 	CREATE TABLE nodes_for_output_in_export_area AS 
 		--we keep only the nodes inside the export area
-	SELECT nou.*
+	SELECT nou.node_id
+		, nou.X - ST_X(dfz.center_in_RGF93) AS X
+		,nou.Y - ST_Y(dfz.center_in_RGF93) AS Y 
+		,nou.Z - COALESCE(ST_Z(dfz.center_in_RGF93),0) AS Z
+		,nou.is_in_intersection
 	FROM nodes_for_output as nou, def_zone_export as dfz
 	WHERE ST_WITHIN(ST_SetSRID(ST_MakePoint(nou.X,nou.Y,nou.Z),932011) , ST_Transform((dfz.geom),932011)) = TRUE;
 
@@ -158,7 +165,9 @@ SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, p
 	DROP TABLE IF EXISTS obs_for_output_in_export_area; 
 	CREATE TABLE obs_for_output_in_export_area AS 
 	WITH obs_in_area AS ( --these are the observations that are inside the defined area
-			SELECT nou.*
+			SELECT nou.qgis_id, nou.area_id, nou.seg_id
+				, ST_Translate(nou.geom,- ST_X(dfz.center_in_RGF93) ,- ST_Y(dfz.center_in_RGF93) , - COALESCE(ST_Z(dfz.center_in_RGF93),0) ) AS geom 
+				, nou.weight
 			FROM weighted_sidewalk_observation_point AS  nou , def_zone_export as dfz
 			WHERE ST_WITHIN(nou.geom,  dfz.geom ) = TRUE 
 		)
@@ -175,8 +184,12 @@ SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, p
 		ORDER BY oia.qgis_id ASC, ST_Distance(ST_Transform(oia.geom,932011),eg.edge_geom ) ASC
 			
 	)
-	SELECT row_number() over() AS obs_id , edge_id, ST_X(tgeom) AS X, ST_Y(tgeom) AS Y, COALESCE(ST_Z(tgeom),0) AS Z , 1::float AS confidence, COALESCE(weight,0) AS weight
-	FROM map, ST_Transform( geom,932011) As tgeom ; 
+	SELECT row_number() over() AS obs_id , edge_id
+		, ST_X(tgeom) AS X
+		, ST_Y(tgeom) AS Y
+		, COALESCE(ST_Z(tgeom),0) AS Z 
+		, 1::float AS confidence, COALESCE(weight,0) AS weight
+	FROM map,(SELECT * FROM def_zone_export LIMIT 1 ) AS dfz, ST_Transform( map.geom,932011) As tgeom ; 
 
 
 
