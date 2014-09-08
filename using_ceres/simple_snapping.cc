@@ -16,6 +16,8 @@
     _ use a 2D cost function output for orthogonal distance, put a term penalyzing being inside an observation width zone
     _ add a constraint on distance to orginal angles between segements.
 
+    _use boost for config files instead of lib found on internet
+
   */
 
 #include "ceres/ceres.h"
@@ -55,6 +57,7 @@ int main(int argc, char** argv) {
 
   //creating the set of parameters (could be read from file)
   g_param = new Parameter();
+  g_param->readParameters();
 
   //getting the data ;
   std::cout << "  \E[34;1mReading data\E[m \n" ;

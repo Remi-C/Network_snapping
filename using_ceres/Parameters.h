@@ -20,22 +20,26 @@
 struct Parameter{
    public :
     Parameter(){
-        input_file_path = "../data/data_in_reduced_export_area/reduced_area.csv";
-        output_file_path =  "../data/data_in_reduced_export_area/snapping_output.csv" ;
-        K_origin = 100;
-        K_obs= 1 ;
-        K_spacing=  1 ;
-        use_initial_position_constraint = false;
-        use_initial_spacing_constraint = false;
-        use_distance_to_proj_constraint = false;
-        use_manual_distance_to_proj_constraint = false;
+        input_file_path ="";// "../data/data_in_reduced_export_area/reduced_area.csv";
+        output_file_path ="";// "../data/data_in_reduced_export_area/snapping_output.csv" ;
+        parameters_file_path = "./parameters.txt";
+        K_origin =0;// 100;
+        K_obs= 0; //1 ;
+        K_spacing= 0 ;// 1 ;
+        use_initial_position_constraint =true; // false;
+        use_initial_spacing_constraint = true; //false;
+        use_distance_to_proj_constraint = true; //false;
+        use_manual_distance_to_proj_constraint = true;// false;
 
-         useLoss = true;
-         lossScale = 3.0;
+         useLoss = false;//true;
+         lossScale = 0;//3.0;
     }
 
+    void readParameters();
+    void setParameters(std::string , std::string );
     std::string input_file_path ;
-    std::string  output_file_path;
+    std::string output_file_path;
+    std::string parameters_file_path;
 
     double K_origin ; //! this parameter scale the distance to origin for a node
     double K_obs ; //! this parameter scale the measure of distance between observation and line (n_i,n_j)
