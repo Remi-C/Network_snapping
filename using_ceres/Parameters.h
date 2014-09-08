@@ -26,9 +26,9 @@ struct Parameter{
         K_obs= 1 ;
         K_spacing=  1 ;
         use_initial_position_constraint = false;
-        use_initial_spacing_constraint = true;
+        use_initial_spacing_constraint = false;
         use_distance_to_proj_constraint = false;
-        use_manual_distance_to_proj_constraint = true;
+        use_manual_distance_to_proj_constraint = false;
 
          useLoss = true;
          lossScale = 3.0;

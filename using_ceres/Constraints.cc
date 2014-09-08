@@ -136,3 +136,23 @@ int addManualConstraintsOnOrthDistToObservation(DataStorage * data, Problem * pr
                     ); //note : both observations are referring to these nodes.
     }
 }
+
+
+
+/** trying to express the orth distance on node,node observation using a local 1D manifold
+    X is the orginal node positions, delta_x is the perturbation, it is expressed along
+    the shortest line that goes from observation to NiNj edge.
+    Note :
+    X is 2*3D, delta is 1D, x_plu_delta is 2*3D
+*/
+
+//bool OrthoParameterization::Plus(const double* x,
+//                                      const double* delta,
+//                                      double* x_plus_delta) const {
+//  return true;
+//}
+
+//bool OrthoParameterization::ComputeJacobian(const double* x,
+//                                                 double* jacobian) const {
+//  return true;
+//}

@@ -245,5 +245,17 @@ public :
 
 
 
+////! this is the same orthogonale constraint but expressed in a local 1D manifold (line orth to vector going to observation)
+//class OrthoParameterization : public LocalParameterization {
+// public:
+//  virtual ~OrthoParameterization() {}
+//  virtual bool Plus(const double* x,
+//                    const double* delta,
+//                    double* x_plus_delta) const;
+//  virtual bool ComputeJacobian(const double* x,
+//                               double* jacobian) const;
+//  virtual int GlobalSize() const { return 4; }
+//  virtual int LocalSize() const { return 3; }
+//};
 
 #endif // CONSTRAINTS_H
