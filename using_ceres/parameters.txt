@@ -1,20 +1,23 @@
 #parameters from street gen snapping 
 
+#about format : line starting  with # are comment, or any line not respecting the key = value format 
+#The parser expects "key = value " followed by anything. Spaces are mandatory
+
 #where are the data files?
-input_file_path = "../data/data_in_reduced_export_area/reduced_area.csv";
-output_file_path =  "../data/data_in_reduced_export_area/snapping_output.csv" ;
+input_file_path = ../data/data_in_reduced_export_area/reduced_area.csv ;
+output_file_path =  ../data/data_in_reduced_export_area/snapping_output.csv ;
 
 #realtiv weight of constraints
-K_origin = 100;
+K_origin = 100 ;
 K_obs = 1 ;
 K_spacing = 1 ;
 
 #what constraints to use?
-use_initial_position_constraint = false;
-use_initial_spacing_constraint = false;
-use_distance_to_proj_constraint = false;
-use_manual_distance_to_proj_constraint = false;
+use_initial_position_constraint = false ;
+use_initial_spacing_constraint = false ;
+use_distance_to_proj_constraint = false ;
+use_manual_distance_to_proj_constraint = false ;
 
 #about loss function : how shall we remove the outliers?
-useLoss = true;
-lossScale = 3.0;
+useLoss = true ;
+lossScale = 3.0 ;

@@ -58,6 +58,8 @@ int main(int argc, char** argv) {
   //creating the set of parameters (could be read from file)
   g_param = new Parameter();
   g_param->readParameters();
+  //std::cout << g_param->printParameters();
+
 
   //getting the data ;
   std::cout << "  \E[34;1mReading data\E[m \n" ;

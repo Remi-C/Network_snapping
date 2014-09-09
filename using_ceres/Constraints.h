@@ -179,7 +179,7 @@ public :
         //the parameters is as follow : parameter[0-2] = n_i = first node;parameter[3-5] = n_j = second node;
 
         //map the input array into 2 eigen vectors, plus map observation position into Eigen
-        cout << "\nbeginning of evaluate" << endl;
+        //cout << "\nbeginning of evaluate" << endl;
         ConstVectorRef Ni( parameters[0],3 );
         ConstVectorRef Nj( parameters[1],3 );
         ConstVectorRef Ob(position_,3);
@@ -204,13 +204,13 @@ public :
         //compute Jacobian norm for Nj : for test simply take d
         Eigen::Vector3d Jj = -1 * sign * Vja *  d ;/// @warning : remove this 10 factor aspa !
 
-        std::cout << "  Observation_id : " <<  obs_->obs_id <<std::endl;
-        std::cout << "  Ni : " << Ni.transpose() <<std::endl;
-         std::cout << " Nj : " << Nj.transpose() <<std::endl;
-         std::cout << " Vja : " << Vja.transpose() <<std::endl;
-        std::cout << "  distance : " << residuals[0] <<std::endl;
-        cout << "   Ji :" << Ji.transpose() <<endl;
-        cout << "   Jj :" << Jj.transpose() <<endl;
+//        cout << "  Observation_id : " <<  obs_->obs_id <<std::endl;
+//         cout << "  Ni : " << Ni.transpose() <<std::endl;
+//        cout << " Nj : " << Nj.transpose() <<std::endl;
+//        cout << " Vja : " << Vja.transpose() <<std::endl;
+//        cout << "  distance : " << residuals[0] <<std::endl;
+//        cout << "   Ji :" << Ji.transpose() <<endl;
+//        cout << "   Jj :" << Jj.transpose() <<endl;
         // std::cout << "\njac (eigen): \n" << jac << std::endl;
 
         if (jacobians == NULL) {
@@ -233,7 +233,7 @@ public :
 
         }
 
-         cout<<"end of evaluate()\n";
+       //  cout<<"end of evaluate()\n";
         return true;
       }
  private:

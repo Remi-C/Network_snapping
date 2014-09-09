@@ -39,7 +39,7 @@ void Parameter::readParameters(){
             }
          else{
 
-            if  (sscanf(line, "%s = %s",key, value) == 2) {
+            if  (sscanf(line, "%s = %s %s",key, value,comment) >= 2) {
                // std::cout<< "reading a parameter : " << std::endl ;
                // std::cout <<"key :"""<< key << """, value """ << value <<""" "<< std::endl;
                 setParameters(key,value);
@@ -47,6 +47,7 @@ void Parameter::readParameters(){
          }
     }
     fclose(p_fptr);
+
     return;
 }
 
@@ -67,6 +68,28 @@ void Parameter::setParameters(std::string key, std::string value){
     return;
 
 }
+
+
+ std::string Parameter::printParameters(){
+
+     std::ostringstream nstring;
+     //nstring.precision(10);
+     nstring << " input_file_path : " << input_file_path  << std::endl
+        << " output_file_path : " << output_file_path  << std::endl
+        << " parameters_file_path : " << parameters_file_path  << std::endl
+        << " K_origin : " << K_origin  << std::endl
+        << " K_obs : " << K_obs  << std::endl
+        << " K_spacing : " << K_spacing  << std::endl
+        << " use_initial_position_constraint : " << use_initial_position_constraint  << std::endl
+        << " use_initial_spacing_constraint : " << use_initial_spacing_constraint  << std::endl
+        << " use_distance_to_proj_constraint : " << use_distance_to_proj_constraint  << std::endl
+        << " use_manual_distance_to_proj_constraint : " << use_manual_distance_to_proj_constraint  << std::endl
+        << " useLoss : " << useLoss  << std::endl
+        << " lossScale : " << lossScale  << std::endl  ;
+     return nstring.str() ;
+
+
+ }
 
 /*
 //#include "Parameters.h"

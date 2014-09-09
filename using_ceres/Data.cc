@@ -66,7 +66,6 @@ bool TEST_observationToString() {
 void DataStorage::readData(){
     //opening files
     FILE* i_fptr = fopen(input_file_path_.c_str(), "r");
- 
 	char line[1000];//input line buffer 
 	
     if (i_fptr == NULL) {

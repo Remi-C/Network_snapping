@@ -37,6 +37,9 @@ struct Parameter{
 
     void readParameters();
     void setParameters(std::string , std::string );
+    std::string printParameters();
+
+
     std::string input_file_path ;
     std::string output_file_path;
     std::string parameters_file_path;
