@@ -7,11 +7,8 @@
   @todo
     _ use Eigen to perfom all geometrical computation ( in the autodiff functor, seelibmv_homeography))
     DONE _ real using of id of element (not just index in array)
-    _ serious parameter reading
-    _ use LocalParameterization instead of what I use now : should greatly improve quality, robustness and speed
-        _ distance from origin : we really optimize on the line going from node to node_origin (1D)
-        _ original spacing : we really otpimize on the line going between n_i and n_j (1D)
-        _ distance to observation  : we really optimize on the line orth to n_i,n_j and passing by observation (1D)
+    DONE serious parameter reading
+    NOT POSSIBLE use LocalParameterization instead of what I use now : should greatly improve quality, robustness and speed
 
     _ use a 2D cost function output for orthogonal distance, put a term penalyzing being inside an observation width zone
     _ add a constraint on distance to orginal angles between segements.
@@ -69,6 +66,12 @@ int main(int argc, char** argv) {
   //setting the mapping beetween node_id and node*
   std::cout << "mapping between node_id and node *" <<"\n";
   data->setMap();
+
+  //! @temp @debug test of map :edge_bynode
+   for(const auto& element : data->edges_by_node_id()){
+       std::cout << "node_id : " << element.first <<" associated edge : "<<element.second->edgeToString() << std::endl;
+
+   }
   //creating the problem to be solved
   Problem problem;
 

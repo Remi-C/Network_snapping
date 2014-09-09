@@ -147,6 +147,9 @@ public:
     edge* ebe(int i ) { return edges_by_edge_id_.at(i); }
     std::unordered_map <int /*edge_id*/, edge *> edges_by_edge_id()
         {return edges_by_edge_id_;}
+    edge* ebn(int i ) { return edges_by_node_id_.at(i); }
+    std::unordered_map <int /*node_id*/, edge *> edges_by_node_id()
+        {return edges_by_node_id_;}
 
 private:
     int num_nodes_; //! total num of nodes we are going to read
@@ -163,6 +166,7 @@ private:
     //! a hash table
     std::unordered_map <int /*node_id*/, node *> nodes_by_node_id_;
     std::unordered_map <int /*edge_id*/, edge *> edges_by_edge_id_;
+    std::unordered_map <int /*node_id*/, edge *> edges_by_node_id_;
 };
 
 #endif // DATA_H

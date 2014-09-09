@@ -223,14 +223,20 @@ void DataStorage::writeData(int iteration){
   */
 void DataStorage::setMap(){
 
+    //setting the map to find node by node_id
    for (int i = 0; i < num_nodes_; ++i) {
-//       nodes_by_node_id_[nodes_[i].node_id] = new node() ;
        nodes_by_node_id_[nodes_[i].node_id] = &nodes_[i] ;
     }//loop on all node from nodes_
 
+   //seting the map to find edge by edge_id
    for (int i = 0; i < num_edges(); ++i) {
-//       edges_by_edge_id_[edges_[i].edge_id] = new edge() ;
        edges_by_edge_id_[edges_[i].edge_id] = &edges_[i] ;
+    }//loop on all edge from edges_
+
+   //setting the map to find edege by node_id (each edge has 2 node id)
+   for (int i = 0; i < num_edges(); ++i) {
+       edges_by_node_id_[edges_[i].start_node] = &edges_[i] ;
+       edges_by_node_id_[edges_[i].end_node] = &edges_[i] ;
     }//loop on all edge from edges_
    return;
  }
