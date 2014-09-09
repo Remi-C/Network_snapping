@@ -59,11 +59,11 @@ void Parameter::setParameters(std::string key, std::string value){
     key.compare("K_origin")==0?K_origin=atof(value.c_str()):0;
     key.compare("K_spacing")==0?K_spacing=atof(value.c_str()):0;
     key.compare("K_obs")==0?K_obs=atof(value.c_str()):0;
-    key.compare("use_initial_position_constraint")==0?use_initial_position_constraint=value.compare("true"):false;
-    key.compare("use_initial_spacing_constraint")==0?use_initial_spacing_constraint=value.compare("true"):false;
-    key.compare("use_distance_to_proj_constraint")==0?use_distance_to_proj_constraint=value.compare("true"):false;
-    key.compare("use_manual_distance_to_proj_constraint")==0?use_manual_distance_to_proj_constraint=value.compare("true"):false;
-    key.compare("useLoss")==0?useLoss=value.compare("true"):false;
+    key.compare("use_initial_position_constraint")==0?use_initial_position_constraint=bool(value.compare("false")):false;
+    key.compare("use_initial_spacing_constraint")==0?use_initial_spacing_constraint=bool(value.compare("false")):false;
+    key.compare("use_distance_to_proj_constraint")==0?use_distance_to_proj_constraint=bool(value.compare("false")):false;
+    key.compare("use_manual_distance_to_proj_constraint")==0?use_manual_distance_to_proj_constraint=bool(value.compare("false")):false;
+    key.compare("useLoss")==0?useLoss=bool(value.compare("false")):false;
     key.compare("lossScale")==0?lossScale=atof(value.c_str()):0;
     return;
 
