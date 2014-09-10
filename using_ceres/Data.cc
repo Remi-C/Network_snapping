@@ -235,8 +235,8 @@ void DataStorage::setMap(){
 
    //setting the map to find edege by node_id (each edge has 2 node id)
    for (int i = 0; i < num_edges(); ++i) {
-       edges_by_node_id_[edges_[i].start_node] = &edges_[i] ;
-       edges_by_node_id_[edges_[i].end_node] = &edges_[i] ;
+       edges_by_node_id_.insert(std::pair<int,edge *>(edges_[i].start_node,&edges_[i] ));
+       edges_by_node_id_.insert(std::pair<int,edge *>(edges_[i].end_node,&edges_[i] ));
     }//loop on all edge from edges_
    return;
  }

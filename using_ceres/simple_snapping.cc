@@ -68,10 +68,27 @@ int main(int argc, char** argv) {
   data->setMap();
 
   //! @temp @debug test of map :edge_bynode
-   for(const auto& element : data->edges_by_node_id()){
-       std::cout << "node_id : " << element.first <<" associated edge : "<<element.second->edgeToString() << std::endl;
+//  for(const auto& element : data->edges_by_node_id()){
+//      std::cout << "node_id : " << element.first <<" associated edge : "<<element.second->edgeToString() << std::endl;
+//  }
+  for (int i = 0 ; i< data->num_nodes(); ++i){
 
+      std::cout << "curr node " << data->nodes(i)->node_id <<std::endl;
+      auto range = data->edges_by_node_id()->equal_range(data->nodes(i)->node_id);
+
+      for (auto it = range.first; it != range.second; ++it) {
+
+          for (auto it2 = it; it2 != range.second; it2++) {
+              if(it->second->edge_id!=it2->second->edge_id) {
+              std::cout << "curr edge " << it->second->edge_id <<", sec edge pair : " << it2->second->edge_id <<std::endl;
+
+              }
+             }
+      }
    }
+
+
+   return 1;
   //creating the problem to be solved
   Problem problem;
 
