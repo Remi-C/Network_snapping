@@ -113,6 +113,65 @@ int addConstraintsOnOrthDistToObservation(DataStorage * data, Problem * problem)
 
 
 //! manual constraint based on observation
+int addManualConstraintsOnDistanceToOriginalAngle(DataStorage * data, Problem * problem){
+
+    for (int i = 0 ; i< data->num_nodes(); ++i){//for every node,
+        int current_node_id = data->nodes(i)->node_id ;
+        std::cout << "curr node " << current_node_id <<std::endl;
+        auto range = data->edges_by_node_id()->equal_range(current_node_id);
+
+        for (auto it = range.first; it != range.second; ++it) {//for every node, loop on all edges concerned
+            edge * first_edge = data->ebe(it->second->edge_id);
+            node * first_node = first_edge->start_node!=current_node_id?
+                        data->nbn(first_edge->start_node)
+                      :data->nbn(first_edge->end_node);
+
+
+            for (auto it2 = it; it2 != range.second; it2++) {//generating all unique pair of edges for a node
+                if(it->second->edge_id!=it2->second->edge_id) {
+                    std::cout << "curr edge " << it->second->edge_id <<", sec edge pair : " << it2->second->edge_id <<std::endl;
+
+                    edge * sec_edge = data->ebe(it2->second->edge_id);
+                    node * sec_node = sec_edge->start_node!=current_node_id?
+                                data->nbn(sec_edge->start_node)
+                              :data->nbn(sec_edge->end_node);
+
+                    //note : the node to input are then : Nc : data->nbn(current_node_id) , Ni : first_node , Nj : sec_node
+
+                    //computing the original angle  :
+                    ConstVectorRef Nc( data->nbn(current_node_id)->position,3 );
+                    ConstVectorRef Ni( first_node->position ,3 );
+                    ConstVectorRef Nj( sec_node->position ,3 );
+                    Eigen::Vector3d pe;//initial perturbation
+                    pe << 0.001,0.001,0.001 ;
+                    double scalar_a = (Nc-Ni+pe).dot(Nc-Nj+pe)/((Nc-Ni+pe).norm() * (Nc-Nj+pe).norm());
+                    double cross_a = ((Nc-Ni+pe).cross(Nc-Nj+pe)/((Nc-Ni+pe).norm() * (Nc-Nj+pe).norm())).norm();
+
+                    CostFunction* distance_cost_function=
+                            new  ManualDistanceToOriginalAngle(scalar_a,cross_a ) ;
+                    //untill 2.0 meters of distance, normal behavior. after that outliers behavior (not square)
+                    LossFunction* loss = NULL;
+                    loss = new ceres::ScaledLoss( g_param->useLoss?(new ceres::SoftLOneLoss(g_param->lossScale)):NULL
+                                                                   ,g_param->K_angle,ceres::DO_NOT_TAKE_OWNERSHIP) ;
+
+                    problem->AddResidualBlock(
+                                distance_cost_function
+                                ,loss
+                                ,data->nbn(current_node_id)->position
+                                ,first_node->position
+                                ,sec_node->position
+                                );
+                }
+            }
+        }
+    }
+}
+
+
+
+
+
+//! manual constraint based on regularisation of angles between edges
 int addManualConstraintsOnOrthDistToObservation(DataStorage * data, Problem * problem){
     for (int i = 0; i < data->num_observations(); ++i) {
 
@@ -137,22 +196,3 @@ int addManualConstraintsOnOrthDistToObservation(DataStorage * data, Problem * pr
     }
 }
 
-
-
-/** trying to express the orth distance on node,node observation using a local 1D manifold
-    X is the orginal node positions, delta_x is the perturbation, it is expressed along
-    the shortest line that goes from observation to NiNj edge.
-    Note :
-    X is 2*3D, delta is 1D, x_plu_delta is 2*3D
-*/
-
-//bool OrthoParameterization::Plus(const double* x,
-//                                      const double* delta,
-//                                      double* x_plus_delta) const {
-//  return true;
-//}
-
-//bool OrthoParameterization::ComputeJacobian(const double* x,
-//                                                 double* jacobian) const {
-//  return true;
-//}

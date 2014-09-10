@@ -4,19 +4,21 @@
 #The parser expects "key = value " followed by anything. Spaces are mandatory
 
 #where are the data files?
-input_file_path = ../data/data_in_reduced_export_area/reduced_area.csv ;
+input_file_path = ../data/data_in_reduced_export_area/reduced_area_4.csv ;
 output_file_path =  ../data/data_in_reduced_export_area/snapping_output.csv ;
 
 #realtiv weight of constraints
 K_origin = 100 ;
 K_obs = 1 ;
 K_spacing = 1 ;
+K_angle = 1 ;
 
 #what constraints to use?
 use_initial_position_constraint = false ;
 use_initial_spacing_constraint = false ;
 use_distance_to_proj_constraint = false ;
-use_manual_distance_to_proj_constraint = false ;
+use_manual_distance_to_proj_constraint = true ;
+use_manual_distance_to_original_angle = true ;
 
 #about loss function : how shall we remove the outliers?
 useLoss = true ;

@@ -52,98 +52,82 @@ int main(int argc, char** argv) {
 
 
 
-  //creating the set of parameters (could be read from file)
-  g_param = new Parameter();
-  g_param->readParameters();
-  //std::cout << g_param->printParameters();
+    //creating the set of parameters (could be read from file)
+    g_param = new Parameter();
+    g_param->readParameters();
+    //std::cout << g_param->printParameters();
 
 
-  //getting the data ;
-  std::cout << "  \E[34;1mReading data\E[m \n" ;
-  DataStorage * data = new DataStorage(  g_param->input_file_path,g_param->output_file_path) ;
-  g_data_pointer = data;
-  data->readData();
-  //setting the mapping beetween node_id and node*
-  std::cout << "mapping between node_id and node *" <<"\n";
-  data->setMap();
-
-  //! @temp @debug test of map :edge_bynode
-//  for(const auto& element : data->edges_by_node_id()){
-//      std::cout << "node_id : " << element.first <<" associated edge : "<<element.second->edgeToString() << std::endl;
-//  }
-  for (int i = 0 ; i< data->num_nodes(); ++i){
-
-      std::cout << "curr node " << data->nodes(i)->node_id <<std::endl;
-      auto range = data->edges_by_node_id()->equal_range(data->nodes(i)->node_id);
-
-      for (auto it = range.first; it != range.second; ++it) {
-
-          for (auto it2 = it; it2 != range.second; it2++) {
-              if(it->second->edge_id!=it2->second->edge_id) {
-              std::cout << "curr edge " << it->second->edge_id <<", sec edge pair : " << it2->second->edge_id <<std::endl;
-
-              }
-             }
-      }
-   }
+    //getting the data ;
+    std::cout << "  \E[34;1mReading data\E[m \n" ;
+    DataStorage * data = new DataStorage(  g_param->input_file_path,g_param->output_file_path) ;
+    g_data_pointer = data;
+    data->readData();
+    //setting the mapping beetween node_id and node*
+    std::cout << "mapping between node_id and node *" <<"\n";
+    data->setMap();
 
 
-   return 1;
-  //creating the problem to be solved
-  Problem problem;
+    //creating the problem to be solved
+    Problem problem;
 
 
     //setting constraint on initial position for each node.
-  if (g_param->use_initial_position_constraint == true) {
-    addConstraintsOnInitialPosition( data, &problem) ;
-  }
+    if (g_param->use_initial_position_constraint == true) {
+        addConstraintsOnInitialPosition( data, &problem) ;
+    }
 
-//setting constraint on initial spacing between nodes for each pair of node.
-  if(g_param->use_initial_spacing_constraint==true){
-      addConstraintsOnInitialspacing( data, &problem) ;
-  }
+    //setting constraint on initial spacing between nodes for each pair of node.
+    if(g_param->use_initial_spacing_constraint==true){
+        addConstraintsOnInitialspacing( data, &problem) ;
+    }
 
- // constraints based on observation : oth distance from observation to segment
-  if(g_param->use_distance_to_proj_constraint == true){
-    addConstraintsOnOrthDistToObservation(data , &problem) ;
-  }
+    // constraints based on observation : oth distance from observation to segment
+    if(g_param->use_distance_to_proj_constraint == true){
+        addConstraintsOnOrthDistToObservation(data , &problem) ;
+    }
 
-  // constraints based on observation : oth distance from observation to segment
-   if(g_param->use_manual_distance_to_proj_constraint == true){
-     addManualConstraintsOnOrthDistToObservation(data, &problem);
-   }
+    // constraints based on observation : oth distance from observation to segment
+    if(g_param->use_manual_distance_to_proj_constraint == true){
+        addManualConstraintsOnOrthDistToObservation(data, &problem);
+    }
 
-  Solver::Options options;
-  options.max_num_iterations = 500;
-  options.linear_solver_type = ceres::DENSE_QR;
-  options.minimizer_progress_to_stdout = true;
+    // constraints based on initial angle between edges
+    if(g_param->use_manual_distance_to_original_angle == true){
+        addManualConstraintsOnDistanceToOriginalAngle(data, &problem);
+    }
 
-  options.minimizer_type = ceres::LINE_SEARCH ;
-  //options.num_threads = 2; /// @todo : handy for speed, but makes it hard to understand cout
+    Solver::Options options;
+    options.max_num_iterations = 500;
+    options.linear_solver_type = ceres::DENSE_QR;
+    options.minimizer_progress_to_stdout = true;
 
-  //options.trust_region_strategy_type = ceres::DOGLEG ;
-  //options.dogleg_type = ceres::SUBSPACE_DOGLEG ;
-  //options.use_inner_iterations =true ;
-  //options.use_approximate_eigenvalue_bfgs_scaling = true;
+    options.minimizer_type = ceres::LINE_SEARCH ;
+    //options.num_threads = 2; /// @todo : handy for speed, but makes it hard to understand cout
 
-  //when stop the solver :
+    //options.trust_region_strategy_type = ceres::DOGLEG ;
+    //options.dogleg_type = ceres::SUBSPACE_DOGLEG ;
+    //options.use_inner_iterations =true ;
+    //options.use_approximate_eigenvalue_bfgs_scaling = true;
 
-  //options.function_tolerance = 0.1;
-  //options.gradient_tolerance= 0.001*0.001 ;
-  //options.parameter_tolerance = 0.005;//std::pow(10,-10) ; // stop when the improvment is less than a millimeter
+    //when stop the solver :
 
-  ////output writing
-  options.update_state_every_iteration= true ;
-  WritingTempResultCallback callback(data->output_file_path(),0);
-  options.callbacks.push_back(&callback);
+    //options.function_tolerance = 0.1;
+    //options.gradient_tolerance= 0.001*0.001 ;
+    //options.parameter_tolerance = 0.005;//std::pow(10,-10) ; // stop when the improvment is less than a millimeter
 
-  Solver::Summary summary;
-  Solve(options, &problem, &summary);
+    ////output writing
+    options.update_state_every_iteration= true ;
+    WritingTempResultCallback callback(data->output_file_path(),0);
+    options.callbacks.push_back(&callback);
 
- // std::cout << summary.BriefReport() << "\n";
-  std::cout << summary.FullReport() << "\n";
-  std::cout << summary.IsSolutionUsable() << "\n";
+    Solver::Summary summary;
+    Solve(options, &problem, &summary);
 
-  return 0;
+    // std::cout << summary.BriefReport() << "\n";
+    std::cout << summary.FullReport() << "\n";
+    std::cout << summary.IsSolutionUsable() << "\n";
+
+    return 0;
 }
 

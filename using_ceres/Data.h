@@ -134,6 +134,7 @@ public:
 	void writeData(int);
     void setMap();
 
+
     int num_nodes()             { return num_nodes_;  }
     int num_edges()             { return num_edges_;    }
     int num_observations()       { return num_observations_;  }

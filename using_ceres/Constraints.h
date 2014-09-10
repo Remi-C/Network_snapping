@@ -41,6 +41,7 @@ int addConstraintsOnInitialPosition(DataStorage *, ceres::Problem * );
 int addConstraintsOnInitialspacing( DataStorage *, ceres::Problem * );
 int addConstraintsOnOrthDistToObservation(DataStorage * , ceres::Problem * ) ;
 int addManualConstraintsOnOrthDistToObservation(DataStorage * , Problem * ) ;
+int addManualConstraintsOnDistanceToOriginalAngle(DataStorage * , Problem * ) ;
 
 /** functor to compute cost between one node position and this node original position
   */
@@ -244,18 +245,88 @@ public :
 
 
 
+/** this class compute the angle formed by 2 edges using a node, and measure the difference with the original angle
+This is a regularisation class.
+We return a 2D cost : sin(angle) and cos(angle), so has to avoid pi/2 roation invariance.
 
-////! this is the same orthogonale constraint but expressed in a local 1D manifold (line orth to vector going to observation)
-//class OrthoParameterization : public LocalParameterization {
-// public:
-//  virtual ~OrthoParameterization() {}
-//  virtual bool Plus(const double* x,
-//                    const double* delta,
-//                    double* x_plus_delta) const;
-//  virtual bool ComputeJacobian(const double* x,
-//                               double* jacobian) const;
-//  virtual int GlobalSize() const { return 4; }
-//  virtual int LocalSize() const { return 3; }
-//};
+We expect the parameters to be in a fixed order: node with angle constraint, a node, another node
+*/
+class ManualDistanceToOriginalAngle  : public ceres::SizedCostFunction<2,3,3,3> {
+public :
+   //! this is the constructor, it expects 2 values : vect_1.vect_2/(norm(vect_1)*norm(vect_2)) and vect_1xvect_2/(norm(vect_1)*norm(vect_2))
+    ManualDistanceToOriginalAngle(const double i_scalar_angle,const double i_cross_angle)
+        : scalar_angle(i_scalar_angle) , cross_angle(i_cross_angle) {}
+
+
+
+    //! this is the operator computing the costs, ie the distance of scalar and cross angle with the original values
+    virtual bool Evaluate(double const* const* parameters,
+                          double* residuals,
+                          double** jacobians) const {
+        //! @param parameters[0] : node on which to compute the constraint (center node)
+        //! @param parameters[1] : one of the node forming the angle
+        //! @param parameters[2] : other node forming the angle
+
+        //map the input array into 3 eigen vectors
+        ConstVectorRef Nc( parameters[0],3 );
+        ConstVectorRef Ni( parameters[1],3 );
+        ConstVectorRef Nj( parameters[2],3 );
+
+        double scalar_a = (Nc-Ni).dot(Nc-Nj)/((Nc-Ni).norm() * (Nc-Nj).norm());
+        double cross_a = ((Nc-Ni).cross(Nc-Nj)/((Nc-Ni).norm() * (Nc-Nj).norm())).norm();
+
+
+        //compute residuals (= cost)
+        residuals[0] = pow(scalar_angle-scalar_a,2) ;
+        residuals[1] = pow(cross_angle-cross_a,2) ;
+
+        //compute jacobian :
+        //only the center node (Nc) should be moved
+        //the direction is along the bissect of angle (Ni,Nc,Nj)
+        Eigen::Vector3d Vjc = ((Nc-Ni).normalized() + (Nc-Nj).normalized() ).normalized();
+
+        /** value of displacement :
+          lets consider a triangle formed on angle alpha (Ni,Nc,Nj) (upper summit is Nc)
+          but with Ni,Nc and Nc,Nj normalized to 1.
+          we want to find Nc_p, that is the new position of Nc after a move of d along the bissect.
+          the final expected angle (Ni,Nc',Nj) is the original angle beta (caracterized by sin and cos)
+          the distance d = sin(alpha)*tan(beta)-cos(alpha)
+          Note that sign determin which direction it goes
+          Note : in theory every angle shoud be divided by 2,thus we may have ot use sin2x=f(sinx^2, sinx) to have correct result
+          */
+       double d = cross_a * cross_angle/scalar_angle  -scalar_a ;
+
+        if (jacobians == NULL) {
+            cout << "JACOBIAN NULL" <<endl;
+          return 0;
+        }
+
+         if (jacobians != NULL && jacobians[0] != NULL) {
+             //note: null jacobian means end of computation?
+            jacobians[0][0] =  0;//Vjc(0); /// @debug : put a d factor here
+            jacobians[0][1] =  0;//Vjc(1);
+            jacobians[0][2]=   0;//Vjc(2);
+
+        }
+         if (jacobians != NULL && jacobians[1] != NULL) {
+             //note: null jacobian means end of computation?
+            jacobians[1][0] =  0;
+            jacobians[1][1] =  0;
+            jacobians[1][2]=   0;
+        }
+         if (jacobians != NULL && jacobians[2] != NULL) {
+             //note: null jacobian means end of computation?
+            jacobians[2][0] =  0;
+            jacobians[2][1] =  0;
+            jacobians[2][2]=   0;
+        }
+
+
+        return true;
+      }
+ private:
+    const double scalar_angle; //! vect_1.vect_2/(norm(vect_1)*norm(vect_2)) (original position)
+    const double cross_angle;  //! vect_1xvect_2/(norm(vect_1)*norm(vect_2)) (original position)
+};
 
 #endif // CONSTRAINTS_H
