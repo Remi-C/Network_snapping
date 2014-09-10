@@ -267,6 +267,8 @@ public :
         //! @param parameters[1] : one of the node forming the angle
         //! @param parameters[2] : other node forming the angle
 
+
+        cout << "begginign of evaluate" <<endl ;
         //map the input array into 3 eigen vectors
         ConstVectorRef Nc( parameters[0],3 );
         ConstVectorRef Ni( parameters[1],3 );
@@ -295,6 +297,14 @@ public :
           Note : in theory every angle shoud be divided by 2,thus we may have ot use sin2x=f(sinx^2, sinx) to have correct result
           */
        double d = cross_a * cross_angle/scalar_angle  -scalar_a ;
+       double init[9] = {0,0,0,0,0,0,0,0,0};
+
+       for(int i=0; i<3;++i){
+            for(int j=0; j<6;++j){
+                jacobians[i][j] =0 ;
+                cout << i<<"," << j << endl;
+            }
+       }
 
         if (jacobians == NULL) {
             cout << "JACOBIAN NULL" <<endl;
@@ -302,26 +312,29 @@ public :
         }
 
          if (jacobians != NULL && jacobians[0] != NULL) {
+             cout << "filled first jac" <<endl;
              //note: null jacobian means end of computation?
-            jacobians[0][0] =  0;//Vjc(0); /// @debug : put a d factor here
-            jacobians[0][1] =  0;//Vjc(1);
-            jacobians[0][2]=   0;//Vjc(2);
+            jacobians[0][0] =  Vjc(0) *d; /// @debug : put a d factor here
+            jacobians[0][1] =  Vjc(1) * d;
+            jacobians[0][2]=   Vjc(2) * d;
 
         }
          if (jacobians != NULL && jacobians[1] != NULL) {
              //note: null jacobian means end of computation?
-            jacobians[1][0] =  0;
-            jacobians[1][1] =  0;
-            jacobians[1][2]=   0;
+              cout << "filled second jac" <<endl;
+            jacobians[1][0] =  init[0];
+            jacobians[1][1] =  init[0];
+            jacobians[1][2]=   init[0];
         }
          if (jacobians != NULL && jacobians[2] != NULL) {
              //note: null jacobian means end of computation?
-            jacobians[2][0] =  0;
-            jacobians[2][1] =  0;
-            jacobians[2][2]=   0;
+              cout << "filled third jac" <<endl;
+            jacobians[2][0] =  init[0];
+            jacobians[2][1] =  init[0];
+            jacobians[2][2]=   init[0];
         }
 
-
+         cout << "end of evaluate" <<endl ;
         return true;
       }
  private:

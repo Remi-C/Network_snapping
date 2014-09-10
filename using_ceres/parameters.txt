@@ -11,15 +11,15 @@ output_file_path =  ../data/data_in_reduced_export_area/snapping_output.csv ;
 K_origin = 100 ;
 K_obs = 1 ;
 K_spacing = 1 ;
-K_angle = 1 ;
+K_angle = 1000 ;
 
 #what constraints to use?
 use_initial_position_constraint = false ;
 use_initial_spacing_constraint = false ;
 use_distance_to_proj_constraint = false ;
 use_manual_distance_to_proj_constraint = true ;
-use_manual_distance_to_original_angle = true ;
+use_manual_distance_to_original_angle = false ;
 
 #about loss function : how shall we remove the outliers?
-useLoss = true ;
+useLoss = false ;
 lossScale = 3.0 ;

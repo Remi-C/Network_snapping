@@ -117,7 +117,7 @@ int addManualConstraintsOnDistanceToOriginalAngle(DataStorage * data, Problem * 
 
     for (int i = 0 ; i< data->num_nodes(); ++i){//for every node,
         int current_node_id = data->nodes(i)->node_id ;
-        std::cout << "curr node " << current_node_id <<std::endl;
+        //std::cout << "curr node " << current_node_id <<std::endl;
         auto range = data->edges_by_node_id()->equal_range(current_node_id);
 
         for (auto it = range.first; it != range.second; ++it) {//for every node, loop on all edges concerned
@@ -129,7 +129,7 @@ int addManualConstraintsOnDistanceToOriginalAngle(DataStorage * data, Problem * 
 
             for (auto it2 = it; it2 != range.second; it2++) {//generating all unique pair of edges for a node
                 if(it->second->edge_id!=it2->second->edge_id) {
-                    std::cout << "curr edge " << it->second->edge_id <<", sec edge pair : " << it2->second->edge_id <<std::endl;
+                    //std::cout << "curr edge " << it->second->edge_id <<", sec edge pair : " << it2->second->edge_id <<std::endl;
 
                     edge * sec_edge = data->ebe(it2->second->edge_id);
                     node * sec_node = sec_edge->start_node!=current_node_id?
@@ -147,6 +147,8 @@ int addManualConstraintsOnDistanceToOriginalAngle(DataStorage * data, Problem * 
                     double scalar_a = (Nc-Ni+pe).dot(Nc-Nj+pe)/((Nc-Ni+pe).norm() * (Nc-Nj+pe).norm());
                     double cross_a = ((Nc-Ni+pe).cross(Nc-Nj+pe)/((Nc-Ni+pe).norm() * (Nc-Nj+pe).norm())).norm();
 
+                    std::cout << "input for block : "<< scalar_a << "," << cross_a << std::endl;
+                    std::cout << "nodes : " << current_node_id <<","<<first_node->node_id <<"," << sec_node->node_id << std::endl;
                     CostFunction* distance_cost_function=
                             new  ManualDistanceToOriginalAngle(scalar_a,cross_a ) ;
                     //untill 2.0 meters of distance, normal behavior. after that outliers behavior (not square)
