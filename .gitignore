@@ -38,3 +38,7 @@ test_forum*
 
 #qgis file
 *.qgs
+
+#animation source file
+frame*.PNG
+frame*.PNGw
