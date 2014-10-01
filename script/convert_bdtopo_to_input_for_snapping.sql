@@ -27,7 +27,7 @@ SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, p
 	DROP TABLE IF EXISTS new_successive_points; 
 	CREATE TABLE new_successive_points AS 
 	WITH  segmentize AS (
-		SELECT  edge_id, ST_Segmentize(geom,4) AS geom, start_node, end_node, ST_NumPoints(geom)  AS num_points
+		SELECT  edge_id,  geom  AS geom, start_node, end_node, ST_NumPoints(geom)  AS num_points
 		 FROM edge_data 
 	)
 	,input_data AS ( --getting all the edges we are going to break into segments .
@@ -101,7 +101,7 @@ SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, p
 		 SELECT ed.edge_id, ed.start_node, ed.end_node, r.largeur AS width
 		FROM edge_data AS ed
 		LEFT OUTER JOIN road AS  r ON (ed.ign_id = r.id)
-		WHERE ST_NumPoints(ST_Segmentize(ed.geom,4))<=2
+		WHERE ST_NumPoints(ed.geom)<=2
 	UNION --should be union all , security against duplicates.
 		SELECT  edge_id
 				, start_node
@@ -122,18 +122,27 @@ SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, p
 		, center_in_RGF93 geometry(POINT,932011)
 	);   
 	INSERT INTO def_zone_export (id, geom) 
-		VALUES( 1
-			, ST_GeomFromText('POLYGON((650907.6  6860870.6 ,650956.9  6860895.8 ,651036.0  6860757.1 ,650983.7  6860736.6 ,650907.6  6860870.6 ))',931008) );
+		VALUES( 1 , ST_GeomFromText('POLYGON((650907.6  6860870.6 ,650956.9  6860895.8 ,651036.0  6860757.1 ,650983.7  6860736.6 ,650907.6  6860870.6 ))',931008) );
+
+-- 	INSERT INTO def_zone_export (id, geom)  --all_of_acquisition
+-- 		VALUES( 1 , ST_GeomFromText('POLYGON((650637.4 6861097.2,650909.8 6861534.1,651068.6 6861638.3,651365.1 6861697.3,651410.3 6861270.3,651544.3 6861218.2,651498.6 6861178.5,651288.1 6861198.7,650863.3 6861051.6,651004.5 6860830.8,651063.1 6860739.1,651421.5 6860706.1,651347.3 6860611.3,651030.6 6860666.2,650657 6861002.8,650637.4 6861097.2))',931008) );
+
+	
 
 	UPDATE def_zone_export SET center_in_RGF93 = ST_Centroid(ST_Transform(geom,932011)) ;
+
+-- 	SELECT ST_AsText(ST_SnapToGrid(geom,0.1))
+-- 	FROM def_zone_export
+
+
 
 	DROP TABLE IF EXISTS nodes_for_output_in_export_area; 
 	CREATE TABLE nodes_for_output_in_export_area AS 
 		--we keep only the nodes inside the export area
 	SELECT nou.node_id
-		, nou.X - ST_X(dfz.center_in_RGF93) AS X
-		,nou.Y - ST_Y(dfz.center_in_RGF93) AS Y 
-		,nou.Z - COALESCE(ST_Z(dfz.center_in_RGF93),0) AS Z
+		, nou.X AS X
+		,nou.Y AS Y 
+		,COALESCE(nou.Z,0) AS Z
 		,nou.is_in_intersection
 	FROM nodes_for_output as nou, def_zone_export as dfz
 	WHERE ST_WITHIN(ST_SetSRID(ST_MakePoint(nou.X,nou.Y,nou.Z),932011) , ST_Transform((dfz.geom),932011)) = TRUE;
@@ -146,19 +155,20 @@ SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, p
 	WHERE eou.start_node = nou1.node_id AND eou.end_node = nou2.node_id  ;
 
 	--importing the sidewalk observation (weighted points ) here
-	DROP MATERIALIZED VIEW IF EXISTS weighted_sidewalk_observation_point ;
-	CREATE MATERIALIZED VIEW weighted_sidewalk_observation_point AS 
-	SELECT *
-	FROM public.dblink( 
-		 'hostaddr=127.0.0.1 port=5433 dbname=TerraMobilita user=postgres password=postgres'::text
-		, 'SELECT * FROM cmm.lines_to_weighted_points '::text
-		,TRUE)  AS   f(
-			 qgis_id bigint,
-			  area_id bigint,
-			  seg_id integer,
-			  geom geometry,
-			  weight numeric
-			 ) ; 
+-- 	
+-- 	DROP MATERIALIZED VIEW IF EXISTS weighted_sidewalk_observation_point ;
+-- 	CREATE MATERIALIZED VIEW weighted_sidewalk_observation_point AS 
+-- 	SELECT *
+-- 	FROM public.dblink( 
+-- 		 'hostaddr=127.0.0.1 port=5433 dbname=TerraMobilita user=postgres password=postgres'::text
+-- 		, 'SELECT * FROM cmm.lines_to_weighted_points '::text
+-- 		,TRUE)  AS   f(
+-- 			 qgis_id bigint,
+-- 			  area_id bigint,
+-- 			  seg_id integer,
+-- 			  geom geometry,
+-- 			  weight numeric
+-- 			 ) ; 
 
 	--getting the observations inside the area 
 
@@ -166,7 +176,7 @@ SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, p
 	CREATE TABLE obs_for_output_in_export_area AS 
 	WITH obs_in_area AS ( --these are the observations that are inside the defined area
 			SELECT nou.qgis_id, nou.area_id, nou.seg_id
-				, ST_Translate(nou.geom,- ST_X(dfz.center_in_RGF93) ,- ST_Y(dfz.center_in_RGF93) , - COALESCE(ST_Z(dfz.center_in_RGF93),0) ) AS geom 
+				, nou.geom AS geom 
 				, nou.weight
 			FROM weighted_sidewalk_observation_point AS  nou , def_zone_export as dfz
 			WHERE ST_WITHIN(nou.geom,  dfz.geom ) = TRUE 
@@ -194,12 +204,12 @@ SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, p
 
 
 
-	COPY  nodes_for_output_in_export_area TO '/media/sf_E_RemiCura/PROJETS/snapping/data/data_in_reduced_export_area/nodes_for_output_in_export_area.csv'
-	 (FORMAT CSV, DELIMITER   ';') ;
-	 COPY  edges_for_output_in_export_area TO '/media/sf_E_RemiCura/PROJETS/snapping/data/data_in_reduced_export_area/edges_for_output_in_export_area.csv'
-	 (FORMAT CSV, DELIMITER   ';') ;
-	 COPY  obs_for_output_in_export_area TO '/media/sf_E_RemiCura/PROJETS/snapping/data/data_in_reduced_export_area/obs_for_output_in_export_area.csv'
-	 (FORMAT CSV, DELIMITER   ';') ;
+-- 	COPY  nodes_for_output_in_export_area TO '/media/sf_E_RemiCura/PROJETS/snapping/data/data_in_reduced_export_area/nodes_for_output_in_export_area.csv'
+-- 	 (FORMAT CSV, DELIMITER   ';') ;
+-- 	 COPY  edges_for_output_in_export_area TO '/media/sf_E_RemiCura/PROJETS/snapping/data/data_in_reduced_export_area/edges_for_output_in_export_area.csv'
+-- 	 (FORMAT CSV, DELIMITER   ';') ;
+-- 	 COPY  obs_for_output_in_export_area TO '/media/sf_E_RemiCura/PROJETS/snapping/data/data_in_reduced_export_area/obs_for_output_in_export_area.csv'
+-- 	 (FORMAT CSV, DELIMITER   ';') ;
 	
 
 	
@@ -234,4 +244,31 @@ SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, p
 		,ST_SetSRID(ST_MakePoint(X::float,Y::float,Z::float),932011) AS sgeom;  
 
 
-	
+
+---test to export the whole file complete, no 3 separated files :
+
+ 
+ 
+COPY (
+	 SELECT '#num nodes;num edge;num observation'
+		UNION ALL 
+	 SELECT (SELECT count(*) FROM nodes_for_output_in_export_area) || ';' 
+		||  (SELECT count(*) FROM edges_for_output_in_export_area) || ';' 
+		|| (SELECT count(*) FROM obs_for_output_in_export_area)
+		UNION ALL 
+	 SELECT '#node_id::int;X::double;Yi_filename::double;Z::double;is_in_intersection::int'
+		UNION ALL 
+	SELECT node_id ||';'||x||';'||y||';'||z||';'||z||';'||is_in_intersection||';' 
+	FROM nodes_for_output_in_export_area
+		UNION ALL 
+	 SELECT '#edge_id::int;start_node::int;end_node::int;width::double'
+		UNION ALL 
+	SELECT edge_id ||';'||start_node||';'||end_node||';'||width
+	FROM edges_for_output_in_export_area
+		UNION ALL 
+	 SELECT '#obs_id::int;edge_id::int;X::double;Y::double;Z::double;confidence::double;weight::double'
+		UNION ALL 
+	SELECT obs_id ||';'||edge_id||';'||x||';'||y||';'||z||';'||confidence||';'||weight
+	FROM obs_for_output_in_export_area
+)
+TO '/media/sf_E_RemiCura/PROJETS/snapping/data/data_in_reduced_export_area/all_in_export_area.csv'
