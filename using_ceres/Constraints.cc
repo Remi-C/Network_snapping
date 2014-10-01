@@ -32,7 +32,9 @@ int addConstraintsOnInitialPosition(DataStorage * data, Problem * problem){
         //untill 2.0 meters of distance, normal behavior. after that outliers behavior (not square)
         LossFunction* loss = NULL;
         loss = new ceres::ScaledLoss(
-                    g_param->useLoss?(new ceres::SoftLOneLoss(g_param->lossScale)):NULL
+                    //g_param->useLoss?(new ceres::SoftLOneLoss(g_param->lossScale)):NULL
+                    /// @DEBUG : temporary
+                    NULL
                     ,g_param->K_origin,ceres::DO_NOT_TAKE_OWNERSHIP) ;
 
         problem->AddResidualBlock(

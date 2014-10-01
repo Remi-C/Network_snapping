@@ -4,7 +4,7 @@
 //                                                      //
 //////////////////////////////////////////////////////////
 /**
-  @todo
+  @TODO
     _ use Eigen to perfom all geometrical computation ( in the autodiff functor, seelibmv_homeography))
     DONE _ real using of id of element (not just index in array)
     DONE serious parameter reading
@@ -14,6 +14,10 @@
     _ add a constraint on distance to orginal angles between segements.
 
     _use boost for config files instead of lib found on internet
+
+  @DEBUG
+
+
 
   */
 
@@ -98,11 +102,11 @@ int main(int argc, char** argv) {
     }
 
     Solver::Options options;
-    options.max_num_iterations = 500;
+    options.max_num_iterations = 10000;
     options.linear_solver_type = ceres::DENSE_QR;
     options.minimizer_progress_to_stdout = true;
 
-    options.minimizer_type = ceres::LINE_SEARCH ;
+    options.minimizer_type = ceres::LINE_SEARCH ; //can also be : TRUST_REGION or LINE_SEARCH
     //options.num_threads = 2; /// @todo : handy for speed, but makes it hard to understand cout
 
     //options.trust_region_strategy_type = ceres::DOGLEG ;

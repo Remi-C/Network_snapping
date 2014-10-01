@@ -59,6 +59,7 @@ struct DistanceToInitialPosition {
     s[0] = (n_i[0]-T(initial_position_[0]) );
     s[1] = (n_i[1]-T(initial_position_[1]) );
     s[2] = (n_i[2]-T(initial_position_[2]) );
+    //distance_to_origin[0] =  squaredNorm(s) ;
     distance_to_origin[0] =  ceres::sqrt(squaredNorm(s)+0.0001) ;
     //distance_to_origin[0] = T(K_origin) *  ceres::sqrt(s[0]*s[0] + s[1]*s[1] + s[2]*s[2] + 0.000001);
 
@@ -85,7 +86,7 @@ struct DistanceToInitialSpacing{
         T n_i_minus_n_j[3] ;
         soustraction(n_i,n_j,n_i_minus_n_j);
 
-         distance_to_original_spacing[0]=  (squaredNorm(n_i_minus_n_j)-squaredNorm(spac)) ;
+         distance_to_original_spacing[0]=  pow(ceres::sqrt(squaredNorm(n_i_minus_n_j))-ceres::sqrt(squaredNorm(spac)),2) ;
 //        //compute the difference with original spacing:
 //        distance_to_original_spacing[0] = T(K_spacing) * ( T(initial_spacing_[0]) - (n_i[0] - n_j[0]) ) ;
 //        distance_to_original_spacing[1] = T(K_spacing) * ( T(initial_spacing_[1]) - (n_i[1] - n_j[1]) );
@@ -215,7 +216,7 @@ public :
         // std::cout << "\njac (eigen): \n" << jac << std::endl;
 
         if (jacobians == NULL) {
-            cout << "JACOBIAN NULL" <<endl;
+            //cout << "JACOBIAN NULL" <<endl;
           return 1;
         }
 
@@ -268,7 +269,7 @@ public :
         //! @param parameters[2] : other node forming the angle
 
 
-        cout << "begginign of evaluate" <<endl ;
+        cout << "begining of evaluate" <<endl ;
         //map the input array into 3 eigen vectors
         ConstVectorRef Nc( parameters[0],3 );
         ConstVectorRef Ni( parameters[1],3 );
@@ -300,7 +301,7 @@ public :
        double init[9] = {0,0,0,0,0,0,0,0,0};
 
        for(int i=0; i<3;++i){
-            for(int j=0; j<6;++j){
+            for(int j=0; j<6 ; ++j){
                 jacobians[i][j] =0 ;
                 cout << i<<"," << j << endl;
             }
