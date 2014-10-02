@@ -145,7 +145,7 @@ SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, p
 		,COALESCE(nou.Z,0) AS Z
 		,nou.is_in_intersection
 	FROM nodes_for_output as nou, def_zone_export as dfz
-	WHERE ST_WITHIN(ST_SetSRID(ST_MakePoint(nou.X,nou.Y,nou.Z),932011) , ST_Transform((dfz.geom),932011)) = TRUE;
+	WHERE ST_DWITHIN(ST_SetSRID(ST_MakePoint(nou.X,nou.Y,nou.Z),932011) , ST_Transform((dfz.geom),932011),200) = TRUE;
 
 	DROP TABLE IF EXISTS edges_for_output_in_export_area; 
 	CREATE TABLE edges_for_output_in_export_area AS 
