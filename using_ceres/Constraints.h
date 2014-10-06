@@ -268,7 +268,7 @@ public :
         //! @param parameters[2] : other node forming the angle
 
 
-        cout << "begining of evaluate" <<endl ;
+//        cout << "begining of evaluate" <<endl ;
         //map the input array into 3 eigen vectors
         ConstVectorRef Nc( parameters[0],3 );
         ConstVectorRef Ni( parameters[1],3 );
@@ -302,17 +302,17 @@ public :
        for(int i=0; i<3;++i){
             for(int j=0; j<6 ; ++j){
                 jacobians[i][j] =0 ;
-                cout << i<<"," << j << endl;
+//                cout << i<<"," << j << endl;
             }
        }
 
         if (jacobians == NULL) {
-            cout << "JACOBIAN NULL" <<endl;
+            //cout << "JACOBIAN NULL" <<endl;
           return 0;
         }
 
          if (jacobians != NULL && jacobians[0] != NULL) {
-             cout << "filled first jac" <<endl;
+             //cout << "filled first jac" <<endl;
              //note: null jacobian means end of computation?
             jacobians[0][0] =  Vjc(0) *d; /// @debug : put a d factor here
             jacobians[0][1] =  Vjc(1) * d;
@@ -321,20 +321,20 @@ public :
         }
          if (jacobians != NULL && jacobians[1] != NULL) {
              //note: null jacobian means end of computation?
-              cout << "filled second jac" <<endl;
+              //cout << "filled second jac" <<endl;
             jacobians[1][0] =  init[0];
             jacobians[1][1] =  init[0];
             jacobians[1][2]=   init[0];
         }
          if (jacobians != NULL && jacobians[2] != NULL) {
              //note: null jacobian means end of computation?
-              cout << "filled third jac" <<endl;
+             // cout << "filled third jac" <<endl;
             jacobians[2][0] =  init[0];
             jacobians[2][1] =  init[0];
             jacobians[2][2]=   init[0];
         }
 
-         cout << "end of evaluate" <<endl ;
+//         cout << "end of evaluate" <<endl ;
         return true;
       }
  private:
@@ -359,7 +359,7 @@ public :
         //the parameters are as follow : parameter[0-2] = n_i = first node;parameter[3-5] = n_j = second node;
 
         //map the input array into 2 eigen vectors into Eigen
-        cout << "\nbeginning of evaluate" << endl;
+        //cout << "\nbeginning of evaluate" << endl;
         ConstVectorRef Ni( parameters[0],3 );
         ConstVectorRef Nj( parameters[1],3 );
         Eigen::Vector3d Is = initial_spacing_;
@@ -380,12 +380,12 @@ public :
         Eigen::Vector3d Ji = -1 * sign* U * cost/2 ;
         Eigen::Vector3d Jj = +1 * sign* U * cost/2 ;
 
-        cout << "initial spacing : " << Is.transpose() << endl;
-        cout << "  Ni : " << Ni.transpose()     << endl;
-        cout << " Nj : " << Nj.transpose()      << endl;
-        cout << "  Cost :" << cost     << endl;
-        cout << "   Ji :" << Ji.transpose()     <<endl;
-        cout << "   Jj :" << Jj.transpose()     << endl;
+//        cout << "initial spacing : " << Is.transpose() << endl;
+//        cout << "  Ni : " << Ni.transpose()     << endl;
+//        cout << " Nj : " << Nj.transpose()      << endl;
+//        cout << "  Cost :" << cost     << endl;
+//        cout << "   Ji :" << Ji.transpose()     <<endl;
+//        cout << "   Jj :" << Jj.transpose()     << endl;
 
 
             if (jacobians == NULL) {
@@ -407,7 +407,7 @@ public :
 
             }
 
-            cout<<"end of evaluate()\n";
+//            cout<<"end of evaluate()\n";
             return true;
       }
  private:

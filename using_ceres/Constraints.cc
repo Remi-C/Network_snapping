@@ -180,8 +180,8 @@ int addManualConstraintsOnDistanceToOriginalAngle(DataStorage * data, Problem * 
                     double scalar_a = (Nc-Ni+pe).dot(Nc-Nj+pe)/((Nc-Ni+pe).norm() * (Nc-Nj+pe).norm());
                     double cross_a = ((Nc-Ni+pe).cross(Nc-Nj+pe)/((Nc-Ni+pe).norm() * (Nc-Nj+pe).norm())).norm();
 
-                    std::cout << "input for block : "<< scalar_a << "," << cross_a << std::endl;
-                    std::cout << "nodes : " << current_node_id <<","<<first_node->node_id <<"," << sec_node->node_id << std::endl;
+//                    std::cout << "input for block : "<< scalar_a << "," << cross_a << std::endl;
+//                    std::cout << "nodes : " << current_node_id <<","<<first_node->node_id <<"," << sec_node->node_id << std::endl;
                     CostFunction* distance_cost_function=
                             new  ManualDistanceToOriginalAngle(scalar_a,cross_a ) ;
                     //untill 2.0 meters of distance, normal behavior. after that outliers behavior (not square)
