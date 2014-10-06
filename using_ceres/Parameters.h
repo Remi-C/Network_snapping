@@ -32,6 +32,7 @@ struct Parameter{
         use_distance_to_proj_constraint = true; //false;
         use_manual_distance_to_proj_constraint = true;// false;
         use_manual_distance_to_original_angle = true ;
+        use_manual_initial_spacing_constraint = true ;
 
          useLoss = false;//true;
          lossScale = 0;//3.0;
@@ -56,6 +57,7 @@ struct Parameter{
     bool use_distance_to_proj_constraint;
     bool use_manual_distance_to_proj_constraint;
     bool use_manual_distance_to_original_angle;
+    bool use_manual_initial_spacing_constraint;
 
     bool useLoss  ;//! shall we use a loss function to reduce outliers weight
     double lossScale ; //! what shall be the loss function scale (after this scale, outliers mode)

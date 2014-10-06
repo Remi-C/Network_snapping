@@ -65,6 +65,7 @@ void Parameter::setParameters(std::string key, std::string value){
     key.compare("use_distance_to_proj_constraint")==0?use_distance_to_proj_constraint=bool(value.compare("false")):false;
     key.compare("use_manual_distance_to_proj_constraint")==0?use_manual_distance_to_proj_constraint=bool(value.compare("false")):false;
     key.compare("use_manual_distance_to_original_angle")==0?use_manual_distance_to_original_angle=bool(value.compare("false")):false;
+    key.compare("use_manual_initial_spacing_constraint")==0?use_manual_initial_spacing_constraint=bool(value.compare("false")):false;
     key.compare("useLoss")==0?useLoss=bool(value.compare("false")):false;
     key.compare("lossScale")==0?lossScale=atof(value.c_str()):0;
     return;
@@ -88,6 +89,7 @@ void Parameter::setParameters(std::string key, std::string value){
         << " use_distance_to_proj_constraint : " << use_distance_to_proj_constraint  << std::endl
         << " use_manual_distance_to_proj_constraint : " << use_manual_distance_to_proj_constraint  << std::endl
         << " use_manual_distance_to_original_angle : " << use_manual_distance_to_original_angle  << std::endl
+        << " use_manual_initial_spacing_constraint : " << use_manual_initial_spacing_constraint << std::endl
         << " useLoss : " << useLoss  << std::endl
         << " lossScale : " << lossScale  << std::endl  ;
      return nstring.str() ;

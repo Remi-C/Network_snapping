@@ -42,6 +42,7 @@ int addConstraintsOnInitialspacing( DataStorage *, ceres::Problem * );
 int addConstraintsOnOrthDistToObservation(DataStorage * , ceres::Problem * ) ;
 int addManualConstraintsOnOrthDistToObservation(DataStorage * , Problem * ) ;
 int addManualConstraintsOnDistanceToOriginalAngle(DataStorage * , Problem * ) ;
+int addManualConstraintsOnInitialspacing(DataStorage * , Problem * ) ;
 
 /** functor to compute cost between one node position and this node original position
   */
@@ -86,7 +87,7 @@ struct DistanceToInitialSpacing{
         T n_i_minus_n_j[3] ;
         soustraction(n_i,n_j,n_i_minus_n_j);
 
-         distance_to_original_spacing[0]=  pow(ceres::sqrt(squaredNorm(n_i_minus_n_j))-ceres::sqrt(squaredNorm(spac)),2) ;
+         distance_to_original_spacing[0]=  ceres::pow(squaredNorm(n_i_minus_n_j) - squaredNorm(spac),2)   ;
 //        //compute the difference with original spacing:
 //        distance_to_original_spacing[0] = T(K_spacing) * ( T(initial_spacing_[0]) - (n_i[0] - n_j[0]) ) ;
 //        distance_to_original_spacing[1] = T(K_spacing) * ( T(initial_spacing_[1]) - (n_i[1] - n_j[1]) );
@@ -165,8 +166,6 @@ struct DistanceToProjectionResidual {
 
 
 //! trying to replace the auto computation of Jacobian by a custom one
-
-
 class ManualOrthDistanceToObservation  : public ceres::SizedCostFunction<1,3,3> {
 
 public :
@@ -342,5 +341,84 @@ public :
     const double scalar_angle; //! vect_1.vect_2/(norm(vect_1)*norm(vect_2)) (original position)
     const double cross_angle;  //! vect_1xvect_2/(norm(vect_1)*norm(vect_2)) (original position)
 };
+
+
+
+
+
+class ManualOriginalSpacing  : public ceres::SizedCostFunction<1,3,3> {
+public :
+   //! this is the constructor, it expects an array of at least 3 doubles.
+    ManualOriginalSpacing(Eigen::Vector3d input_vect)
+        :initial_spacing_(input_vect) {}
+
+    //! this is the operator computing the cost
+    virtual bool Evaluate(double const* const* parameters,
+                          double* residuals,
+                          double** jacobians) const {
+        //the parameters are as follow : parameter[0-2] = n_i = first node;parameter[3-5] = n_j = second node;
+
+        //map the input array into 2 eigen vectors into Eigen
+        cout << "\nbeginning of evaluate" << endl;
+        ConstVectorRef Ni( parameters[0],3 );
+        ConstVectorRef Nj( parameters[1],3 );
+        Eigen::Vector3d Is = initial_spacing_;
+
+        //compute the cost, that is the change in distance between orignial spacing and new spacing.
+        double cost = (Ni-Nj).norm() - Is.norm() ;
+
+        //compute the sign of the jacobian : if NiNj are too close, negativ, if too far, positiv
+        int sign = ((  cost > 0) - (cost < 0));
+
+        //compute director vector of (NiNj) ie : NiNj/norm(NiNj) = u
+        Eigen::Vector3d U = (Nj-Ni).normalized();
+
+        //write residual
+        residuals[0] = pow(cost,2);
+
+        //compute Jacobian
+        Eigen::Vector3d Ji = -1 * sign* U * cost/2 ;
+        Eigen::Vector3d Jj = +1 * sign* U * cost/2 ;
+
+        cout << "initial spacing : " << Is.transpose() << endl;
+        cout << "  Ni : " << Ni.transpose()     << endl;
+        cout << " Nj : " << Nj.transpose()      << endl;
+        cout << "  Cost :" << cost     << endl;
+        cout << "   Ji :" << Ji.transpose()     <<endl;
+        cout << "   Jj :" << Jj.transpose()     << endl;
+
+
+            if (jacobians == NULL) {
+                //cout << "JACOBIAN NULL" <<endl;
+              return 1;
+            }
+
+             if (jacobians != NULL && jacobians[0] != NULL) {
+                jacobians[0][0] =  Ji(0);
+                jacobians[0][1] =  Ji(1);
+                jacobians[0][2]=   Ji(2);
+
+            }
+             if (jacobians != NULL && jacobians[1] != NULL) {
+                 //note: null jacobian means end of computation?
+                jacobians[1][0] =  Jj(0);
+                jacobians[1][1] =  Jj(1);
+                jacobians[1][2]=   Jj(2);
+
+            }
+
+            cout<<"end of evaluate()\n";
+            return true;
+      }
+ private:
+     Eigen::Vector3d initial_spacing_; /**< store the original 3D vector between the 2 nodes*/
+};
+
+
+
+
+
+
+
 
 #endif // CONSTRAINTS_H

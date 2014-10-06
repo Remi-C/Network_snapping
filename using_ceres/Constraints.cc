@@ -83,6 +83,37 @@ int addConstraintsOnInitialspacing(DataStorage * data, Problem * problem){
     }
 }
 
+//! manual constraint based on regularisation of distance between nodes
+int addManualConstraintsOnInitialspacing(DataStorage * data, Problem * problem){
+    for(const auto& element : data->edges_by_edge_id()){
+        //std::cout << element.second->end_node << std::endl;
+
+        edge * edge_to_output = element.second;
+        node * start_node = data->nbn(edge_to_output->start_node) ;
+        node * end_node = data->nbn(edge_to_output->end_node) ;
+
+        VectorRef sNode(start_node->position,3);
+        VectorRef eNode(end_node->position,3);
+        //std::cout << "sNode : " <<sNode.transpose() << std::endl ;
+        //std::cout << "eNode : " <<eNode.transpose() << std::endl ;
+
+        Eigen::Vector3d o_s = sNode-eNode  ;//+ VectorRef::Random(); /// @DEBUG : warning : this should be maybe 0.001
+        CostFunction* original_spacing_distance_functor = new ManualOriginalSpacing( o_s) ;
+
+
+        LossFunction* loss = NULL;
+        loss = new ceres::ScaledLoss( g_param->useLoss?(new ceres::SoftLOneLoss(g_param->lossScale)):NULL
+                                        ,g_param->K_spacing,ceres::DO_NOT_TAKE_OWNERSHIP) ;
+
+        problem->AddResidualBlock(
+                     original_spacing_distance_functor
+                    ,loss
+                    ,start_node->position
+                    ,end_node->position
+                    ); //note : both observations are referring to these nodes.
+    }
+}
+
 //! constraint based on observation
 int addConstraintsOnOrthDistToObservation(DataStorage * data, Problem * problem){
     for (int i = 0; i < data->num_observations(); ++i) {
@@ -114,7 +145,7 @@ int addConstraintsOnOrthDistToObservation(DataStorage * data, Problem * problem)
 
 
 
-//! manual constraint based on observation
+//! manual constraint based original angles in network
 int addManualConstraintsOnDistanceToOriginalAngle(DataStorage * data, Problem * problem){
 
     for (int i = 0 ; i< data->num_nodes(); ++i){//for every node,

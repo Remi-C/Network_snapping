@@ -16,7 +16,7 @@
     _use boost for config files instead of lib found on internet
 
   @DEBUG
-
+        remvoe this line from manualdistorth :" const double* w_i_j_;//! the width of the edge, in meter"
 
 
   */
@@ -101,8 +101,13 @@ int main(int argc, char** argv) {
         addManualConstraintsOnDistanceToOriginalAngle(data, &problem);
     }
 
+    //manual constraints regularisation on distance between nodes
+    if(g_param->use_manual_initial_spacing_constraint == true){
+        addManualConstraintsOnInitialspacing(data, &problem);
+    }
+
     Solver::Options options;
-    options.max_num_iterations = 10000;
+    options.max_num_iterations = 50;
     options.linear_solver_type = ceres::DENSE_QR;
     options.minimizer_progress_to_stdout = true;
 
