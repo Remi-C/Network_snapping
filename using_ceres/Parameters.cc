@@ -56,6 +56,7 @@ void Parameter::setParameters(std::string key, std::string value){
 
     key.compare("input_file_path")==0?input_file_path=value:"NULL";
     key.compare("output_file_path")==0?output_file_path=value:"NULL";
+    key.compare("class_definition_path")==0?class_definition_path=value:"NULL";
     key.compare("K_origin")==0?K_origin=atof(value.c_str()):0;
     key.compare("K_spacing")==0?K_spacing=atof(value.c_str()):0;
     key.compare("K_obs")==0?K_obs=atof(value.c_str()):0;
@@ -79,6 +80,7 @@ void Parameter::setParameters(std::string key, std::string value){
      //nstring.precision(10);
      nstring << " input_file_path : " << input_file_path  << std::endl
         << " output_file_path : " << output_file_path  << std::endl
+        << " class_definition_path : " << class_definition_path  << std::endl
         << " parameters_file_path : " << parameters_file_path  << std::endl
         << " K_origin : " << K_origin  << std::endl
         << " K_obs : " << K_obs  << std::endl
