@@ -7,7 +7,7 @@
 //////////////////////////////////////////////////////////
 
 
-//! fucntion to perform soustraction on double[3] vector
+//! function to perform soustraction on double[3] vector
 template<typename T> inline
 void soustraction(const T x[3], const T y[3], T result[3]) {
   result[0] = x[0]- y[0];
