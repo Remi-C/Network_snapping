@@ -43,7 +43,8 @@
 using std::string;
 using std::basic_string;
 
-
+enum road_relation_enum{IN=1 ,OUT=-1 ,BORDER=0, UNDEF=-110 } ;
+enum geom_type_enum{POINT=1,LINESTRING=2,POLYGON=3} ;
 
 //! a simple structure to hold observation data : that is a point with some attributes
 struct node{
@@ -123,6 +124,31 @@ string observationToString(){
 
 };
  
+struct classification{
+
+    unsigned char class_id;           //! unique id per class, positive, 8 bits long, contains kind of information on object type grouping
+    std::string class_name;          //! name of the class, in english
+    geom_type_enum geom_type;   //! geometry type, folowwing geos  : 1 = point, 2 = line, 3 = polygon
+    road_relation_enum road_surface_relation;//! how does the object relate to road surface : allowed : IN/OUT/BORDER/UNDEF
+    double precision ;
+    double importance ;
+    double dist_to_border ;
+
+    //! function to get an idea of what is in the observation
+    string classificationToString(){
+        //#obs_id::int;X::double;Y::double;Z::double;confidence::double;weight::double
+
+        std::ostringstream nstring;
+        //nstring.precision(10);
+        nstring << "(class_id : " << int(class_id)  << " ), class_name : (" << class_name
+                << " ), geom_type : (" << geom_type << "),(road_surface_relation :"<< road_surface_relation
+                << "), (precision : " << precision << "), (importance : " << importance
+                <<")"<< "), (dist_to_border : " << dist_to_border <<")";
+        return nstring.str() ;
+    }
+
+};
+
 typedef std::unordered_multimap <int /*node_id*/, edge *> ummap_e;
 
 class DataStorage {
