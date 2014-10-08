@@ -22,6 +22,7 @@ struct Parameter{
     Parameter(){
         input_file_path ="";// "../data/data_in_reduced_export_area/reduced_area.csv";
         output_file_path ="";// "../data/data_in_reduced_export_area/snapping_output.csv" ;
+        class_definition_path = "";
         parameters_file_path = "./parameters.txt";
         K_origin =0;// 100;
         K_obs= 0; //1 ;
@@ -45,6 +46,7 @@ struct Parameter{
 
     std::string input_file_path ;
     std::string output_file_path;
+    std::string class_definition_path;
     std::string parameters_file_path;
 
     double K_origin ; //! this parameter scale the distance to origin for a node
