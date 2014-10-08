@@ -171,6 +171,8 @@ public:
     edge* edges(int i)                { return &edges_[i];}
     observation* observations()  { return observations_;}
     observation* observations(int i)  { return &observations_[i];}
+    classification* classifications()  { return classifications_;}
+    classification* classifications(int i)  { return &classifications_[i];}
     node* nbn(int i ) { return nodes_by_node_id_.at(i); }
     std::unordered_map <int /*node_id*/, node *> nodes_by_node_id() {return nodes_by_node_id_;}
     edge* ebe(int i ) { return edges_by_edge_id_.at(i); }
@@ -179,6 +181,10 @@ public:
     std::pair <ummap_e::iterator, ummap_e::iterator> ebn(int i ) { return edges_by_node_id_.equal_range(i); }
     ummap_e * edges_by_node_id()
         {return &edges_by_node_id_;}
+    std::unordered_map <int /*class_id*/, classification *> classification_by_id()
+        {return classification_by_id_;}
+    std::unordered_map <int /*class_name*/, classification *> classification_by_name()
+        {return classification_by_name_;}
 
 private:
     int num_nodes_; //! total num of nodes we are going to read
@@ -188,6 +194,7 @@ private:
     node* nodes_;//! an array of node
     edge* edges_;//! an array og edges
     observation* observations_;//! an array of observations
+    classification* classifications_; //! an array of classification class.
     
     const string input_file_path_;//! name of the file containing the input data
     const string output_file_path_;//! name of the file where to write results
@@ -196,6 +203,8 @@ private:
     std::unordered_map <int /*node_id*/, node *> nodes_by_node_id_;
     std::unordered_map <int /*edge_id*/, edge *> edges_by_edge_id_;
     ummap_e edges_by_node_id_;
+    std::unordered_map <int /*class_id*/, classification *> classification_by_id_;
+    std::unordered_map <int /*class_name*/, classification *> classification_by_name_;
 };
 
 #endif // DATA_H
