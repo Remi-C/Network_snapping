@@ -206,7 +206,7 @@ int addManualConstraintsOnDistanceToOriginalAngle(DataStorage * data, Problem * 
 
 
 
-//! manual constraint based on regularisation of angles between edges
+//! manual constraint based on distance between observation and edges
 int addManualConstraintsOnOrthDistToObservation(DataStorage * data, Problem * problem){
     for (int i = 0; i < data->num_observations(); ++i) {
 
