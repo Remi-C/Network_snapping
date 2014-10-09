@@ -55,17 +55,25 @@ Parameter * g_param;
 int main(int argc, char** argv) {
 
 
-
     //creating the set of parameters (could be read from file)
     g_param = new Parameter();
     g_param->readParameters();
     //std::cout << g_param->printParameters();
 
-
     //getting the data ;
     std::cout << "  \E[34;1mReading data\E[m \n" ;
     DataStorage * data = new DataStorage(  g_param->input_file_path,g_param->output_file_path) ;
     g_data_pointer = data;
+
+    data->readClassifications() ;
+
+
+    for(int i = 0 ; i<100; ++i ){
+
+        cout << data->classifications(i)->classificationToString() << std::endl;
+    }
+     return 1; /// @temp @debug
+
     data->readData();
     //setting the mapping beetween node_id and node*
     std::cout << "mapping between node_id and node *" <<"\n";

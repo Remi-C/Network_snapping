@@ -28,9 +28,9 @@
     #geom;width;cost;start_time;end_time;iteration
     LINESTRINGZ(X1 Y1 Z1, X2 Y2 Z2);2.25;12.98;YYYY-MM-DD HH:MM:SS.ssssss;YYYY-MM-DD HH:MM:SS.ssssss;1
     LINESTRINGZ(X1 Y1 Z1, X2 Y2 Z2);2.25;12.98;YYYY-MM-DD HH:MM:SS.ssssss;YYYY-MM-DD HH:MM:SS.ssssss;2
-	...
+    ...
 """""""""""""""""""""""""""""""""""""  
-  
+
   */
 #include <string>
 #include <iostream>
@@ -44,86 +44,86 @@ using std::string;
 using std::basic_string;
 
 enum road_relation_enum{IN=1 ,OUT=-1 ,BORDER=0, UNDEF=-110 } ;
-enum geom_type_enum{POINT=1,LINESTRING=2,POLYGON=3} ;
+enum geom_type_enum{POINT=1,LINESTRING=2,POLYGON=3, COLLECTION=4} ;
 
 //! a simple structure to hold observation data : that is a point with some attributes
 struct node{
-  int node_id;            //! unique id per node
-  double position[3];      //! 3 coordinates X,Y,Z. Will be changed upon optimization
-  short is_in_intersection;//! is this node part of an intersection, or is this an intermediary node?
-  
-  
-  node(int id,double X,double Y,double Z,bool in_inter) {
-		node_id = id;
-        position[0] = X ;
-		position[1] = Y ;
-		position[2] = Z;
-		is_in_intersection = in_inter ;
-  }
+    int node_id;            //! unique id per node
+    double position[3];      //! 3 coordinates X,Y,Z. Will be changed upon optimization
+    short is_in_intersection;//! is this node part of an intersection, or is this an intermediary node?
 
-  node() {
+
+    node(int id,double X,double Y,double Z,bool in_inter) {
+        node_id = id;
+        position[0] = X ;
+        position[1] = Y ;
+        position[2] = Z;
+        is_in_intersection = in_inter ;
+    }
+
+    node() {
         node_id = 0;
         position[0] = 0.0 ;
         position[1] = 0.0 ;
         position[2] = 0.0 ;
         is_in_intersection = false ;
-  }
+    }
 
-  string nodeToString(){ 
-	//#node_id::int;X::double;Yi_filename::double;Z::double;is_in_intersection::int
-	 
-	std::ostringstream nstring;
-	nstring << "(node_id : " << node_id  
-		<< " , position : (" << position[0] << "," << position[1] <<"," << position[2] 
-		<< "), is_in_intersection : "<< is_in_intersection << ")";  
-	//return nstring ;
-	return nstring.str() ;
-}
+    string nodeToString(){
+        //#node_id::int;X::double;Yi_filename::double;Z::double;is_in_intersection::int
+
+        std::ostringstream nstring;
+        nstring << "(node_id : " << node_id
+                << " , position : (" << position[0] << "," << position[1] <<"," << position[2]
+                << "), is_in_intersection : "<< is_in_intersection << ")";
+        //return nstring ;
+        return nstring.str() ;
+    }
 
 };
 
 
 
 struct edge{
-  int edge_id;      //! unique id per edge
-  int start_node;   //! link to the id of the node that starts this edge
-  int end_node;     //! link to the id of the node that ends this edge
-  double width;     //! width of the edge, in meters.
-  
-  //! function to get an idea of what is in the edge
-string edgeToString(){ 
-	//#edge_id::int;start_node::int;end_node::int;width::double
-	 
-	std::ostringstream nstring;
-	nstring << "(edge_id : " << edge_id  
-		<< " , start_node : " << start_node << ", end_node : " << end_node <<", width : " << width <<")"; 
-	return nstring.str() ;
-}
+    int edge_id;      //! unique id per edge
+    int start_node;   //! link to the id of the node that starts this edge
+    int end_node;     //! link to the id of the node that ends this edge
+    double width;     //! width of the edge, in meters.
+
+    //! function to get an idea of what is in the edge
+    string edgeToString(){
+        //#edge_id::int;start_node::int;end_node::int;width::double
+
+        std::ostringstream nstring;
+        nstring << "(edge_id : " << edge_id
+                << " , start_node : " << start_node << ", end_node : " << end_node <<", width : " << width <<")";
+        return nstring.str() ;
+    }
 
 };
 
 struct observation{
-  int obs_id;           //! unique id per observations
-  int edge_id;          //! id of the edge that shoud be snapped to this observation
-  double position[3];    //! 3 coordinates X,Y,Z
-  //int edge_id;          //! this edge should be snapped to this observation
-  double confidence;    //! confidence between 0 and 1. 0-> very unlikely ; 1-> certain
-  double weight;        //! statistical weight of this observation (observation are points extracted from lines, weight = length of the 2 lines/2)
-  
-  //! function to get an idea of what is in the observation
-string observationToString(){ 
-	//#obs_id::int;X::double;Y::double;Z::double;confidence::double;weight::double
-	 
-    std::ostringstream nstring;
-    //nstring.precision(10);
-    nstring << "(obs_id : " << obs_id  << " , edge_id : (" << edge_id
-		<< " , position : (" << position[0] << "," << position[1] <<"," << position[2] 
-		<< "), confidence : " << confidence << ", weight : " << weight <<")"; 
-	return nstring.str() ;
-}
+    int obs_id;           //! unique id per observations
+    int edge_id;          //! id of the edge that shoud be snapped to this observation
+    double position[3];    //! 3 coordinates X,Y,Z
+    //int edge_id;          //! this edge should be snapped to this observation
+    double confidence;    //! confidence between 0 and 1. 0-> very unlikely ; 1-> certain
+    double weight;        //! statistical weight of this observation (observation are points extracted from lines, weight = length of the 2 lines/2)
+
+    //! function to get an idea of what is in the observation
+    string observationToString(){
+        //#obs_id::int;X::double;Y::double;Z::double;confidence::double;weight::double
+
+        std::ostringstream nstring;
+        //nstring.precision(10);
+        nstring << "(obs_id : " << obs_id  << " , edge_id : (" << edge_id
+                << " , position : (" << position[0] << "," << position[1] <<"," << position[2]
+                << "), confidence : " << confidence << ", weight : " << weight <<")";
+        return nstring.str() ;
+    }
 
 };
- 
+
 struct classification{
 
     unsigned char class_id;           //! unique id per class, positive, 8 bits long, contains kind of information on object type grouping
@@ -147,7 +147,18 @@ struct classification{
         return nstring.str() ;
     }
 
+    friend std::ostream &operator<<(std::ostream &os, classification const &c) {
+        return os << c.class_id  << "\t"
+                  << c.class_name << "\t"
+                  << c.geom_type    << "\t"
+                  << c.road_surface_relation   << "\t"
+                  << c.precision   << "\t"
+                  << c.importance   << "\t"
+                  << c.dist_to_border;
+    }
+
 };
+
 
 typedef std::unordered_multimap <int /*node_id*/, edge *> ummap_e;
 
@@ -156,8 +167,9 @@ public:
     DataStorage(const string, const string );
 
     ~DataStorage();
-	void readData();
-	void writeData(int);
+    void readData();
+    void readClassifications();
+    void writeData(int);
     void setMap();
 
 
@@ -177,14 +189,14 @@ public:
     std::unordered_map <int /*node_id*/, node *> nodes_by_node_id() {return nodes_by_node_id_;}
     edge* ebe(int i ) { return edges_by_edge_id_.at(i); }
     std::unordered_map <int /*edge_id*/, edge *> edges_by_edge_id()
-        {return edges_by_edge_id_;}
+    {return edges_by_edge_id_;}
     std::pair <ummap_e::iterator, ummap_e::iterator> ebn(int i ) { return edges_by_node_id_.equal_range(i); }
     ummap_e * edges_by_node_id()
-        {return &edges_by_node_id_;}
+    {return &edges_by_node_id_;}
     std::unordered_map <int /*class_id*/, classification *> classification_by_id()
-        {return classification_by_id_;}
+    {return classification_by_id_;}
     std::unordered_map <int /*class_name*/, classification *> classification_by_name()
-        {return classification_by_name_;}
+    {return classification_by_name_;}
 
 private:
     int num_nodes_; //! total num of nodes we are going to read
