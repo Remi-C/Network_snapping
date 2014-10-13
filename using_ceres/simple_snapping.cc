@@ -32,7 +32,7 @@
 #include "Constraints.h"                //define all the cost functor to be used in otpimization
 #include "utils_function.h"             //for easier vect operation @TODO : we should work on templated eighen like in libmv_homography.cc
 #include "WritingTempResultCallback.h"  //functor to write temp result in file at each iteration.
-
+#include "geometry_function.h"
 
 using ceres::NumericDiffCostFunction;
 using ceres::CENTRAL;
@@ -60,24 +60,31 @@ int main(int argc, char** argv) {
     g_param->readParameters();
     //std::cout << g_param->printParameters();
 
-    //getting the data ;
+
+
+
+
     std::cout << "  \E[34;1mReading data\E[m \n" ;
     DataStorage * data = new DataStorage(  g_param->input_file_path,g_param->output_file_path) ;
     g_data_pointer = data;
 
+    //reading the classification file :
     data->readClassifications() ;
 
-
-    for(int i = 0 ; i<100; ++i ){
-
-        cout << data->classifications(i)->classificationToString() << std::endl;
-    }
-     return 1; /// @temp @debug
-
+    //reading the network data ;
     data->readData();
+
     //setting the mapping beetween node_id and node*
-    std::cout << "mapping between node_id and node *" <<"\n";
+    std::cout << "mapping between id of objects and objects" <<"\n";
     data->setMap();
+
+    //testing the map on classifications :
+
+    //string s = "LINESTRING(0 0 0 , 1 1 1, 2 2 2 )" ;
+    string s = "POLYGON((1 3 50 , 3 3 50, 3 4 50, 1 4 50 ,1 3 50) )" ;
+    read_WKT(s);
+
+    return 1; /// @temp @debug
 
 
     //creating the problem to be solved
