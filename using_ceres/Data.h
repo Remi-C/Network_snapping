@@ -32,6 +32,7 @@
 """""""""""""""""""""""""""""""""""""  
 
   */
+#include "Parameters.h"
 #include <string>
 #include <iostream>
 #include <fstream>
@@ -43,8 +44,8 @@
 using std::string;
 using std::basic_string;
 
-enum road_relation_enum{IN=1 ,OUT=-1 ,BORDER=0, UNDEF=-110 } ;
-enum geom_type_enum{POINT=1,LINESTRING=2,POLYGON=3, COLLECTION=4} ;
+
+
 
 //! a simple structure to hold observation data : that is a point with some attributes
 struct node{
@@ -122,10 +123,59 @@ struct observation{
         return nstring.str() ;
     }
 
+
 };
 
 struct classification{
 
+
+    enum road_relation_enum{IN=1 ,OUT=-1 ,BORDER=0, UNDEF=-110 } ;
+    road_relation_enum string_to_road_relation_enum(string s){
+        if(s.compare("IN")==0)
+            return IN;
+        if(s.compare("OUT")==0)
+            return OUT;
+        if(s.compare("BORDER")==0)
+            return BORDER;
+        if(s.compare("UNDEF")==0)
+            return UNDEF;
+    }
+    string road_relation_enum_to_string(road_relation_enum e){
+        if(e==IN)
+            return "IN";
+        if(e==OUT)
+            return "OUT";
+        if(e==BORDER)
+            return "BORDER";
+        if(e==UNDEF)
+            return "UNDEF";
+        return std::to_string( e );
+    }
+
+    enum geom_type_enum{POINT=1,LINESTRING=2,POLYGON=3, COLLECTION=4} ;
+    geom_type_enum string_to_geom_type_enum(string s){
+        geom_type_enum e;
+        if(s.compare("POINT")==0){
+            e= POINT;}
+        if(s.compare("LINESTRING")==0){
+            e= LINESTRING;}
+        if(s.compare("POLYGON")==0){
+            e= POLYGON;}
+        if(s.compare("COLLECTION")==0){
+            e= COLLECTION;}
+        return e;
+    }
+    string geom_type_enum_to_string(geom_type_enum e){
+        if(e==POINT)
+            return "POINT";
+        if(e==LINESTRING)
+            return "LINESTRING";
+        if(e==POLYGON)
+            return "POLYGON";
+        if(e==COLLECTION)
+            return "COLLECTION";
+        return std::to_string(e);
+    }
     unsigned char class_id;           //! unique id per class, positive, 8 bits long, contains kind of information on object type grouping
     std::string class_name;          //! name of the class, in english
     geom_type_enum geom_type;   //! geometry type, folowwing geos  : 1 = point, 2 = line, 3 = polygon
@@ -137,13 +187,15 @@ struct classification{
     //! function to get an idea of what is in the observation
     string classificationToString(){
         //#obs_id::int;X::double;Y::double;Z::double;confidence::double;weight::double
-
         std::ostringstream nstring;
         //nstring.precision(10);
-        nstring << "(class_id : " << int(class_id)  << " ), class_name : (" << class_name
-                << " ), geom_type : (" << geom_type << "),(road_surface_relation :"<< road_surface_relation
-                << "), (precision : " << precision << "), (importance : " << importance
-                <<")"<< "), (dist_to_border : " << dist_to_border <<")";
+        nstring << "class_id : " << int(class_id)  << std::endl
+                <<"\t class_name : " << class_name << std::endl
+                << "\t geom_type : " << geom_type<< ":"<<geom_type_enum_to_string(geom_type) << std::endl
+                << "\t road_surface_relation :"<<road_surface_relation<< ":"<<road_relation_enum_to_string(road_surface_relation) << std::endl
+                << "\t precision : " << precision << std::endl
+                << "\t importance : " << importance << std::endl
+                << "\t dist_to_border : " << dist_to_border <<std::endl;
         return nstring.str() ;
     }
 
@@ -157,6 +209,22 @@ struct classification{
                   << c.dist_to_border;
     }
 
+    void setClassification(int class_id_
+                   ,std::string class_name_
+                   ,std::string geom_type_
+                   ,std::string road_surface_relation_
+                   ,double precision_
+                   ,double importance_
+                   ,double dist_to_border_ ){
+
+        this->class_id = int(class_id_);
+        this->class_name = class_name_;
+        this->geom_type = string_to_geom_type_enum(geom_type_);
+        this->road_surface_relation = string_to_road_relation_enum(road_surface_relation_);
+        this->precision = abs(precision_) ;
+        this->importance = abs(importance_) ;
+        this->dist_to_border = abs(dist_to_border_);
+    }
 };
 
 
@@ -176,6 +244,7 @@ public:
     int num_nodes()             { return num_nodes_;  }
     int num_edges()             { return num_edges_;    }
     int num_observations()       { return num_observations_;  }
+    int num_classifications()   {return num_classifications_; }
     const std::string output_file_path()     { return output_file_path_;  }
     node* nodes()                { return nodes_;}
     node* nodes(int i)           { return &nodes_[i];}
@@ -193,15 +262,23 @@ public:
     std::pair <ummap_e::iterator, ummap_e::iterator> ebn(int i ) { return edges_by_node_id_.equal_range(i); }
     ummap_e * edges_by_node_id()
     {return &edges_by_node_id_;}
-    std::unordered_map <int /*class_id*/, classification *> classification_by_id()
-    {return classification_by_id_;}
-    std::unordered_map <int /*class_name*/, classification *> classification_by_name()
-    {return classification_by_name_;}
+    std::unordered_map <int /*class_id*/, classification *>*  classification_by_id()
+    {return &classification_by_id_;}
+     classification *  cbi(int i){
+        return classification_by_id_.at(i);
+    }
+
+    std::unordered_map <std::string /*class_name*/, classification *>* classification_by_name()
+    {return &classification_by_name_;}
+    classification *  cbn(string cname){
+        return classification_by_name_.at(cname);
+    }
 
 private:
     int num_nodes_; //! total num of nodes we are going to read
     int num_edges_; //! total num of edges we are going to read
     int num_observations_;//! total num of observations we are going to read
+    int num_classifications_;//! total num of classifications we have read
 
     node* nodes_;//! an array of node
     edge* edges_;//! an array og edges
@@ -216,7 +293,7 @@ private:
     std::unordered_map <int /*edge_id*/, edge *> edges_by_edge_id_;
     ummap_e edges_by_node_id_;
     std::unordered_map <int /*class_id*/, classification *> classification_by_id_;
-    std::unordered_map <int /*class_name*/, classification *> classification_by_name_;
+    std::unordered_map <std::string /*class_name*/, classification *> classification_by_name_;
 };
 
 #endif // DATA_H

@@ -8,10 +8,12 @@
 
   */
 
+
 #include "Data.h"
+#include "Parameters.h"
 using std::endl;
 using std::cout;
-
+extern Parameter* g_param;
 
 /** Constructor for data input/storage
   @param name of the file containing the input data : the format is very specific
@@ -23,6 +25,7 @@ DataStorage::DataStorage(const string i_filename, const string o_filename )
     nodes_ = 0x0;
     edges_ = 0x0;
     observations_ = 0x0;
+    classifications_ = 0x0;
 }
 DataStorage::~DataStorage(){
     delete[] nodes_;
@@ -69,13 +72,12 @@ bool TEST_observationToString() {
 
 
 void DataStorage::readClassifications(){
-    //opening files
-    std::string temp_class_definition_path  = "../data/data_in_reduced_export_area/class_definition.csv";
-    FILE* i_fptr = fopen(temp_class_definition_path.c_str(), "r"); /// @debug @temp warning, shoudl read this in parameter
+    //opening files //cout << "here is the file path read in parameters.txt : "  << g_param->class_definition_path <<endl;
+    FILE* i_fptr = fopen( g_param->class_definition_path.c_str() , "r"); /// @debug @temp warning, shoudl read this in parameter
     char line[1000];//input line buffer
 
     if (i_fptr == NULL) {
-        std::cerr << "Error: unable to open file " << temp_class_definition_path;
+        std::cerr << "Error: unable to open file " << g_param->class_definition_path <<endl;
         return;
     }
 
@@ -121,23 +123,35 @@ void DataStorage::readClassifications(){
                         )
                 != 7) {
             //reading a comment line
-            std::cout << "reading comment line : " << line ;
+            //std::cout << "reading comment line : " << line ;
         } else {
-            cout << "filling classification  " << class_number <<endl;
+            //cout << "filling classification  " << class_number <<endl;
             //filling the classification :
-            classifications_[class_number].class_id = class_id;
-            classifications_[class_number].class_name = class_name;
-            classifications_[class_number].geom_type = POINT;
-            classifications_[class_number].road_surface_relation = IN;
-            classifications_[class_number].precision = precision;
-            classifications_[class_number].importance = importance;
-            classifications_[class_number].dist_to_border = dist_to_border;
+            classifications_[class_number].setClassification(
+                                class_id
+                               ,string(class_name)
+                               ,string(geom_type)
+                               ,string(road_surface_relation)
+                               ,precision
+                               ,importance
+                               ,dist_to_border
+                               );
+//             cout <<class_id << endl
+//                << "\t"<<  string(class_name) << endl
+//                << "\t"<< string(geom_type) << " " <<   endl
+//                  << "\t"<< string(road_surface_relation)  <<endl
+//                << "\t"<< precision << endl
+//                 << "\t"<< importance <<endl
+//                << "\t"<< dist_to_border <<endl ;
 
+//             cout << classifications_[class_number].classificationToString()<<endl ;
             class_number++ ;
+
         }
     }
 
-
+    //write class_number into parameters
+    this->num_classifications_ = class_number ;
     fclose(i_fptr);
     return;
 }
@@ -319,6 +333,14 @@ void DataStorage::setMap(){
         edges_by_node_id_.insert(std::pair<int,edge *>(edges_[i].start_node,&edges_[i] ));
         edges_by_node_id_.insert(std::pair<int,edge *>(edges_[i].end_node,&edges_[i] ));
     }//loop on all edge from edges_
+
+    //setting the map to find classification by class id or by class_name
+    for (int i = 0; i < num_classifications(); ++i) {
+        classification_by_id_.insert(std::pair<int,classification*>(classifications_[i].class_id,&classifications_[i] ));
+        classification_by_name_.insert(std::pair<string,classification*>(classifications_[i].class_name,&classifications_[i] ));
+    }//loop on all classifications
+
+
     return;
 }
 
