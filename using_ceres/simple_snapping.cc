@@ -56,6 +56,7 @@ int main(int argc, char** argv) {
 
 
     //creating the set of parameters (could be read from file)
+    std::cout << "  \E[34;1mReading parameters\E[m \n" ;
     g_param = new Parameter();
     g_param->readParameters();
     //std::cout << g_param->printParameters();
@@ -69,9 +70,11 @@ int main(int argc, char** argv) {
     g_data_pointer = data;
 
     //reading the classification file :
+    std::cout << "  \E[34;1m \t Reading classification\E[m \n" ;
     data->readClassifications() ;
 
     //reading the network data ;
+    std::cout << "  \E[34;1m \t Reading network\E[m \n" ;
     data->readData();
 
     //setting the mapping beetween node_id and node*
