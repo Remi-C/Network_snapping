@@ -101,7 +101,7 @@ void DataStorage::readClassifications(){
                         )
                 != 7) {
             //reading a comment line
-            std::cout << "reading comment line : " << line ;
+            //std::cout << "reading comment line : " << line ;
         } else {
             class_number++ ;
         }

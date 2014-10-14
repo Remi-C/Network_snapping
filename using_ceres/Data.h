@@ -126,10 +126,13 @@ struct observation{
 
 };
 
+enum road_relation_enum{IN=1 ,OUT=-1 ,BORDER=0, BORDER_IN = 10, BORDER_OUT= -10, UNDEF=-110 } ;
+enum geom_type_enum{POINT=1,LINESTRING=2,POLYGON=3, COLLECTION=4} ;
+
 struct classification{
 
 
-    enum road_relation_enum{IN=1 ,OUT=-1 ,BORDER=0, UNDEF=-110 } ;
+
     road_relation_enum string_to_road_relation_enum(string s){
         if(s.compare("IN")==0)
             return IN;
@@ -137,6 +140,10 @@ struct classification{
             return OUT;
         if(s.compare("BORDER")==0)
             return BORDER;
+        if(s.compare("BORDER_IN")==0)
+            return BORDER_IN;
+        if(s.compare("BORDER_OUT")==0)
+            return BORDER_OUT;
         if(s.compare("UNDEF")==0)
             return UNDEF;
     }
@@ -147,12 +154,16 @@ struct classification{
             return "OUT";
         if(e==BORDER)
             return "BORDER";
+        if(e==BORDER_IN)
+            return "BORDER_IN";
+        if(e==BORDER_OUT)
+            return "BORDER_OUT";
         if(e==UNDEF)
             return "UNDEF";
         return std::to_string( e );
     }
 
-    enum geom_type_enum{POINT=1,LINESTRING=2,POLYGON=3, COLLECTION=4} ;
+
     geom_type_enum string_to_geom_type_enum(string s){
         geom_type_enum e;
         if(s.compare("POINT")==0){
