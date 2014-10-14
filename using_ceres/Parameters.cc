@@ -20,7 +20,7 @@ void Parameter::readParameters(){
     //opening files
     FILE* p_fptr = fopen(parameters_file_path.c_str(), "r");
 
-    std::cout << "reading config file" <<std::endl ;
+    //std::cout << "reading config file" <<std::endl ;
     char line[1000];//input line buffer
     char comment[1000];//buffer to hold comment line
     char key[1000];//name of the parameter to set
