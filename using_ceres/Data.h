@@ -127,8 +127,8 @@ struct observation{
 };
 
 enum road_relation_enum{IN=1 ,OUT=-1 ,BORDER=0, BORDER_IN = 10, BORDER_OUT= -10, UNDEF=-110 } ;
-enum geom_type_enum{POINT=1,LINESTRING=2,POLYGON=3, COLLECTION=4} ;
-
+enum geom_type_enum{POINT=1,LINESTRING=2,POLYGON=3,COLLECTION=4} ;
+enum attractive_repulsive{ATTRACTIVE=1 ,REPULSIVE=-1,ATTR_AND_REP =-11,  NEUTRAL=0 } ;
 struct classification{
 
 
