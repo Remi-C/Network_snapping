@@ -41,9 +41,10 @@
 #include <math.h> //for
 
 
+#include "enum_functions.h"
 using std::string;
 using std::basic_string;
-
+//using SnapEnums;
 
 
 
@@ -126,71 +127,20 @@ struct observation{
 
 };
 
-enum road_relation_enum{IN=1 ,OUT=-1 ,BORDER=0, BORDER_IN = 10, BORDER_OUT= -10, UNDEF=-110 } ;
-enum geom_type_enum{POINT=1,LINESTRING=2,POLYGON=3,COLLECTION=4} ;
-enum attractive_repulsive{ATTRACTIVE=1 ,REPULSIVE=-1,ATTR_AND_REP =-11,  NEUTRAL=0 } ;
+
+
+
+
+
+
+
+
 struct classification{
 
-
-
-    road_relation_enum string_to_road_relation_enum(string s){
-        if(s.compare("IN")==0)
-            return IN;
-        if(s.compare("OUT")==0)
-            return OUT;
-        if(s.compare("BORDER")==0)
-            return BORDER;
-        if(s.compare("BORDER_IN")==0)
-            return BORDER_IN;
-        if(s.compare("BORDER_OUT")==0)
-            return BORDER_OUT;
-        if(s.compare("UNDEF")==0)
-            return UNDEF;
-    }
-    string road_relation_enum_to_string(road_relation_enum e){
-        if(e==IN)
-            return "IN";
-        if(e==OUT)
-            return "OUT";
-        if(e==BORDER)
-            return "BORDER";
-        if(e==BORDER_IN)
-            return "BORDER_IN";
-        if(e==BORDER_OUT)
-            return "BORDER_OUT";
-        if(e==UNDEF)
-            return "UNDEF";
-        return std::to_string( e );
-    }
-
-
-    geom_type_enum string_to_geom_type_enum(string s){
-        geom_type_enum e;
-        if(s.compare("POINT")==0){
-            e= POINT;}
-        if(s.compare("LINESTRING")==0){
-            e= LINESTRING;}
-        if(s.compare("POLYGON")==0){
-            e= POLYGON;}
-        if(s.compare("COLLECTION")==0){
-            e= COLLECTION;}
-        return e;
-    }
-    string geom_type_enum_to_string(geom_type_enum e){
-        if(e==POINT)
-            return "POINT";
-        if(e==LINESTRING)
-            return "LINESTRING";
-        if(e==POLYGON)
-            return "POLYGON";
-        if(e==COLLECTION)
-            return "COLLECTION";
-        return std::to_string(e);
-    }
     unsigned char class_id;           //! unique id per class, positive, 8 bits long, contains kind of information on object type grouping
     std::string class_name;          //! name of the class, in english
-    geom_type_enum geom_type;   //! geometry type, folowwing geos  : 1 = point, 2 = line, 3 = polygon
-    road_relation_enum road_surface_relation;//! how does the object relate to road surface : allowed : IN/OUT/BORDER/UNDEF
+    SnapEnums::geom_type_enum geom_type;   //! geometry type, folowwing geos  : 1 = point, 2 = line, 3 = polygon
+    SnapEnums::road_relation_enum road_surface_relation;//! how does the object relate to road surface : allowed : IN/OUT/BORDER/UNDEF
     double precision ;
     double importance ;
     double dist_to_border ;
@@ -202,8 +152,8 @@ struct classification{
         //nstring.precision(10);
         nstring << "class_id : " << int(class_id)  << std::endl
                 <<"\t class_name : " << class_name << std::endl
-                << "\t geom_type : " << geom_type<< ":"<<geom_type_enum_to_string(geom_type) << std::endl
-                << "\t road_surface_relation :"<<road_surface_relation<< ":"<<road_relation_enum_to_string(road_surface_relation) << std::endl
+                << "\t geom_type : " << geom_type<< ":"<<SnapEnums::gt_toString(geom_type) << std::endl
+                << "\t road_surface_relation :"<<road_surface_relation<< ":"<<SnapEnums::rre_toString(road_surface_relation) << std::endl
                 << "\t precision : " << precision << std::endl
                 << "\t importance : " << importance << std::endl
                 << "\t dist_to_border : " << dist_to_border <<std::endl;
@@ -230,8 +180,8 @@ struct classification{
 
         this->class_id = int(class_id_);
         this->class_name = class_name_;
-        this->geom_type = string_to_geom_type_enum(geom_type_);
-        this->road_surface_relation = string_to_road_relation_enum(road_surface_relation_);
+        this->geom_type = SnapEnums::String_togt(geom_type_);
+        this->road_surface_relation = SnapEnums::String_torre(road_surface_relation_);
         this->precision = abs(precision_) ;
         this->importance = abs(importance_) ;
         this->dist_to_border = abs(dist_to_border_);

@@ -107,7 +107,7 @@ geom axis_to_rectangle(const double * pt1, const double * pt2, double axis_width
 
 
 
-double shared_area_cost(road_relation_enum road_relation, const double* pt1, const double* pt2, double axis_width, geom object_snapping_surface, double object_snapping_surface_area  ){
+double shared_area_cost(SnapEnums::road_relation_enum road_relation, const double* pt1, const double* pt2, double axis_width, geom object_snapping_surface, double object_snapping_surface_area  ){
     /**
       @param road_relation : what is the behaviour of the object toward road surface
       @param pt1 : first node
@@ -124,10 +124,10 @@ double shared_area_cost(road_relation_enum road_relation, const double* pt1, con
     geom street_rectangle;
     int intersects ; // 1 = true
     double distance_to_shell =  100 ;
-    attractive_repulsive attractive ;
-    if(road_relation==IN || road_relation==BORDER_IN ){attractive = ATTRACTIVE;}
-    if(road_relation==OUT || road_relation==BORDER_OUT ){attractive = REPULSIVE;}
-    if(road_relation==BORDER){attractive = ATTR_AND_REP;};
+    SnapEnums::attractive_repulsive attractive ;
+    if(road_relation==SnapEnums::IN || road_relation==SnapEnums::BORDER_IN ){attractive = SnapEnums::ATTRACTIVE;}
+    if(road_relation==SnapEnums::OUT || road_relation==SnapEnums::BORDER_OUT ){attractive = SnapEnums::REPULSIVE;}
+    if(road_relation==SnapEnums::BORDER){attractive = SnapEnums::ATTR_AND_REP;};
     //{IN=1 ,OUT=-1 ,BORDER=0, BORDER_IN = 10, BORDER_OUT= -10, UNDEF=-110 } ;
 
     //compute the rectangle from pts
@@ -141,7 +141,7 @@ double shared_area_cost(road_relation_enum road_relation, const double* pt1, con
     //     << " , " << write_WKT(object_snapping_surface,3) << endl;
 
     //possibilities
-    if(road_relation == UNDEF){return 0 ; } //nothing to do
+    if(road_relation == SnapEnums::UNDEF){return 0 ; } //nothing to do
 
 
     //road relation must be IN=1 ,OUT=-1 ,BORDER=0, BORDER_IN = 10, BORDER_OUT
@@ -155,23 +155,23 @@ double shared_area_cost(road_relation_enum road_relation, const double* pt1, con
     //we take some shortcuts to avoid computing intersection if it's not necessary
     if(distance_to_shell!=0){//the object is either fully inside or fully outside
         if(intersects==1){//the object is fully inside
-            if(road_relation==BORDER){
+            if(road_relation==SnapEnums::BORDER){
                 cost_surface = object_snapping_surface_area;
             }
-            if(attractive==ATTRACTIVE){
+            if(attractive==SnapEnums::ATTRACTIVE){
                 cost_surface = 0;
             }
-            if(attractive==REPULSIVE){
+            if(attractive==SnapEnums::REPULSIVE){
                 cost_surface = object_snapping_surface_area;
             }
         }else{//the object is fully outside
-            if(road_relation==BORDER){
+            if(road_relation==SnapEnums::BORDER){
                 cost_surface = object_snapping_surface_area;
             }
-            if(attractive==ATTRACTIVE){
+            if(attractive==SnapEnums::ATTRACTIVE){
                 cost_surface = object_snapping_surface_area;
             }
-            if(attractive==REPULSIVE){
+            if(attractive==SnapEnums::REPULSIVE){
                 cost_surface = 0;
             }
 
@@ -179,19 +179,19 @@ double shared_area_cost(road_relation_enum road_relation, const double* pt1, con
     }else{//the object intersects the border
         //we must compute the shared surface
 
-        if(road_relation==BORDER){//cost is 0 when object is centered on border
+        if(road_relation==SnapEnums::BORDER){//cost is 0 when object is centered on border
             cost_surface = std::abs(object_snapping_surface_area-2*shared_area);
         }
-        if(attractive==ATTRACTIVE){//Cost is high when object is outside
+        if(attractive==SnapEnums::ATTRACTIVE){//Cost is high when object is outside
             cost_surface = object_snapping_surface_area-shared_area;
         }
-        if(attractive==REPULSIVE){//cost is high when object is inside
+        if(attractive==SnapEnums::REPULSIVE){//cost is high when object is inside
             cost_surface = shared_area;
         }
 
     }
 
-    if(road_relation == BORDER || road_relation == BORDER_IN || road_relation == BORDER_OUT){
+    if(road_relation == SnapEnums::BORDER || road_relation == SnapEnums::BORDER_IN || road_relation == SnapEnums::BORDER_OUT){
         //we add a term to cost that is proprortionnal to the distance to border
 
         if(distance_to_shell==0){
@@ -215,40 +215,6 @@ double shared_area_cost(road_relation_enum road_relation, const double* pt1, con
 
 }
 
-
-
-double test_geos(){
-
-
-    std::string rec = "POLYGON((0 0.5, 5 0.5, 5 -0.5, 0 -0.5, 0 0.5))";
-    std::string obj  = "POLYGON((1 3, 3 3, 3 4, 1 4, 1 3))";
-
-
-    cout << "input string: " << rec << " ,  " << obj << endl ;
-    geom rectangle;
-    geom object ;
-
-    GEOSWKTReader GEOS_DLL* reader ;
-    reader = GEOSWKTReader_create();
-    rectangle = GEOSWKTReader_read(reader, rec.c_str());
-    object = GEOSWKTReader_read(reader, obj.c_str());
-    GEOSWKTReader_destroy(reader);
-
-    rectangle = read_WKT(rec);
-    object = read_WKT(obj);
-
-    cout << "having read the geoms " << endl ;
-    cout << "rectangle :" <<  write_WKT(rectangle,2) <<endl ;
-    cout << "object :" <<  write_WKT(object,2) <<endl ;
-
-    double distance = 20 ;
-    GEOSDistance( rectangle , object, &distance);
-
-    cout << "distance : " << distance << endl ;
-
-
-    return 0 ;
-}
 
 void initialize_geom_computation(){
     GEOSMessageHandler notice_function;

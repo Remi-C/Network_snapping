@@ -33,6 +33,7 @@
 #include "utils_function.h"             //for easier vect operation @TODO : we should work on templated eighen like in libmv_homography.cc
 #include "WritingTempResultCallback.h"  //functor to write temp result in file at each iteration.
 #include "geometry_function.h"
+#include "enum_functions.h"
 
 using ceres::NumericDiffCostFunction;
 using ceres::CENTRAL;

@@ -44,11 +44,7 @@ void axis_to_rectangle(const double* pt1,const double* pt2, double axis_width, g
     If this shared area is 0, it returns the distance between object_surface and rectangle.
     Else, it returns the shared area
   */
-double shared_area_cost( road_relation_enum road_relation , const double* pt1, const double* pt2, double axis_width, geom object_snapping_surface, double object_snapping_surface_area);
-
-
-
-double test_geos();
+double shared_area_cost( SnapEnums::road_relation_enum road_relation , const double* pt1, const double* pt2, double axis_width, geom object_snapping_surface, double object_snapping_surface_area);
 
 void initialize_geom_computation();
 void finish_geom_computation() ;
