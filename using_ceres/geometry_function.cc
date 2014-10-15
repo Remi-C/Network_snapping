@@ -11,29 +11,29 @@ geometry_function::geometry_function()
 
 
 geom read_WKT(std::string s ){
-//    cout << "reading wkt \n" ;
+    //    cout << "reading wkt \n" ;
 
-//    GEOSMessageHandler notice_function;
-//    GEOSMessageHandler error_function;
-//    initGEOS(notice_function,error_function);
+    //    GEOSMessageHandler notice_function;
+    //    GEOSMessageHandler error_function;
+    //    initGEOS(notice_function,error_function);
     GEOSWKTReader GEOS_DLL* reader ;
     reader = GEOSWKTReader_create();
     geom readed_geom;
     readed_geom = GEOSWKTReader_read(reader, s.c_str());
 
     GEOSWKTReader_destroy(reader);
-//    finishGEOS();
+    //    finishGEOS();
 
-//    printf("end of reading wkt \n");
+    //    printf("end of reading wkt \n");
     return readed_geom;
 }
 
 /// write a geom into wkt
 char *write_WKT(geom input_geom, int dim){
 
-//    GEOSMessageHandler notice_function;
-//    GEOSMessageHandler error_function;
-//    initGEOS(notice_function,error_function);
+    //    GEOSMessageHandler notice_function;
+    //    GEOSMessageHandler error_function;
+    //    initGEOS(notice_function,error_function);
 
 
     GEOSWKTWriter GEOS_DLL * writer ;
@@ -47,7 +47,7 @@ char *write_WKT(geom input_geom, int dim){
     wkt_geom = GEOSWKTWriter_write(writer, input_geom) ;
 
     GEOSWKTWriter_destroy( writer);
-//    finishGEOS();
+    //    finishGEOS();
 
     return wkt_geom;
 }
@@ -62,9 +62,9 @@ void EigenToCoordinate_Seq(Eigen::Vector3d tmp_point, GEOSCoordSequence GEOS_DLL
 geom axis_to_rectangle(const double * pt1, const double * pt2, double axis_width){
 
     //cout << "computing the rectangle" << endl;
-//    GEOSMessageHandler notice_function;
-//    GEOSMessageHandler error_function;
-//    initGEOS(notice_function,error_function);
+    //    GEOSMessageHandler notice_function;
+    //    GEOSMessageHandler error_function;
+    //    initGEOS(notice_function,error_function);
 
 
     ConstVectorRef Ni( pt1 ,3 );
@@ -107,93 +107,113 @@ geom axis_to_rectangle(const double * pt1, const double * pt2, double axis_width
 
 
 
-double shared_area_cost(attractive_repulsive attractive, const double* pt1, const double* pt2, double axis_width, geom object_snapping_surface, double object_snapping_surface_area  ){
+double shared_area_cost(road_relation_enum road_relation, const double* pt1, const double* pt2, double axis_width, geom object_snapping_surface, double object_snapping_surface_area  ){
     /**
-      @param attractive : 1 if the object is attractive, 0 if the object is repulsive
+      @param road_relation : what is the behaviour of the object toward road surface
       @param pt1 : first node
+      @param pt2 : second node
       @param axis_to_rectangle(const double * pt1, const double * pt2, double axis_width){ pt2 : second node
       @param axis_width : width of the segment [pt1,pt2]
       @param object_snapping_surface : the surface of the object dilated by distance to border
       @param object_snapping_surface_area : area in square meter of the object_surface dilated
-
-      compute a polygon from pt1,pt2,axis_width aka rectangle
-      if rectangle and obj_surface don't intersect, cost = area(obj_surface)(1+dist(obj_surface, rectangle))
-      if rectangle and obj_surface intersect, cost = shared surface
     */
-//    GEOSMessageHandler notice_function;
-//    GEOSMessageHandler error_function;
-//    initGEOS(notice_function,error_function);
+    //    GEOSMessageHandler notice_function;
+    //    GEOSMessageHandler error_function;
+    //    initGEOS(notice_function,error_function);
 
     geom street_rectangle;
     int intersects ; // 1 = true
     double distance_to_shell =  100 ;
+    attractive_repulsive attractive ;
+    if(road_relation==IN || road_relation==BORDER_IN ){attractive = ATTRACTIVE;}
+    if(road_relation==OUT || road_relation==BORDER_OUT ){attractive = REPULSIVE;}
+    if(road_relation==BORDER){attractive = ATTR_AND_REP;};
+    //{IN=1 ,OUT=-1 ,BORDER=0, BORDER_IN = 10, BORDER_OUT= -10, UNDEF=-110 } ;
 
     //compute the rectangle from pts
     street_rectangle = axis_to_rectangle(pt1,pt2, axis_width) ;
-    double cost  = 0 ;
+    double cost_surface  = 0 ;
+    double cost_distance = 0;
     double shared_area = 0 ;
 
-    GEOSSetSRID(street_rectangle, 0);
-    GEOSSetSRID(object_snapping_surface, 0);
 
-    cout << "working on geom : rectangle, obj : " << write_WKT(street_rectangle,3)
-         << " , " << write_WKT(object_snapping_surface,3) << endl;
-    cout << "validity : " << int(GEOSisValid(street_rectangle))
-         << " " << int(GEOSisValid(object_snapping_surface)) << endl ;
+    //cout << "working on geom : rectangle, obj : " << write_WKT(street_rectangle,3)
+    //     << " , " << write_WKT(object_snapping_surface,3) << endl;
 
-    //check if rectangle and other geom intersects
+    //possibilities
+    if(road_relation == UNDEF){return 0 ; } //nothing to do
+
+
+    //road relation must be IN=1 ,OUT=-1 ,BORDER=0, BORDER_IN = 10, BORDER_OUT
+
     intersects = GEOSIntersects(street_rectangle , object_snapping_surface) ;
-    cout <<"intersects : " << intersects <<endl ;
-    //check distance to rectangle shell :
+    GEOSArea(GEOSIntersection(street_rectangle, object_snapping_surface)
+             , &shared_area) ;
     GEOSDistance( GEOSGetExteriorRing(street_rectangle) , object_snapping_surface, &distance_to_shell);
-    cout <<"distance_to_shell : " << distance_to_shell <<endl ;
 
-
-
-        if(distance_to_shell== 0 ){
-            //the object surface is halw inside, half outside of the road surface
-            //the cost is shared surface or tot_surf - shared surf, depending on attractiv or repulsiv
-
-            GEOSArea(GEOSIntersection(street_rectangle, object_snapping_surface)
-                     , &shared_area) ;
-            cout << "\t on the border" << endl;
+    //putting a cost based on shared area.
+    //we take some shortcuts to avoid computing intersection if it's not necessary
+    if(distance_to_shell!=0){//the object is either fully inside or fully outside
+        if(intersects==1){//the object is fully inside
+            if(road_relation==BORDER){
+                cost_surface = object_snapping_surface_area;
+            }
             if(attractive==ATTRACTIVE){
-                //cost is high when shared surface is low
-                cost = object_snapping_surface_area - shared_area;
-                cout << "\t \t attractive : tot-shared" << endl;
-            }else{//cost is high when surface shared is high
-                cost = shared_area;
-                cout << "\t \t repulsive : shared" << endl;
+                cost_surface = 0;
+            }
+            if(attractive==REPULSIVE){
+                cost_surface = object_snapping_surface_area;
+            }
+        }else{//the object is fully outside
+            if(road_relation==BORDER){
+                cost_surface = object_snapping_surface_area;
+            }
+            if(attractive==ATTRACTIVE){
+                cost_surface = object_snapping_surface_area;
+            }
+            if(attractive==REPULSIVE){
+                cost_surface = 0;
             }
 
-        }else{ // the object is either totally inside or totally outside
-            cout << "\t strictly inside or outside" << endl;
-            if(attractive==ATTRACTIVE){//attractive case : we want the surface to be inside the rectangle
-                if(intersects==1){//the obj is inside the rectangle, perfect
-                    cout << "\t \t attractive, inside, good" << endl;
-                    cost = 0;
-                }else{//the object is outside the rectangle, cost is high
-                    cout << "\t \t attractive, outside, bad" << endl;
-                    cost = (1+distance_to_shell) * object_snapping_surface_area;
-                }
-            }else{//repulsive case
-                if(intersects==1){//the obj is inside the rectangle, cost is high
-                    cout << "\t \t repuslive, inside, bad" << endl;
-                    cost = (1+distance_to_shell) * object_snapping_surface_area;
-                }else{//the obj is outside the rectangle , perfect
-                    cout << "\t \t repuslive, outside, good" << endl;
-                    cost = 0 ;
-                }
-            }
         }
-        cout << "\t \t  cost : " << cost <<endl ;
+    }else{//the object intersects the border
+        //we must compute the shared surface
 
-//    finishGEOS();
-    return cost ;
+        if(road_relation==BORDER){//cost is 0 when object is centered on border
+            cost_surface = std::abs(object_snapping_surface_area-2*shared_area);
+        }
+        if(attractive==ATTRACTIVE){//Cost is high when object is outside
+            cost_surface = object_snapping_surface_area-shared_area;
+        }
+        if(attractive==REPULSIVE){//cost is high when object is inside
+            cost_surface = shared_area;
+        }
+
+    }
+
+    if(road_relation == BORDER || road_relation == BORDER_IN || road_relation == BORDER_OUT){
+        //we add a term to cost that is proprortionnal to the distance to border
+
+        if(distance_to_shell==0){
+            //the distance to border is null, no modification of the cost
+        }else{//the object is either fully inside or fully outside
+            //the cost is proportionnal to its distance to border
+            cost_distance = (distance_to_shell) * object_snapping_surface_area ;
+        }
+    }
+
+    cout << "\t  total_cost : " << cost_surface + cost_distance <<endl;
+    cout << "\t  cost_surface : " << cost_surface
+         <<" , cost_distance : " << cost_distance <<endl ;
+    cout << "\t \t road_relation type :" << road_relation  <<endl ;
+    cout << "\t \t attractivity ; " <<  attractive <<endl;
+    cout << "\t \t distance_to_shell : " << distance_to_shell
+         << " , intersects? "<< intersects <<endl ;
+
+    //    finishGEOS();
+    return cost_surface+cost_distance ;
 
 }
-
-
 
 
 

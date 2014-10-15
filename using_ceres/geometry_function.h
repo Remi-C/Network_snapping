@@ -9,13 +9,14 @@
 #include <sstream>
 #include <iomanip>
 #include <cstdlib>
+#include <cmath>
 
 #include "time_measurement.h"
 #include "Constraints.h"
 
 
 
-enum attractive_repulsive{ATTRACTIVE=1 ,REPULSIVE=-1 } ;
+
 //enum In_Out_Border{ATTRACTIVE=1 ,REPULSIVE=-1 } ;
 
 /// type to abstract geos lib for the rest of the application
@@ -43,7 +44,9 @@ void axis_to_rectangle(const double* pt1,const double* pt2, double axis_width, g
     If this shared area is 0, it returns the distance between object_surface and rectangle.
     Else, it returns the shared area
   */
-double shared_area_cost( attractive_repulsive attractive, const double* pt1, const double* pt2, double axis_width, geom object_snapping_surface, double object_snapping_surface_area);
+double shared_area_cost( road_relation_enum road_relation , const double* pt1, const double* pt2, double axis_width, geom object_snapping_surface, double object_snapping_surface_area);
+
+
 
 double test_geos();
 
