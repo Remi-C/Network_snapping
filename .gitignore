@@ -21,8 +21,7 @@
 
 #CMAKE files :
 *.cmake
-*.make
-CMake*
+*.make 
 
 #make file
 MakeFile
