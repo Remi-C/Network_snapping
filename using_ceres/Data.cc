@@ -72,7 +72,7 @@ bool TEST_observationToString() {
 
 void DataStorage::readClassifications(){
     //opening files //cout << "here is the file path read in parameters.txt : "  << g_param->class_definition_path <<endl;
-    FILE* i_fptr = fopen( g_param->class_definition_path.c_str() , "r"); /// @debug @temp warning, shoudl read this in parameter
+    FILE* i_fptr = fopen( g_param->class_definition_path.c_str() , "r");
     char line[1000];//input line buffer
 
     if (i_fptr == NULL) {
@@ -127,23 +127,23 @@ void DataStorage::readClassifications(){
             //cout << "filling classification  " << class_number <<endl;
             //filling the classification :
             classifications_[class_number].setClassification(
-                                class_id
-                               ,string(class_name)
-                               ,string(geom_type)
-                               ,string(road_surface_relation)
-                               ,precision
-                               ,importance
-                               ,dist_to_border
-                               );
-//             cout <<class_id << endl
-//                << "\t"<<  string(class_name) << endl
-//                << "\t"<< string(geom_type) << " " <<   endl
-//                  << "\t"<< string(road_surface_relation)  <<endl
-//                << "\t"<< precision << endl
-//                 << "\t"<< importance <<endl
-//                << "\t"<< dist_to_border <<endl ;
+                        class_id
+                        ,string(class_name)
+                        ,string(geom_type)
+                        ,string(road_surface_relation)
+                        ,precision
+                        ,importance
+                        ,dist_to_border
+                        );
+            //             cout <<class_id << endl
+            //                << "\t"<<  string(class_name) << endl
+            //                << "\t"<< string(geom_type) << " " <<   endl
+            //                  << "\t"<< string(road_surface_relation)  <<endl
+            //                << "\t"<< precision << endl
+            //                 << "\t"<< importance <<endl
+            //                << "\t"<< dist_to_border <<endl ;
 
-//             cout << classifications_[class_number].classificationToString()<<endl ;
+            //             cout << classifications_[class_number].classificationToString()<<endl ;
             class_number++ ;
 
         }
@@ -155,7 +155,100 @@ void DataStorage::readClassifications(){
     return;
 }
 
+void DataStorage::readObjects(){
+    //opening files //cout << "here is the file path read in parameters.txt : "  << g_param->class_definition_path <<endl;
+    FILE* i_fptr = fopen( g_param->objects_path.c_str() , "r");
+    char line[1000];//input line buffer
 
+    if (i_fptr == NULL) {
+        std::cerr << "Error: unable to open file " << g_param->objects_path <<endl;
+        return;
+    }
+    //object_id;class_id;class_name;edge_id;geom;confidence;
+    int obj_number = 0;
+    int obj_id= 0;
+    int class_id = 0;
+    char class_name[1000] = "#########";
+    int edge_id = 0;
+    char geom_wkt[1000] ="#########";
+    double confidence = 0;
+
+    //char line[1000] = "1;75;car;1;POLYGON((0 0, 1 0, 1 1 , 0 1 , 0 0 ));0.89";
+
+    while (fgets(line, sizeof line, i_fptr) != NULL ) {
+
+        cout << "readed line: " << line ;
+        if (
+                sscanf( line , "%d;%d;%[^;];%d;%[^;];%lG"
+                        ,&obj_id
+                        ,&class_id
+                        ,class_name
+                        ,&edge_id
+                        ,geom_wkt
+                        ,&confidence
+                        )
+                != 6) {
+            //reading a comment line
+            std::cout << "reading comment line : " << line ;
+        } else {
+            obj_number++ ;
+            cout <<obj_id << endl
+                << "\t"<<  class_id << endl
+                << "\t"<< string(class_name) << " " <<   endl
+                << "\t"<< edge_id  <<endl
+                << "\t"<< geom_wkt << endl
+                << "\t"<< confidence <<endl ;
+        }
+    }
+    //allocating memory for a new classification
+    //classifications_ = new classification[class_number];  //! @TODO : do alligned memory allocation it's better
+
+    //    //new parsing
+    //    class_number = 0 ;
+    //    rewind(i_fptr);
+
+    //    while (!feof(i_fptr)) {
+    //        fgets(line, sizeof line, i_fptr);
+    //        if (
+    //                sscanf( line , "%d;%[^;];%[^;];%[^;];%lG;%lG;%lG"
+    //                        ,&class_id
+    //                        ,class_name ,geom_type ,road_surface_relation
+    //                        ,&precision ,&importance ,&dist_to_border
+    //                        )
+    //                != 7) {
+    //            //reading a comment line
+    //            //std::cout << "reading comment line : " << line ;
+    //        } else {
+    //            //cout << "filling classification  " << class_number <<endl;
+    //            //filling the classification :
+    //            classifications_[class_number].setClassification(
+    //                                class_id
+    //                               ,string(class_name)
+    //                               ,string(geom_type)
+    //                               ,string(road_surface_relation)
+    //                               ,precision
+    //                               ,importance
+    //                               ,dist_to_border
+    //                               );
+    ////             cout <<class_id << endl
+    ////                << "\t"<<  string(class_name) << endl
+    ////                << "\t"<< string(geom_type) << " " <<   endl
+    ////                  << "\t"<< string(road_surface_relation)  <<endl
+    ////                << "\t"<< precision << endl
+    ////                 << "\t"<< importance <<endl
+    ////                << "\t"<< dist_to_border <<endl ;
+
+    ////             cout << classifications_[class_number].classificationToString()<<endl ;
+    //            class_number++ ;
+
+    //        }
+    //    }
+
+    //write class_number into parameters
+    //this->num_classifications_ = class_number ;
+    fclose(i_fptr);
+    return;
+}
 
 void DataStorage::readData(){
     //opening files

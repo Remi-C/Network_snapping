@@ -113,7 +113,6 @@ struct observation{
     //int edge_id;          //! this edge should be snapped to this observation
     double confidence;    //! confidence between 0 and 1. 0-> very unlikely ; 1-> certain
     double weight;        //! statistical weight of this observation (observation are points extracted from lines, weight = length of the 2 lines/2)
-
     //! function to get an idea of what is in the observation
     string observationToString(){
         //#obs_id::int;X::double;Y::double;Z::double;confidence::double;weight::double
@@ -130,13 +129,6 @@ struct observation{
 };
 
 
-
-
-
-
-
-
-
 struct classification{
 
     unsigned char class_id;           //! unique id per class, positive, 8 bits long, contains kind of information on object type grouping
@@ -146,7 +138,6 @@ struct classification{
     double precision ;
     double importance ;
     double dist_to_border ;
-
     //! function to get an idea of what is in the observation
     string classificationToString(){
         //#obs_id::int;X::double;Y::double;Z::double;confidence::double;weight::double
@@ -154,11 +145,11 @@ struct classification{
         //nstring.precision(10);
         nstring << "class_id : " << int(class_id)  << std::endl
                 <<"\t class_name : " << class_name << std::endl
-                << "\t geom_type : " << geom_type<< ":"<<SnapEnums::gt_toString(geom_type) << std::endl
-                << "\t road_surface_relation :"<<road_surface_relation<< ":"<<SnapEnums::rre_toString(road_surface_relation) << std::endl
-                << "\t precision : " << precision << std::endl
-                << "\t importance : " << importance << std::endl
-                << "\t dist_to_border : " << dist_to_border <<std::endl;
+               << "\t geom_type : " << geom_type<< ":"<<SnapEnums::gt_toString(geom_type) << std::endl
+               << "\t road_surface_relation :"<<road_surface_relation<< ":"<<SnapEnums::rre_toString(road_surface_relation) << std::endl
+               << "\t precision : " << precision << std::endl
+               << "\t importance : " << importance << std::endl
+               << "\t dist_to_border : " << dist_to_border <<std::endl;
         return nstring.str() ;
     }
 
@@ -173,12 +164,12 @@ struct classification{
     }
 
     void setClassification(int class_id_
-                   ,std::string class_name_
-                   ,std::string geom_type_
-                   ,std::string road_surface_relation_
-                   ,double precision_
-                   ,double importance_
-                   ,double dist_to_border_ ){
+                           ,std::string class_name_
+                           ,std::string geom_type_
+                           ,std::string road_surface_relation_
+                           ,double precision_
+                           ,double importance_
+                           ,double dist_to_border_ ){
 
         this->class_id = int(class_id_);
         this->class_name = class_name_;
@@ -186,8 +177,67 @@ struct classification{
         this->road_surface_relation = SnapEnums::String_torre(road_surface_relation_);
         this->precision = abs(precision_) ;
         this->importance = abs(importance_) ;
-        this->dist_to_border = abs(dist_to_border_);
+        this->dist_to_border = std::abs(dist_to_border_);
     }
+};
+
+
+
+struct street_object{
+
+    unsigned char object_id;           //! unique id per object, positive, 8 bits long, contains kind of information on object type grouping
+    unsigned char class_id;
+    std::string class_name;          //! name of the class, in english
+    int edge_id ;
+    geometry geom;
+    geometry geom_border_surface;
+    double geom_border_area;
+    double confidence;
+
+
+    //! function to get an idea of what is in the observation
+    string street_objectsToString(){
+
+        std::ostringstream nstring;
+        //nstring.precision(10);
+        nstring << "object_id : " << int(object_id)  << std::endl
+                <<"\t class_id : " << int(class_id) << std::endl
+               <<"\t class_name : " << class_name << std::endl
+              << "\t edge_id : " << edge_id<< ":"<<  std::endl
+              << "\t geom :"<< write_WKT(geom,3) << std::endl
+              << "\t geom_border_surface :"<< write_WKT(geom_border_surface,3) << std::endl
+              << "\t geom_border_area :"<< geom_border_area << std::endl
+              << "\t confidence : " << confidence << std::endl;
+        return nstring.str() ;
+    }
+
+
+    void setStreet_Object(
+            unsigned char object_id_,
+            unsigned char class_id_,
+            std::string class_name_,
+            int edge_id_,
+            std::string geom_wkt,
+            double confidence_){
+
+        this->object_id = int(object_id_);
+        this->class_id = int(class_id_);
+        this->class_name =  class_name_ ;
+        this->edge_id =  int(edge_id_);
+        this->geom = read_WKT(geom_wkt) ;
+        this->geom_border_surface =
+                Geometry::BufferWithStyle(
+                    this->geom
+                    , 1 //width
+                    ,NULL //quadseg
+                    ,CAP_FLAT //endcapstyle
+                    ,JOIN_ROUND //joinStyle
+                    ,0 //mitreLimit
+                    );
+        this->geom_border_area = Geometry::area(this->geom_border_surface);
+        this->confidence =  confidence_ ;
+    }
+
 };
 
 
@@ -200,6 +250,7 @@ public:
     ~DataStorage();
     void readData();
     void readClassifications();
+    void readObjects();
     void writeData(int);
     void setMap();
 
@@ -208,6 +259,8 @@ public:
     int num_edges()             { return num_edges_;    }
     int num_observations()       { return num_observations_;  }
     int num_classifications()   {return num_classifications_; }
+    int num_street_objects() {return num_street_objects_;}
+
     const std::string output_file_path()     { return output_file_path_;  }
     node* nodes()                { return nodes_;}
     node* nodes(int i)           { return &nodes_[i];}
@@ -227,7 +280,7 @@ public:
     {return &edges_by_node_id_;}
     std::unordered_map <int /*class_id*/, classification *>*  classification_by_id()
     {return &classification_by_id_;}
-     classification *  cbi(int i){
+    classification *  cbi(int i){
         return classification_by_id_.at(i);
     }
 
@@ -242,11 +295,13 @@ private:
     int num_edges_; //! total num of edges we are going to read
     int num_observations_;//! total num of observations we are going to read
     int num_classifications_;//! total num of classifications we have read
+    int num_street_objects_;
 
     node* nodes_;//! an array of node
     edge* edges_;//! an array og edges
     observation* observations_;//! an array of observations
     classification* classifications_; //! an array of classification class.
+    street_object * street_objects_;
     
     const string input_file_path_;//! name of the file containing the input data
     const string output_file_path_;//! name of the file where to write results

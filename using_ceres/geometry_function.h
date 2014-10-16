@@ -20,20 +20,20 @@ typedef Eigen::Map<const Eigen::Vector3d> ConstVectorRef;
 #include "time_measurement.h"
 #include "enum_functions.h"
 //#include "Constraints.h"
-
+/// type to abstract geos lib for the rest of the application
+typedef GEOSGeometry GEOS_DLL* geometry;
 
 
 
 //enum In_Out_Border{ATTRACTIVE=1 ,REPULSIVE=-1 } ;
 
-/// type to abstract geos lib for the rest of the application
-typedef GEOSGeometry GEOS_DLL* geom;
+
 
 /// read a string containing wkt geom. Returns a geom
-geom read_WKT(std::string );
+geometry read_WKT(std::string );
 
 /// write a geom into wkt . Don't forget to free the return after !
-char *write_WKT(geom, int dim);
+char *write_WKT(geometry, int dim);
 
 /// free memory of char buffer allocated by writting
 //void free_writter_buffer(void *buffer){
@@ -43,7 +43,7 @@ char *write_WKT(geom, int dim);
 /** function that compute a rectangle given 2 points and a width.
     The 2 points are a segment, the rectangle is obtained by dilating segment by width
 */
-void axis_to_rectangle(const double* pt1,const double* pt2, double axis_width, geom rectangle);
+void axis_to_rectangle(const double* pt1,const double* pt2, double axis_width, geometry rectangle);
 
 /** Main function to compute cost that is shared area if overlaps, area*(1+dist) if no overlaps
   this geometric function takes a segment (2 points), this segment width? It computes a rectangle
@@ -51,17 +51,31 @@ void axis_to_rectangle(const double* pt1,const double* pt2, double axis_width, g
     If this shared area is 0, it returns the distance between object_surface and rectangle.
     Else, it returns the shared area
   */
-double shared_area_cost( SnapEnums::road_relation_enum road_relation , const double* pt1, const double* pt2, double axis_width, geom object_snapping_surface, double object_snapping_surface_area);
+double shared_area_cost( SnapEnums::road_relation_enum road_relation , const double* pt1, const double* pt2, double axis_width, geometry object_snapping_surface, double object_snapping_surface_area);
 
 void initialize_geom_computation();
 void finish_geom_computation() ;
 
 
-class geometry_function
+class Geometry
 {
 public:
-    geometry_function();
+    Geometry();
     //bool read_WKT(string);
+
+    static geometry BufferWithStyle(const geometry g,
+                                    double width, int quadsegs, int endCapStyle, int joinStyle,
+                                    double mitreLimit){
+        return   GEOSBufferWithStyle( g,
+                                      width, quadsegs, endCapStyle,  joinStyle,
+                                     mitreLimit);
+    }
+    static double area(const geometry g){
+        double a;
+         GEOSArea(g, &a) ;
+        return a;
+    }
+
 };
 
 

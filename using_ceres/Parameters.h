@@ -25,6 +25,7 @@ struct Parameter{
         output_file_path ="";// "../data/data_in_reduced_export_area/snapping_output.csv" ;
         class_definition_path = "";
         parameters_file_path = "./parameters.txt";
+        objects_path = "";
         K_origin =0;// 100;
         K_obs= 0; //1 ;
         K_spacing= 0 ;// 1 ;
@@ -49,6 +50,7 @@ struct Parameter{
     std::string output_file_path;
     std::string class_definition_path;
     std::string parameters_file_path;
+    std::string objects_path;
 
     double K_origin ; //! this parameter scale the distance to origin for a node
     double K_obs ; //! this parameter scale the measure of distance between observation and line (n_i,n_j)

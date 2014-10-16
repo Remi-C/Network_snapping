@@ -5,12 +5,12 @@ using std::endl ;
 using std::cout ;
 using std::string;
 
-geometry_function::geometry_function()
+Geometry::Geometry()
 {
 }
 
 
-geom read_WKT(std::string s ){
+geometry read_WKT(std::string s ){
     //    cout << "reading wkt \n" ;
 
     //    GEOSMessageHandler notice_function;
@@ -18,7 +18,7 @@ geom read_WKT(std::string s ){
     //    initGEOS(notice_function,error_function);
     GEOSWKTReader GEOS_DLL* reader ;
     reader = GEOSWKTReader_create();
-    geom readed_geom;
+    geometry readed_geom;
     readed_geom = GEOSWKTReader_read(reader, s.c_str());
 
     GEOSWKTReader_destroy(reader);
@@ -29,7 +29,7 @@ geom read_WKT(std::string s ){
 }
 
 /// write a geom into wkt
-char *write_WKT(geom input_geom, int dim){
+char *write_WKT(geometry input_geom, int dim){
 
     //    GEOSMessageHandler notice_function;
     //    GEOSMessageHandler error_function;
@@ -59,7 +59,7 @@ void EigenToCoordinate_Seq(Eigen::Vector3d tmp_point, GEOSCoordSequence GEOS_DLL
 }
 
 
-geom axis_to_rectangle(const double * pt1, const double * pt2, double axis_width){
+geometry axis_to_rectangle(const double * pt1, const double * pt2, double axis_width){
 
     //cout << "computing the rectangle" << endl;
     //    GEOSMessageHandler notice_function;
@@ -71,7 +71,7 @@ geom axis_to_rectangle(const double * pt1, const double * pt2, double axis_width
     ConstVectorRef Nj( pt2 ,3 );
     GEOSCoordSequence GEOS_DLL * rectangle_points;
     Eigen::Vector3d tmp_point;
-    geom rectangle;
+    geometry rectangle;
 
     Eigen::Vector3d u = (Ni-Nj).normalized(); //director vector of segment, normalized
     Eigen::Vector3d normal = u.cross(Eigen::Vector3d::UnitZ()); //normal of segment
@@ -107,7 +107,7 @@ geom axis_to_rectangle(const double * pt1, const double * pt2, double axis_width
 
 
 
-double shared_area_cost(SnapEnums::road_relation_enum road_relation, const double* pt1, const double* pt2, double axis_width, geom object_snapping_surface, double object_snapping_surface_area  ){
+double shared_area_cost(SnapEnums::road_relation_enum road_relation, const double* pt1, const double* pt2, double axis_width, geometry object_snapping_surface, double object_snapping_surface_area  ){
     /**
       @param road_relation : what is the behaviour of the object toward road surface
       @param pt1 : first node
@@ -121,7 +121,7 @@ double shared_area_cost(SnapEnums::road_relation_enum road_relation, const doubl
     //    GEOSMessageHandler error_function;
     //    initGEOS(notice_function,error_function);
 
-    geom street_rectangle;
+    geometry street_rectangle;
     int intersects ; // 1 = true
     double distance_to_shell =  100 ;
     SnapEnums::attractive_repulsive attractive ;

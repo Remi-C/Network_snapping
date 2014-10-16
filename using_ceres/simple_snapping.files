@@ -2,8 +2,6 @@ CMakeLists.txt
 simple_snapping.cc
 history.utils.cc
 utils_function.h
-iteration_callback.cc
-main.cpp
 WritingTempResultCallback.h
 Constraints.h
 Data.h
@@ -15,3 +13,5 @@ parameters.txt
 geometry_function.h
 geometry_function.cc
 time_measurement.h
+enum_functions.h
+enum_functions.cc
