@@ -24,7 +24,6 @@ typedef Eigen::Map<Eigen::Vector3d> VectorRef;
 typedef Eigen::Map<const Eigen::Vector3d> ConstVectorRef;
 
 #include "Parameters.h"
-#include "Data.h"
 #include "utils_function.h"
 
 using std::cout;

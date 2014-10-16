@@ -12,6 +12,7 @@
   */
 
 #include <string>
+#include <cstdlib>
 
 #include "ceres/ceres.h"
 

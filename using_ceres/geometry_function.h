@@ -11,8 +11,15 @@
 #include <cstdlib>
 #include <cmath>
 
+
+#include "eigen3/Eigen/Eigen"
+typedef Eigen::Map<Eigen::Vector3d> VectorRef;
+typedef Eigen::Map<const Eigen::Vector3d> ConstVectorRef;
+
+
 #include "time_measurement.h"
-#include "Constraints.h"
+#include "enum_functions.h"
+//#include "Constraints.h"
 
 
 

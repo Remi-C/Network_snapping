@@ -40,8 +40,10 @@
 #include <unordered_map> //the hash_table
 #include <math.h> //for
 
-
+#include "Parameters.h"
 #include "enum_functions.h"
+#include "geometry_function.h"
+
 using std::string;
 using std::basic_string;
 //using SnapEnums;

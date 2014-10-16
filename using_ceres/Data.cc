@@ -10,7 +10,6 @@
 
 
 #include "Data.h"
-#include "Parameters.h"
 using std::endl;
 using std::cout;
 extern Parameter* g_param;
