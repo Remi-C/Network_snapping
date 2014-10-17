@@ -24,7 +24,7 @@ struct Parameter{
         input_file_path ="";// "../data/data_in_reduced_export_area/reduced_area.csv";
         output_file_path ="";// "../data/data_in_reduced_export_area/snapping_output.csv" ;
         class_definition_path = "";
-        parameters_file_path = "./parameters.txt";
+        parameters_file_path = "../parameters.txt";
         objects_path = "";
         K_origin =0;// 100;
         K_obs= 0; //1 ;
