@@ -54,7 +54,7 @@ DataStorage * g_data_pointer ;
 Parameter * g_param;
 
 int main(int argc, char** argv) {
-
+    initialize_geom_computation();
 
     //creating the set of parameters (could be read from file)
     std::cout << "  \E[34;1mReading parameters\E[m \n" ;
@@ -75,14 +75,16 @@ int main(int argc, char** argv) {
     std::cout << "  \E[34;1m \t Reading network\E[m \n" ;
     data->readData();
 
+    //setting the mapping beetween node_id and node*
+    std::cout << "mapping between id of objects and objects" <<"\n";
+    data->setMap();
+
     //reading the objects for snapping
     std::cout << "  \E[34;1m \t Reading Objects\E[m \n" ;
     data->readObjects();
     return 1; /// @todo @temp
 
-    //setting the mapping beetween node_id and node*
-    std::cout << "mapping between id of objects and objects" <<"\n";
-    data->setMap();
+
 
     //    //testing geometric computing
     //    initialize_geom_computation();
@@ -181,6 +183,8 @@ int main(int argc, char** argv) {
     // std::cout << summary.BriefReport() << "\n";
     std::cout << summary.FullReport() << "\n";
     std::cout << summary.IsSolutionUsable() << "\n";
+
+    finish_geom_computation();
 
     return 0;
 }

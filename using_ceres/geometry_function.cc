@@ -18,7 +18,7 @@ geometry read_WKT(std::string s ){
     //    initGEOS(notice_function,error_function);
     GEOSWKTReader GEOS_DLL* reader ;
     reader = GEOSWKTReader_create();
-    geometry readed_geom;
+    geometry readed_geom ;
     readed_geom = GEOSWKTReader_read(reader, s.c_str());
 
     GEOSWKTReader_destroy(reader);

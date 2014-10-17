@@ -218,18 +218,24 @@ struct street_object{
             std::string class_name_,
             int edge_id_,
             std::string geom_wkt,
+            double radius,
             double confidence_){
 
         this->object_id = int(object_id_);
         this->class_id = int(class_id_);
-        this->class_name =  class_name_ ;
+        this->class_name =  string(class_name_) ;
+
+        //finding the classification associated with this object
+
+
+
         this->edge_id =  int(edge_id_);
         this->geom = read_WKT(geom_wkt) ;
         this->geom_border_surface =
                 Geometry::BufferWithStyle(
                     this->geom
-                    , 1 //width
-                    ,NULL //quadseg
+                     ,radius//width
+                    ,0 //quadseg
                     ,CAP_FLAT //endcapstyle
                     ,JOIN_ROUND //joinStyle
                     ,0 //mitreLimit

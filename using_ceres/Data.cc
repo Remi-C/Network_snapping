@@ -177,7 +177,29 @@ void DataStorage::readObjects(){
 
     while (fgets(line, sizeof line, i_fptr) != NULL ) {
 
-        cout << "readed line: " << line ;
+        //cout << "readed line: " << line ;
+        if (
+                sscanf( line , "%d;%d;%[^;];%d;%[^;];%lG"
+                        ,&obj_id
+                        ,&class_id
+                        ,class_name
+                        ,&edge_id
+                        ,geom_wkt
+                        ,&confidence
+                        )
+                != 6) { //reading a comment line
+            //std::cout << "reading comment line : " << line ;
+        } else {
+            obj_number++ ;
+        }
+    }
+    //allocating memory for a new classification
+    street_objects_ = new street_object[obj_number];  //! @TODO : do alligned memory allocation it's better
+    obj_number = 0 ;
+    rewind(i_fptr);
+    while (fgets(line, sizeof line, i_fptr) != NULL ) {
+
+//        cout << "readed line: " << line ;
         if (
                 sscanf( line , "%d;%d;%[^;];%d;%[^;];%lG"
                         ,&obj_id
@@ -189,63 +211,36 @@ void DataStorage::readObjects(){
                         )
                 != 6) {
             //reading a comment line
-            std::cout << "reading comment line : " << line ;
+            //std::cout << "reading comment line : " << line ;
         } else {
+
+//            cout <<obj_id << endl
+//                << "\t"<<  class_id << endl
+//                << "\t"<< string(class_name) << " " <<   endl
+//                << "\t"<< edge_id  <<endl
+//                << "\t"<< geom_wkt << endl
+//                << "\t"<< confidence <<endl ;
+
+            classification * object_classification = this->cbn(class_name);
+
+            //cout << "width :" << object_classification->dist_to_border <<endl ;
+            street_objects_[obj_number].setStreet_Object(
+                        obj_id
+                        ,class_id
+                        ,class_name
+                        ,edge_id
+                        ,geom_wkt
+                        , object_classification->dist_to_border
+                        ,confidence
+                        );
+
             obj_number++ ;
-            cout <<obj_id << endl
-                << "\t"<<  class_id << endl
-                << "\t"<< string(class_name) << " " <<   endl
-                << "\t"<< edge_id  <<endl
-                << "\t"<< geom_wkt << endl
-                << "\t"<< confidence <<endl ;
         }
     }
-    //allocating memory for a new classification
-    //classifications_ = new classification[class_number];  //! @TODO : do alligned memory allocation it's better
 
-    //    //new parsing
-    //    class_number = 0 ;
-    //    rewind(i_fptr);
-
-    //    while (!feof(i_fptr)) {
-    //        fgets(line, sizeof line, i_fptr);
-    //        if (
-    //                sscanf( line , "%d;%[^;];%[^;];%[^;];%lG;%lG;%lG"
-    //                        ,&class_id
-    //                        ,class_name ,geom_type ,road_surface_relation
-    //                        ,&precision ,&importance ,&dist_to_border
-    //                        )
-    //                != 7) {
-    //            //reading a comment line
-    //            //std::cout << "reading comment line : " << line ;
-    //        } else {
-    //            //cout << "filling classification  " << class_number <<endl;
-    //            //filling the classification :
-    //            classifications_[class_number].setClassification(
-    //                                class_id
-    //                               ,string(class_name)
-    //                               ,string(geom_type)
-    //                               ,string(road_surface_relation)
-    //                               ,precision
-    //                               ,importance
-    //                               ,dist_to_border
-    //                               );
-    ////             cout <<class_id << endl
-    ////                << "\t"<<  string(class_name) << endl
-    ////                << "\t"<< string(geom_type) << " " <<   endl
-    ////                  << "\t"<< string(road_surface_relation)  <<endl
-    ////                << "\t"<< precision << endl
-    ////                 << "\t"<< importance <<endl
-    ////                << "\t"<< dist_to_border <<endl ;
-
-    ////             cout << classifications_[class_number].classificationToString()<<endl ;
-    //            class_number++ ;
-
-    //        }
-    //    }
 
     //write class_number into parameters
-    //this->num_classifications_ = class_number ;
+    this->num_street_objects_= obj_number ;
     fclose(i_fptr);
     return;
 }
@@ -435,23 +430,4 @@ void DataStorage::setMap(){
 
     return;
 }
-
-
-
-//! testing data IO
-
-//int main(int argc, char** argv) {
-//const string output_file_path("/media/sf_E_RemiCura/PROJETS/snapping/visu/visu_inqgis_timemanager/simple_test.csv") ;
-//const string input_file_path("/media/sf_E_RemiCura/PROJETS/snapping/using_ceres/data/simple_example.csv") ;
-
-//	//getting the data ;
-//    DataStorage * data = new DataStorage(input_file_path,output_file_path) ;
-//    std::cout << "  \E[34;1mReading data\E[m \n" ;
-//	data->readData();
-//    std::cout << "  \E[34;1mWriting data\E[m \n" ;
-//	data->writeData(1);
-//  return 0;
-//}
-
-
 
