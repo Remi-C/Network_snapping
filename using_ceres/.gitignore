@@ -1,3 +1,6 @@
 /win_build/
 /CMakeFiles/
-/CMakeCache.txt
+CMakeCache.txt
+/build/
+/debug/
+/release/
