@@ -190,6 +190,7 @@ struct street_object{
     std::string class_name;          //! name of the class, in english
     int edge_id ;
     geometry geom;
+    geometry geom_centroid;
     geometry geom_border_surface;
     double geom_border_area;
     double confidence;
@@ -205,6 +206,7 @@ struct street_object{
                <<"\t class_name : " << class_name << std::endl
               << "\t edge_id : " << edge_id<< ":"<<  std::endl
               << "\t geom :"<< write_WKT(geom,3) << std::endl
+              << "\t geom_centroid :"<< write_WKT(geom_centroid,3) << std::endl
               << "\t geom_border_surface :"<< write_WKT(geom_border_surface,3) << std::endl
               << "\t geom_border_area :"<< geom_border_area << std::endl
               << "\t confidence : " << confidence << std::endl;
@@ -231,6 +233,7 @@ struct street_object{
 
         this->edge_id =  int(edge_id_);
         this->geom = read_WKT(geom_wkt) ;
+        this->geom_centroid = Geometry::centroid(this->geom) ;
         this->geom_border_surface =
                 Geometry::BufferWithStyle(
                     this->geom

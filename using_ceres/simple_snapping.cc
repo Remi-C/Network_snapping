@@ -56,6 +56,21 @@ Parameter * g_param;
 int main(int argc, char** argv) {
     initialize_geom_computation();
 
+    //testing point2double
+    std::string a_ppoint_s = "POINT(1 2 3)";
+    geometry geom = read_WKT(a_ppoint_s);
+    double coord[]= {0,0,0};
+    int ndim =  Geometry::geomPoint2Double(geom,coord);
+    std::cout << "point 2 double, ndim : " << ndim
+              << "coordinates X : " << coord[0]
+              << "coordinates Y : " << coord[1]
+              << "coordinates Z : " << coord[2]
+              << std::endl;
+
+    std::cout << "centroid : " << write_WKT(Geometry::centroid(geom),3) << std::endl;
+
+    return 1;
+
     //creating the set of parameters (could be read from file)
     std::cout << "  \E[34;1mReading parameters\E[m \n" ;
     g_param = new Parameter();
@@ -82,42 +97,8 @@ int main(int argc, char** argv) {
     //reading the objects for snapping
     std::cout << "  \E[34;1m \t Reading Objects\E[m \n" ;
     data->readObjects();
+    std::cout << "object read" << std::endl ;
     return 1; /// @todo @temp
-
-
-
-    //    //testing geometric computing
-    //    initialize_geom_computation();
-
-    //    //string s = "LINESTRING(0 0 0 , 1 1 1, 2 2 2 )" ;
-    //    //string s = "POLYGON((1 3 50 , 3 3 50, 3 4 50, 1 4 50 ,1 3 50) )" ;
-    //    //string s = "POLYGON((1 3, 3 3, 3 4, 1 4,1 3) )" ;
-    //    //std::cout << write_WKT(read_WKT(s),3) <<std::endl;
-
-
-    //    //LINESTRING(19.7 -22.2 0,-20.3 42.9 0)
-    //    //
-    //    string s = "MULTIPOLYGON Z (((0.9 1.9 0,0.9 1.8 0,0.8 1.7 0,0.7 1.7 0,0.6 1.6 0,0.5 1.6 0,0.4 1.5 0,0.2 1.6 0,0.1 1.7 0,-0.1 1.8 0,-0.2 1.9 0,-0.3 2 0,-0.4 2.1 0,-0.5 2.2 0,-0.6 2.3 0,-0.7 2.5 0,-0.8 2.6 0,-1.2 2.8 0,-1.3 3.1 0,-1.3 3.3 0,-1.4 3.4 0,-1.1 3.9 0,-1.3 4.2 0,-1.9 4.1 0,-2 4.5 0,-2 4.6 0,-1.9 5 0,-2 5.2 0,-1.9 5.3 0,-1.8 5.4 0,-1.7 5.4 0,-1.6 5.5 0,-1.5 5.6 0,-1.4 5.6 0,-1.3 5.8 0,-1.1 6.2 0,-1 6.4 0,-0.9 6.4 0,-0.9 6.3 0,-0.9 6.2 0,-0.9 6 0,-0.9 5.9 0,-0.9 5.5 0,-0.8 5.5 0,-0.8 5.4 0,-0.8 5.3 0,-0.7 5.3 0,-0.7 5.2 0,-0.6 5.1 0,-0.5 5 0,-0.5 4.9 0,-0.4 4.8 0,-0.4 4.7 0,-0.3 4.7 0,-0.3 4.6 0,-0.2 4.5 0,-0.1 4.4 0,-0.1 4.3 0,0 4.3 0,0 4.2 0,0.1 4.1 0,0.1 4 0,0.2 4 0,0.2 3.9 0,0.3 3.8 0,0.5 3.7 0,0.6 3.4 0,0.6 3.3 0,0.7 3.3 0,0.7 3.2 0,0.7 3.1 0,0.8 3.1 0,0.8 3 0,0.9 2.9 0,1 2.8 0,1 2.7 0,1 2.6 0,1.1 2.5 0,1.1 2.4 0,1.1 2.3 0,1.1 2.2 0,1.1 2.1 0,1 2.1 0,1 2 0,0.9 1.9 0),(-0.4 3 0,-0.3 2.9 0,0.1 2.8 0,0.2 2.9 0,0.3 3.3 0,0.1 3.5 0,-0.4 3.4 0,-0.5 3.3 0,-0.4 3 0)))";
-
-    //    const double point1[3] = {19.7,-22.2,0};
-    //    const double point2[3] = {-20.3,42.9,0};
-    //    //std::cout << write_WKT(axis_to_rectangle(point1,point2,0.5),3) <<std::endl;
-
-
-    //   // test_geos();
-
-    //    double result =   shared_area_cost(
-    //                 OUT
-    //                , point1
-    //                , point2
-    //                , 3.65
-    //                , read_WKT(s)
-    //                , 6.06
-    //                );
-    //    std::cout <<"result : " <<result << std::endl;
-    //    finish_geom_computation();
-    //    return 1; /// @temp @debug
-
 
     //creating the problem to be solved
     Problem problem;

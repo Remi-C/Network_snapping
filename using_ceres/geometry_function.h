@@ -68,12 +68,32 @@ public:
                                     double mitreLimit){
         return   GEOSBufferWithStyle( g,
                                       width, quadsegs, endCapStyle,  joinStyle,
-                                     mitreLimit);
+                                      mitreLimit);
     }
     static double area(const geometry g){
         double a;
-         GEOSArea(g, &a) ;
+        GEOSArea(g, &a) ;
         return a;
+    }
+
+    static geometry centroid(geometry g){
+        return GEOSGetCentroid(g);
+    }
+    static int geomPoint2Double(geometry g, double * coordinates){
+        //input must be a point
+        //convert point ot coordinate sequence
+        const GEOSCoordSequence GEOS_DLL * s = GEOSGeom_getCoordSeq( g);
+
+        unsigned int dims=0;
+        GEOSCoordSeq_getDimensions(s,&dims) ;
+        for(int i=0;i<dims;i++){//wrting x, y, z
+            GEOS_DLL GEOSCoordSeq_getOrdinate(
+                        s
+                        ,0
+                        ,i
+                        ,&coordinates[i]);
+        }
+        return dims;
     }
 
 };
