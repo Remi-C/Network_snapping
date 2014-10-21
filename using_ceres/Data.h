@@ -139,18 +139,18 @@ struct classification{
     double importance ;
     double dist_to_border ;
     //! function to get an idea of what is in the observation
-    string classificationToString(){
+    string classificationToString() const {
         //#obs_id::int;X::double;Y::double;Z::double;confidence::double;weight::double
         std::ostringstream nstring;
         //nstring.precision(10);
-        nstring << "class_id : " << int(class_id)  << std::endl
+        std::cout  << "class_id : " << int(class_id)  << std::endl
                 <<"\t class_name : " << class_name << std::endl
                << "\t geom_type : " << geom_type<< ":"<<SnapEnums::gt_toString(geom_type) << std::endl
                << "\t road_surface_relation :"<<road_surface_relation<< ":"<<SnapEnums::rre_toString(road_surface_relation) << std::endl
                << "\t precision : " << precision << std::endl
                << "\t importance : " << importance << std::endl
                << "\t dist_to_border : " << dist_to_border <<std::endl;
-        return nstring.str() ;
+        return "tata" ;
     }
 
     friend std::ostream &operator<<(std::ostream &os, classification const &c) {
@@ -197,20 +197,26 @@ struct street_object{
 
 
     //! function to get an idea of what is in the observation
-    string street_objectsToString(){
+    string street_objectsToString() const {
 
         std::ostringstream nstring;
         //nstring.precision(10);
-        nstring << "object_id : " << int(object_id)  << std::endl
-                <<"\t class_id : " << int(class_id) << std::endl
-               <<"\t class_name : " << class_name << std::endl
-              << "\t edge_id : " << edge_id<< ":"<<  std::endl
-              << "\t geom :"<< write_WKT(geom,3) << std::endl
-              << "\t geom_centroid :"<< write_WKT(geom_centroid,3) << std::endl
-              << "\t geom_border_surface :"<< write_WKT(geom_border_surface,3) << std::endl
-              << "\t geom_border_area :"<< geom_border_area << std::endl
-              << "\t confidence : " << confidence << std::endl;
-        return nstring.str() ;
+        std::cout << "toto"  << std::endl;
+
+        std::cout << "toto" << std::endl;
+        std::cout << "toto2" << std::endl;
+
+        std::cout << "object_id : " << int(object_id)  << std::endl;
+        std::cout <<"\t class_id : " << int(class_id) << std::endl;
+        std::cout <<"\t class_name : " << class_name << std::endl;
+        std::cout << "\t edge_id : " << edge_id<< ":"<<  std::endl;
+        std::cout << "\t geom :"<< write_WKT(geom,3) << std::endl;
+        std::cout << "\t geom_centroid :"<< write_WKT(geom_centroid,3) << std::endl;
+        std::cout << "\t geom_border_surface :"<< write_WKT(geom_border_surface,3) << std::endl;
+        std::cout << "\t geom_border_area :"<< geom_border_area << std::endl;
+        std::cout << "\t confidence : " << confidence   << std::endl;
+        //return nstring.str() ;
+        return string("toto");
     }
 
 
@@ -237,7 +243,7 @@ struct street_object{
         this->geom_border_surface =
                 Geometry::BufferWithStyle(
                     this->geom
-                     ,radius//width
+                    ,radius//width
                     ,0 //quadseg
                     ,CAP_FLAT //endcapstyle
                     ,JOIN_ROUND //joinStyle
@@ -279,6 +285,9 @@ public:
     observation* observations(int i)  { return &observations_[i];}
     classification* classifications()  { return classifications_;}
     classification* classifications(int i)  { return &classifications_[i];}
+    street_object* street_objects()  { return street_objects_;}
+    street_object* street_objects(int i)  { return &street_objects_[i];}
+
     node* nbn(int i ) { return nodes_by_node_id_.at(i); }
     std::unordered_map <int /*node_id*/, node *> nodes_by_node_id() {return nodes_by_node_id_;}
     edge* ebe(int i ) { return edges_by_edge_id_.at(i); }

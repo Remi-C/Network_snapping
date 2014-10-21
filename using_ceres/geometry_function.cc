@@ -29,7 +29,7 @@ geometry read_WKT(std::string s ){
 }
 
 /// write a geom into wkt
-char *write_WKT(geometry input_geom, int dim){
+char *write_WKT(const geometry input_geom,const int dim){
 
     //    GEOSMessageHandler notice_function;
     //    GEOSMessageHandler error_function;
@@ -131,7 +131,7 @@ double shared_area_cost(SnapEnums::road_relation_enum road_relation, const doubl
     //{IN=1 ,OUT=-1 ,BORDER=0, BORDER_IN = 10, BORDER_OUT= -10, UNDEF=-110 } ;
 
     //compute the rectangle from pts
-    street_rectangle = axis_to_rectangle(pt1,pt2, axis_width) ;
+    street_rectangle = axis_to_rectangle(pt1,pt2, axis_width/2.0) ;
     double cost_surface  = 0 ;
     double cost_distance = 0;
     double shared_area = 0 ;
@@ -211,7 +211,8 @@ double shared_area_cost(SnapEnums::road_relation_enum road_relation, const doubl
          << " , intersects? "<< intersects <<endl ;
 
     //    finishGEOS();
-    return cost_surface+cost_distance ;
+    int sign = (attractive==SnapEnums::ATTRACTIVE?+1:-1) * (intersects==1?+1:-1);
+    return sign* (cost_surface+cost_distance) ;
 
 }
 

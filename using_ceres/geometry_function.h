@@ -79,20 +79,29 @@ public:
     static geometry centroid(geometry g){
         return GEOSGetCentroid(g);
     }
-    static int geomPoint2Double(geometry g, double * coordinates){
+    static const double * return_double(int dim, const double * coor){
+        return coor;
+    }
+
+    static int  geomPoint2Double(const geometry g, double * coordinates){
         //input must be a point
         //convert point ot coordinate sequence
         const GEOSCoordSequence GEOS_DLL * s = GEOSGeom_getCoordSeq( g);
-
-        unsigned int dims=0;
+        unsigned int dims=4;
+        //filling dims
         GEOSCoordSeq_getDimensions(s,&dims) ;
-        for(int i=0;i<dims;i++){//wrting x, y, z
-            GEOS_DLL GEOSCoordSeq_getOrdinate(
-                        s
-                        ,0
-                        ,i
-                        ,&coordinates[i]);
+
+        double * temp= new double[dims];
+        // Initialize all elements to zero.
+        for (int i=0; i<dims; ++i) {
+            temp[i] = 0;
         }
+        for(int i=0;i<dims;i++){//writing x, y, z
+            GEOSCoordSeq_getOrdinate(s,0,i,&temp[i]);
+        }
+        std::cout << temp[0] << " " << temp[1] << std::endl;
+        std::cout  << dims << std::endl ;
+        coordinates = temp ;
         return dims;
     }
 

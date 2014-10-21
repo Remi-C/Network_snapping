@@ -231,3 +231,39 @@ int addManualConstraintsOnOrthDistToObservation(DataStorage * data, Problem * pr
     }
 }
 
+
+
+
+//! manual constraint based on surf distance between object and and edge
+int addManualConstraintsOnSurfDistToObjects(DataStorage * data, Problem * problem){
+    for (int i = 0; i < data->num_street_objects(); ++i) {
+
+        //finding the street_object
+        //finding the 2 nodes concerned by this observations
+        street_object * obj = data->street_objects(i) ;
+
+        edge * relativ_edge = data->ebe(obj->edge_id) ;
+        node * start_node = data->nbn(relativ_edge->start_node)  ;
+        node * end_node = data->nbn(relativ_edge->end_node)  ;
+
+        CostFunction* distance_cost_function=
+            new  ManualAttr_Rep_Object(i, data ) ;
+        //untill 2.0 meters of distance, normal behavior. after that outliers behavior (not square)
+        LossFunction* loss = NULL;
+        loss = new ceres::ScaledLoss( g_param->useLoss?(new ceres::SoftLOneLoss(g_param->lossScale)):NULL
+                                        ,g_param->K_obj,ceres::DO_NOT_TAKE_OWNERSHIP) ;
+
+        std::cout << "no problemo \n" << std::endl;
+        std::string s = ((ManualAttr_Rep_Object*) distance_cost_function)->ToString() ;
+
+
+
+        problem->AddResidualBlock(
+                    distance_cost_function
+                    ,NULL //loss
+                    ,start_node->position
+                    ,end_node->position
+                    ); //note : obj is referring to these nodes.
+    }
+}
+

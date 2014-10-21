@@ -56,20 +56,6 @@ Parameter * g_param;
 int main(int argc, char** argv) {
     initialize_geom_computation();
 
-    //testing point2double
-    std::string a_ppoint_s = "POINT(1 2 3)";
-    geometry geom = read_WKT(a_ppoint_s);
-    double coord[]= {0,0,0};
-    int ndim =  Geometry::geomPoint2Double(geom,coord);
-    std::cout << "point 2 double, ndim : " << ndim
-              << "coordinates X : " << coord[0]
-              << "coordinates Y : " << coord[1]
-              << "coordinates Z : " << coord[2]
-              << std::endl;
-
-    std::cout << "centroid : " << write_WKT(Geometry::centroid(geom),3) << std::endl;
-
-    return 1;
 
     //creating the set of parameters (could be read from file)
     std::cout << "  \E[34;1mReading parameters\E[m \n" ;
@@ -97,8 +83,6 @@ int main(int argc, char** argv) {
     //reading the objects for snapping
     std::cout << "  \E[34;1m \t Reading Objects\E[m \n" ;
     data->readObjects();
-    std::cout << "object read" << std::endl ;
-    return 1; /// @todo @temp
 
     //creating the problem to be solved
     Problem problem;
@@ -130,8 +114,8 @@ int main(int argc, char** argv) {
     }
 
     //manual constraints regularisation on distance between nodes
-    if(g_param->use_manual_initial_spacing_constraint == true){
-        addManualConstraintsOnInitialspacing(data, &problem);
+    if(g_param->use_manual_Surf_Dist_To_Objects_constraint == true){
+        addManualConstraintsOnSurfDistToObjects(data, &problem);
     }
 
     Solver::Options options;
