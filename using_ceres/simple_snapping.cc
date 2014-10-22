@@ -11,14 +11,11 @@
     NOT POSSIBLE use LocalParameterization instead of what I use now : should greatly improve quality, robustness and speed
 
     _ use a 2D cost function output for orthogonal distance, put a term penalyzing being inside an observation width zone
-    _ add a constraint on distance to orginal angles between segements.
 
-    _use boost for config files instead of lib found on internet
+    DONE add a constraint on distance to orginal angles between segements.
+
 
   @DEBUG
-        remvoe this line from manualdistorth :" const double* w_i_j_;//! the width of the edge, in meter"
-
-
   */
 
 #include "ceres/ceres.h"
