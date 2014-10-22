@@ -480,15 +480,15 @@ public :
                                        ,obj_->geom_border_area
                                        );
 
-        residuals[0] =   std::abs(cost);
+        residuals[0] = pow(std::abs(cost),2);
 
 
         int sign =-1* Geometry::orientationIndex(parameters[0],parameters[1],centroid2D_);//depends on left or right !
 
         //compute Jacobian norm for Ni : for test simply take d
-        Eigen::Vector3d Ji =  sign * Vja * cost  ;
+        Eigen::Vector3d Ji =  sign * Vja * SIGN(cost)*  residuals[0];
         //compute Jacobian norm for Nj : for test simply take d
-        Eigen::Vector3d Jj =  sign * Vja * cost ;
+        Eigen::Vector3d Jj =  sign * Vja * SIGN(cost) * residuals[0];
 
         ////        cout << "  Observation_id : " <<  obs_->obs_id <<std::endl;
         cout << "  Ni : " << Ni.transpose() <<std::endl;
