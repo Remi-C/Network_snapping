@@ -196,7 +196,7 @@ public :
         Eigen::Vector3d U = (Nj-Ni)/(Nj-Ni).norm();
         //compute residual = distance from O to NiNj : norm(vect(NiO,NiNj))/norm(NiNj)
         double d = Np.norm()/(Nj-Ni).norm()-  w_i_j_[0]/2.0;
-        residuals[0]= pow(d,2) *   obs_->confidence * obs_->weight ;
+        residuals[0]= pow(d * obs_->confidence * obs_->weight ,2) ;
         //compute Jacobian director vector : vect(u,n)
         Eigen::Vector3d Vja = U.cross(Np/Np.norm());
         //if(obs_->obs_id ==1 ) {Vja << -0.7,-0.7,0;}
@@ -205,9 +205,9 @@ public :
         //compute the direction of movement : - = toward the obs, + = away from point
         int sign = ((  residuals[0]  >0) - (residuals[0] <0));
         //compute Jacobian norm for Ni : for test simply take d
-        Eigen::Vector3d Ji = -1 * sign* Vja * d ;
+        Eigen::Vector3d Ji = -1 * sign* Vja * SIGN(d) *residuals[0]  ;
         //compute Jacobian norm for Nj : for test simply take d
-        Eigen::Vector3d Jj = -1 * sign * Vja *  d ;/// @warning : remove this 10 factor aspa !
+        Eigen::Vector3d Jj = -1 * sign * Vja *  SIGN(d) * residuals[0] ;
 
         //        cout << "  Observation_id : " <<  obs_->obs_id <<std::endl;
         //         cout << "  Ni : " << Ni.transpose() <<std::endl;
