@@ -167,29 +167,40 @@ double shared_area_cost(SnapEnums::road_relation_enum road_relation, const doubl
         shared_area = 0 ;
         GEOSDistance( GEOSGetExteriorRing(street_rectangle) , object_snapping_surface, &distance_to_shell);
     }
+    int sign=0;
+
 
     //putting a cost based on shared area.
     //we take some shortcuts to avoid computing intersection if it's not necessary
+
     if(distance_to_shell!=0){//the object is either fully inside or fully outside
         if(intersects==1){//the object is fully inside
             if(road_relation==SnapEnums::BORDER){
                 cost_surface = object_snapping_surface_area;
+                sign= +1;
             }
             if(attractive==SnapEnums::ATTRACTIVE){
                 cost_surface = 0;
+                sign = 1;//is no 0 because of BORDER_IN case
             }
             if(attractive==SnapEnums::REPULSIVE){
                 cost_surface = object_snapping_surface_area;
+                cost_distance = (distance_to_shell) * object_snapping_surface_area ;
+                sign = +1 ;
             }
         }else{//the object is fully outside
             if(road_relation==SnapEnums::BORDER){
                 cost_surface = object_snapping_surface_area;
+                sign = -1;
             }
             if(attractive==SnapEnums::ATTRACTIVE){
                 cost_surface = object_snapping_surface_area;
+                cost_distance = (distance_to_shell) * object_snapping_surface_area ;
+                sign = -1;
             }
             if(attractive==SnapEnums::REPULSIVE){
                 cost_surface = 0;
+                sign = -1;//is not 0 because of border_out
             }
 
         }
@@ -197,13 +208,17 @@ double shared_area_cost(SnapEnums::road_relation_enum road_relation, const doubl
         //we must compute the shared surface
 
         if(road_relation==SnapEnums::BORDER){//cost is 0 when object is centered on border
-            cost_surface = std::abs(object_snapping_surface_area-2*shared_area);
+            cost_surface = object_snapping_surface_area-2*shared_area ;
+            sign = -1*SIGN(cost_surface);//this is the sign function
+            cost_surface = std::abs(cost_surface);
         }
         if(attractive==SnapEnums::ATTRACTIVE){//Cost is high when object is outside
             cost_surface = object_snapping_surface_area-shared_area;
+            sign = -1;
         }
         if(attractive==SnapEnums::REPULSIVE){//cost is high when object is inside
             cost_surface = shared_area;
+            sign = +1;
         }
 
     }
@@ -232,14 +247,12 @@ double shared_area_cost(SnapEnums::road_relation_enum road_relation, const doubl
         Thus, ATTRACTIVE = ((INTERSECTION==TRUE) != (DISTANCE==0))
         REPULSIVE = (!(INTERSECTION)) && (!(DISTANCE==0))
     */
-    bool att = (attractive==SnapEnums::ATTRACTIVE) && ((intersects==1)!=(distance_to_shell==0));//0 or 1
-    bool rep = (attractive==SnapEnums::REPULSIVE) &&(!(intersects==1)) && (!(distance_to_shell==0)); //0 or 1
+    //bool att = (attractive==SnapEnums::ATTRACTIVE) && ((intersects==1)!=(distance_to_shell==0));//0 or 1
 
-    int sign = !att;//only one of the 2 may contribute at the same time
-    sign= (sign*2)-1;//putting sign to value -1 or 1
+    //int sign = !att;//only one of the 2 may contribute at the same time
+    //sign= (sign*2)-1;//putting sign to value -1 or 1
 
-
-    //    cout << "\t  total_cost : " << sign *( cost_surface + cost_distance) <<endl;
+    cout << "\t  total_cost : " << sign *( cost_surface + cost_distance) <<endl;
     cout << "\t  cost_surface : " << cost_surface
          <<" , cost_distance : " << cost_distance <<endl ;
     //    cout << "\t \t road_relation type :" << road_relation  <<endl ;

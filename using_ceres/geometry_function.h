@@ -3,6 +3,7 @@
 
 #define TOLERANCE 0.0004
 #define TOLERANCY_EQUAL(A,B) ( std::abs((A)-(B))<(TOLERANCE))
+#define SIGN(X) (((X) > 0) - ((X) < 0))
 
 #include "geos_c.h"
 
@@ -102,8 +103,8 @@ public:
         for(int i=0;i<dims;i++){//writing x, y, z
             GEOSCoordSeq_getOrdinate(s,0,i,&temp[i]);
         }
-        std::cout << temp[0] << " " << temp[1] << std::endl;
-        std::cout  << dims << std::endl ;
+        //std::cout << temp[0] << " " << temp[1] << std::endl;
+        //std::cout  << dims << std::endl ;
 
         for (int i=0; i<dims; ++i) {
             coordinates[i] = temp[i];
