@@ -30,6 +30,8 @@ DataStorage::~DataStorage(){
     delete[] nodes_;
     delete[] edges_;
     delete[] observations_;
+    delete[] classifications_;
+    delete[] street_objects_;
 }
 
 //! unit test for node to string

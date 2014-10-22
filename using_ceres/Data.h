@@ -304,6 +304,11 @@ public:
     }
 
 private:
+    // Copy and assignment declared private and not defined to prevent from copying
+    // instances of this class
+    DataStorage(const DataStorage& nocopy);
+    DataStorage& operator=(const DataStorage& nocopy);
+
     int num_nodes_; //! total num of nodes we are going to read
     int num_edges_; //! total num of edges we are going to read
     int num_observations_;//! total num of observations we are going to read

@@ -81,11 +81,15 @@ int main(int argc, char** argv) {
     data->setMap();
 
     //reading the objects for snapping
-    std::cout << "  \E[34;1m \t Reading Objects\E[m \n" ;
+    std::cout << "  \E[34;1m \tconst int Reading Objects\E[m \n" ;
     data->readObjects();
 
+
+    /// clean version to not allow ceres to destroy the memory itself
+    Problem::Options pb_options;
+    pb_options.local_parameterization_ownership = ceres::DO_NOT_TAKE_OWNERSHIP;
     //creating the problem to be solved
-    Problem problem;
+    Problem problem(pb_options);
 
 
     //setting constraint on initial position for each node.
@@ -119,6 +123,7 @@ int main(int argc, char** argv) {
     }
 
     Solver::Options options;
+
     options.max_num_iterations = 50;
     options.linear_solver_type = ceres::DENSE_QR;
     options.minimizer_progress_to_stdout = true;
@@ -150,7 +155,6 @@ int main(int argc, char** argv) {
     std::cout << summary.IsSolutionUsable() << "\n";
 
     finish_geom_computation();
-
     return 0;
 }
 
