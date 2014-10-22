@@ -160,7 +160,7 @@ void DataStorage::readClassifications(){
 void DataStorage::readObjects(){
     //opening files //cout << "here is the file path read in parameters.txt : "  << g_param->class_definition_path <<endl;
     FILE* i_fptr = fopen( g_param->objects_path.c_str() , "r");
-    char line[1000];//input line buffer
+    char line[100000];//input line buffer
 
     if (i_fptr == NULL) {
         std::cerr << "Error: unable to open file " << g_param->objects_path <<endl;
@@ -172,7 +172,7 @@ void DataStorage::readObjects(){
     int class_id = 0;
     char class_name[1000] = "#########";
     int edge_id = 0;
-    char geom_wkt[1000] ="#########";
+    char geom_wkt[100000] ="#########";
     double confidence = 0;
 
     //char line[1000] = "1;75;car;1;POLYGON((0 0, 1 0, 1 1 , 0 1 , 0 0 ));0.89";
