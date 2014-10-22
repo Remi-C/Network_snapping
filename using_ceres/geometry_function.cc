@@ -146,10 +146,27 @@ double shared_area_cost(SnapEnums::road_relation_enum road_relation, const doubl
 
     //road relation must be IN=1 ,OUT=-1 ,BORDER=0, BORDER_IN = 10, BORDER_OUT
 
+
     intersects = GEOSIntersects(street_rectangle , object_snapping_surface) ;
-    GEOSArea(GEOSIntersection(street_rectangle, object_snapping_surface)
-             , &shared_area) ;
-    GEOSDistance( GEOSGetExteriorRing(street_rectangle) , object_snapping_surface, &distance_to_shell);
+
+    //this is a shortcut trick to avoid computing intersection and/or distance when not necessary
+    if(intersects==1){  //fully or half within
+
+        GEOSArea(GEOSIntersection(street_rectangle, object_snapping_surface)
+                 , &shared_area) ;
+
+        if( TOLERANCY_EQUAL(object_snapping_surface_area,shared_area) ){//fully within, need to compute distance
+
+            GEOSDistance( GEOSGetExteriorRing(street_rectangle) , object_snapping_surface, &distance_to_shell);
+
+        }else{//half within, no need to compute distance, it's 0
+            distance_to_shell = 0;
+        }
+    }else{ //fully outside
+        //, no need to compute intersection, but need to compute distance
+        shared_area = 0 ;
+        GEOSDistance( GEOSGetExteriorRing(street_rectangle) , object_snapping_surface, &distance_to_shell);
+    }
 
     //putting a cost based on shared area.
     //we take some shortcuts to avoid computing intersection if it's not necessary
@@ -202,15 +219,33 @@ double shared_area_cost(SnapEnums::road_relation_enum road_relation, const doubl
         }
     }
 
-    int sign = -1* (attractive==SnapEnums::ATTRACTIVE?+1:-1) * (intersects==1?1:-1);
+    /** we compute a sign that gives the direction into witch make the modification
 
-//    cout << "\t  total_cost : " << sign *( cost_surface + cost_distance) <<endl;
+        CASE(object left of axis) : A : object fully outside. B : object hlaf inside, C: object fully inside
+        CASE                A   B   C
+        INTERSECTION==TRUE  0   1   1
+        DISTANCE==0         0   1   0
+
+        ATTRACTIVE==TRUE    1   1   0
+        REPULSIVE==TRUE     1   0   0
+
+        Thus, ATTRACTIVE = ((INTERSECTION==TRUE) != (DISTANCE==0))
+        REPULSIVE = (!(INTERSECTION)) && (!(DISTANCE==0))
+    */
+    bool att = (attractive==SnapEnums::ATTRACTIVE) && ((intersects==1)!=(distance_to_shell==0));//0 or 1
+    bool rep = (attractive==SnapEnums::REPULSIVE) &&(!(intersects==1)) && (!(distance_to_shell==0)); //0 or 1
+
+    int sign = !att;//only one of the 2 may contribute at the same time
+    sign= (sign*2)-1;//putting sign to value -1 or 1
+
+
+    //    cout << "\t  total_cost : " << sign *( cost_surface + cost_distance) <<endl;
     cout << "\t  cost_surface : " << cost_surface
          <<" , cost_distance : " << cost_distance <<endl ;
-//    cout << "\t \t road_relation type :" << road_relation  <<endl ;
-//    cout << "\t \t attractivity ; " <<  attractive <<endl;
+    //    cout << "\t \t road_relation type :" << road_relation  <<endl ;
+    //    cout << "\t \t attractivity ; " <<  attractive <<endl;
     cout << "\t \t distance_to_shell : " << distance_to_shell
-//         << " , intersects? "<< intersects
+            //         << " , intersects? "<< intersects
          <<endl ;
 
     return sign* (cost_surface+cost_distance) ;

@@ -1,6 +1,9 @@
 #ifndef GEOMETRY_FUNCTION_H
 #define GEOMETRY_FUNCTION_H
 
+#define TOLERANCE 0.0004
+#define TOLERANCY_EQUAL(A,B) ( std::abs((A)-(B))<(TOLERANCE))
+
 #include "geos_c.h"
 
 #include <iostream>

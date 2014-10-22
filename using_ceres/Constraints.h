@@ -483,7 +483,7 @@ public :
         residuals[0] =  std::abs(cost) ;
 
 
-        int sign = -1 * Geometry::orientationIndex(parameters[0],parameters[1],centroid2D_);//depends on left or right !
+        int sign = Geometry::orientationIndex(parameters[0],parameters[1],centroid2D_);//depends on left or right !
 
         //compute Jacobian norm for Ni : for test simply take d
         Eigen::Vector3d Ji =  sign * Vja * cost  ;
