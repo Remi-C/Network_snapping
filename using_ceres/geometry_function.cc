@@ -252,14 +252,14 @@ double shared_area_cost(SnapEnums::road_relation_enum road_relation, const doubl
     //int sign = !att;//only one of the 2 may contribute at the same time
     //sign= (sign*2)-1;//putting sign to value -1 or 1
 
-    cout << "\t  total_cost : " << sign *( cost_surface + cost_distance) <<endl;
-    cout << "\t  cost_surface : " << cost_surface
-         <<" , cost_distance : " << cost_distance <<endl ;
+//    cout << "\t  total_cost : " << sign *( cost_surface + cost_distance) <<endl;
+//    cout << "\t  cost_surface : " << cost_surface
+//         <<" , cost_distance : " << cost_distance <<endl ;
     //    cout << "\t \t road_relation type :" << road_relation  <<endl ;
     //    cout << "\t \t attractivity ; " <<  attractive <<endl;
-    cout << "\t \t distance_to_shell : " << distance_to_shell
+//    cout << "\t \t distance_to_shell : " << distance_to_shell
             //         << " , intersects? "<< intersects
-         <<endl ;
+//         <<endl ;
 
     return sign* (cost_surface+cost_distance) ;
 

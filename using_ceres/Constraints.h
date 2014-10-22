@@ -449,7 +449,7 @@ public :
         //the parameters is as follow : parameter[0-2] = n_i = first node;parameter[3-5] = n_j = second node;
 
         //map the input array into 2 eigen vectors, plus map observation position into Eigen
-        cout << "\nbeginning of evaluate" << endl;
+//        cout << "\nbeginning of evaluate" << endl;
         ConstVectorRef Ni( parameters[0],3 );
         ConstVectorRef Nj( parameters[1],3 );
 
@@ -491,13 +491,13 @@ public :
         Eigen::Vector3d Jj =  sign * Vja * SIGN(cost) * residuals[0];
 
         ////        cout << "  Observation_id : " <<  obs_->obs_id <<std::endl;
-        cout << "  Ni : " << Ni.transpose() <<std::endl;
-        cout << " Nj : " << Nj.transpose() <<std::endl;
+//        cout << "  Ni : " << Ni.transpose() <<std::endl;
+//        cout << " Nj : " << Nj.transpose() <<std::endl;
         ////        cout << " Vja : " << Vja.transpose() <<std::endl;
-        cout << "  residual : " << residuals[0] <<std::endl;
-        cout << "  cost : " << cost <<std::endl;
-        cout << "   Ji :" << Ji.transpose() <<endl;
-        cout << "   Jj :" << Jj.transpose() <<endl;
+//        cout << "  residual : " << residuals[0] <<std::endl;
+//        cout << "  cost : " << cost <<std::endl;
+//        cout << "   Ji :" << Ji.transpose() <<endl;
+//        cout << "   Jj :" << Jj.transpose() <<endl;
         //        // std::cout << "\njac (eigen): \n" << jac << std::endl;
 
         if (jacobians == NULL) {
@@ -521,7 +521,7 @@ public :
         }
 
 
-        cout << "end of evaluate()\n";
+//        cout << "end of evaluate()\n";
         return true;
     }
 
