@@ -12,6 +12,9 @@
 
 #include "Data.h"
 
+#include "Parameters.h"
+#include "utils_function.h"
+
 //extern const double K_origin;
 //extern const double K_obs;
 //extern const double K_spacing;
@@ -20,11 +23,12 @@
 #include "ceres/ceres.h"
 #include "ceres/rotation.h"
 
+#include <cmath>
+
+
 typedef Eigen::Map<Eigen::Vector3d> VectorRef;
 typedef Eigen::Map<const Eigen::Vector3d> ConstVectorRef;
 
-#include "Parameters.h"
-#include "utils_function.h"
 
 using std::cout;
 using std::endl;
@@ -429,7 +433,7 @@ public :
         , obj_(data->street_objects(index))
         ,classification_(data->cbn(obj_->class_name))
         ,centroid2D_{0,0}
-        ,axis_width_(&data->ebe(obj_->edge_id)->width)
+    ,axis_width_(&data->ebe(obj_->edge_id)->width)
     {
         Geometry::geomPoint2Double( obj_->geom_centroid
                                     , this->centroid2D_  );
@@ -445,11 +449,11 @@ public :
         //the parameters is as follow : parameter[0-2] = n_i = first node;parameter[3-5] = n_j = second node;
 
         //map the input array into 2 eigen vectors, plus map observation position into Eigen
-        //cout << "\nbeginning of evaluate" << endl;
+        cout << "\nbeginning of evaluate" << endl;
         ConstVectorRef Ni( parameters[0],3 );
         ConstVectorRef Nj( parameters[1],3 );
 
-        cout << centroid2D_[0] << " " << centroid2D_[1] << endl;
+        //cout << centroid2D_[0] << " " << centroid2D_[1] << endl;
         //center of object : ConstVectorRef Ob(position_,3);
         Eigen::Vector3d Obj_center;
         Obj_center[0] = centroid2D_[0] ;
@@ -468,29 +472,32 @@ public :
         Eigen::Vector3d Vja = (U.cross(Np)).normalized();
 
         //compute the cost using the geometric distance
-        residuals[0] = shared_area_cost(classification_->road_surface_relation
-                                        ,parameters[0]
-                                        ,parameters[1]
-                                        ,*axis_width_
-                                        ,obj_->geom_border_surface
-                                        ,obj_->geom_border_area
-                                        );
+        double cost = shared_area_cost(classification_->road_surface_relation
+                                       ,parameters[0]
+                                       ,parameters[1]
+                                       ,*axis_width_
+                                       ,obj_->geom_border_surface
+                                       ,obj_->geom_border_area
+                                       );
 
-        //compute the direction of movement : - = toward the obj, + = away from obj, for an attractive object
-        //int sign = ((  residuals[0]  >0) - (residuals[0] <0));
+        residuals[0] =  std::abs(cost) ;
+
+
+        int sign = -1 * Geometry::orientationIndex(parameters[0],parameters[1],centroid2D_);//depends on left or right !
 
         //compute Jacobian norm for Ni : for test simply take d
-        Eigen::Vector3d Ji =  Vja * residuals[0] ;
+        Eigen::Vector3d Ji =  sign * Vja * cost  ;
         //compute Jacobian norm for Nj : for test simply take d
-        Eigen::Vector3d Jj = Vja *  residuals[0] ;
+        Eigen::Vector3d Jj =  sign * Vja * cost ;
 
         ////        cout << "  Observation_id : " <<  obs_->obs_id <<std::endl;
-        ////         cout << "  Ni : " << Ni.transpose() <<std::endl;
-        ////        cout << " Nj : " << Nj.transpose() <<std::endl;
+        cout << "  Ni : " << Ni.transpose() <<std::endl;
+        cout << " Nj : " << Nj.transpose() <<std::endl;
         ////        cout << " Vja : " << Vja.transpose() <<std::endl;
-        ////        cout << "  distance : " << residuals[0] <<std::endl;
-        ////        cout << "   Ji :" << Ji.transpose() <<endl;
-        ////        cout << "   Jj :" << Jj.transpose() <<endl;
+        cout << "  residual : " << residuals[0] <<std::endl;
+        cout << "  cost : " << cost <<std::endl;
+        cout << "   Ji :" << Ji.transpose() <<endl;
+        cout << "   Jj :" << Jj.transpose() <<endl;
         //        // std::cout << "\njac (eigen): \n" << jac << std::endl;
 
         if (jacobians == NULL) {
@@ -521,20 +528,18 @@ public :
     std::string ToString() const {
         std::ostringstream nstring;
 
-        std::string str= "\t" ;
+
         //nstring.precision(10);
-        std::string obj_s = obj_->street_objectsToString();
-        std::string classification_s = classification_->classificationToString();
-        std::cout <<  "object_index_ : ";
-        std::cout << int(object_index_);
-        std::cout << std::endl ;
-        std::cout << "\t obj_ : "<<obj_s << std::endl;
-        std::cout << "\t classification_ : "<<classification_s<<std::endl;
-        std::cout << "\t centroid2D_ : "<<"\t\t X :"<<centroid2D_[0]
-                  <<"\t\t  Y :"<<centroid2D_[1]
-                 <<std::endl;
-        std::cout << "\t axis_width_ :"<<axis_width_[0]  <<std::endl ;
-        return "titi" ;
+        nstring <<  "object_index_ : ";
+        nstring << int(object_index_);
+        nstring << std::endl ;
+        nstring << "\t obj_ : "<<obj_->street_objectsToString() << std::endl;
+        nstring << "\t classification_ : "<<classification_->classificationToString()<<std::endl;
+        nstring << "\t centroid2D_ : "<<"\t\t X :"<<centroid2D_[0]
+                <<"\t\t  Y :"<<centroid2D_[1]
+               <<std::endl;
+        nstring << "\t axis_width_ :"<<axis_width_[0]  <<std::endl ;
+        return nstring.str() ;
     }
 
 private:

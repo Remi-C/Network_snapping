@@ -101,8 +101,18 @@ public:
         }
         std::cout << temp[0] << " " << temp[1] << std::endl;
         std::cout  << dims << std::endl ;
-        coordinates = temp ;
+
+        for (int i=0; i<dims; ++i) {
+            coordinates[i] = temp[i];
+        }
         return dims;
+    }
+
+    static int orientationIndex(const double * A,const  double * B,const double * P)  {
+        return GEOSOrientationIndex(
+                    A[0],A[1]
+                    , B[0],B[1]
+                    , P[0],P[1]);
     }
 
 };

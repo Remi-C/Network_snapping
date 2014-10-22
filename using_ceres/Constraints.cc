@@ -253,7 +253,6 @@ int addManualConstraintsOnSurfDistToObjects(DataStorage * data, Problem * proble
         loss = new ceres::ScaledLoss( g_param->useLoss?(new ceres::SoftLOneLoss(g_param->lossScale)):NULL
                                         ,g_param->K_obj,ceres::DO_NOT_TAKE_OWNERSHIP) ;
 
-        std::cout << "no problemo \n" << std::endl;
         std::string s = ((ManualAttr_Rep_Object*) distance_cost_function)->ToString() ;
 
 

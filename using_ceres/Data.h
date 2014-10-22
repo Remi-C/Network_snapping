@@ -143,14 +143,14 @@ struct classification{
         //#obs_id::int;X::double;Y::double;Z::double;confidence::double;weight::double
         std::ostringstream nstring;
         //nstring.precision(10);
-        std::cout  << "class_id : " << int(class_id)  << std::endl
-                <<"\t class_name : " << class_name << std::endl
-               << "\t geom_type : " << geom_type<< ":"<<SnapEnums::gt_toString(geom_type) << std::endl
-               << "\t road_surface_relation :"<<road_surface_relation<< ":"<<SnapEnums::rre_toString(road_surface_relation) << std::endl
-               << "\t precision : " << precision << std::endl
-               << "\t importance : " << importance << std::endl
-               << "\t dist_to_border : " << dist_to_border <<std::endl;
-        return "tata" ;
+        nstring  << "class_id : " << int(class_id)  << std::endl
+                   <<"\t class_name : " << class_name << std::endl
+                  << "\t geom_type : " << geom_type<< ":"<<SnapEnums::gt_toString(geom_type) << std::endl
+                  << "\t road_surface_relation :"<<road_surface_relation<< ":"<<SnapEnums::rre_toString(road_surface_relation) << std::endl
+                  << "\t precision : " << precision << std::endl
+                  << "\t importance : " << importance << std::endl
+                  << "\t dist_to_border : " << dist_to_border <<std::endl;
+        return nstring.str() ;
     }
 
     friend std::ostream &operator<<(std::ostream &os, classification const &c) {
@@ -201,22 +201,17 @@ struct street_object{
 
         std::ostringstream nstring;
         //nstring.precision(10);
-        std::cout << "toto"  << std::endl;
-
-        std::cout << "toto" << std::endl;
-        std::cout << "toto2" << std::endl;
-
-        std::cout << "object_id : " << int(object_id)  << std::endl;
-        std::cout <<"\t class_id : " << int(class_id) << std::endl;
-        std::cout <<"\t class_name : " << class_name << std::endl;
-        std::cout << "\t edge_id : " << edge_id<< ":"<<  std::endl;
-        std::cout << "\t geom :"<< write_WKT(geom,3) << std::endl;
-        std::cout << "\t geom_centroid :"<< write_WKT(geom_centroid,3) << std::endl;
-        std::cout << "\t geom_border_surface :"<< write_WKT(geom_border_surface,3) << std::endl;
-        std::cout << "\t geom_border_area :"<< geom_border_area << std::endl;
-        std::cout << "\t confidence : " << confidence   << std::endl;
-        //return nstring.str() ;
-        return string("toto");
+        nstring << "object_id : " << int(object_id)  << std::endl;
+        nstring <<"\t class_id : " << int(class_id) << std::endl;
+        nstring <<"\t class_name : " << class_name << std::endl;
+        nstring << "\t edge_id : " << edge_id<< ":"<<  std::endl;
+        nstring << "\t geom :"<< write_WKT(geom,3) << std::endl;
+        nstring << "\t geom_centroid :"<< write_WKT(geom_centroid,3) << std::endl;
+        nstring << "\t geom_border_surface :"<< write_WKT(geom_border_surface,3) << std::endl;
+        nstring << "\t geom_border_area :"<< geom_border_area << std::endl;
+        nstring << "\t confidence : " << confidence   << std::endl;
+        return nstring.str() ;
+        //return string("toto");
     }
 
 

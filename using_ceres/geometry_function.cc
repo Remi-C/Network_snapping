@@ -202,16 +202,17 @@ double shared_area_cost(SnapEnums::road_relation_enum road_relation, const doubl
         }
     }
 
-    cout << "\t  total_cost : " << cost_surface + cost_distance <<endl;
+    int sign = -1* (attractive==SnapEnums::ATTRACTIVE?+1:-1) * (intersects==1?1:-1);
+
+//    cout << "\t  total_cost : " << sign *( cost_surface + cost_distance) <<endl;
     cout << "\t  cost_surface : " << cost_surface
          <<" , cost_distance : " << cost_distance <<endl ;
-    cout << "\t \t road_relation type :" << road_relation  <<endl ;
-    cout << "\t \t attractivity ; " <<  attractive <<endl;
+//    cout << "\t \t road_relation type :" << road_relation  <<endl ;
+//    cout << "\t \t attractivity ; " <<  attractive <<endl;
     cout << "\t \t distance_to_shell : " << distance_to_shell
-         << " , intersects? "<< intersects <<endl ;
+//         << " , intersects? "<< intersects
+         <<endl ;
 
-    //    finishGEOS();
-    int sign = (attractive==SnapEnums::ATTRACTIVE?+1:-1) * (intersects==1?+1:-1);
     return sign* (cost_surface+cost_distance) ;
 
 }
