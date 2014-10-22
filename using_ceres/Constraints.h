@@ -480,7 +480,7 @@ public :
                                        ,obj_->geom_border_area
                                        );
 
-        residuals[0] = pow(std::abs(cost),2);
+        residuals[0] = pow(std::abs(cost * obj_->confidence),2);
 
 
         int sign =-1* Geometry::orientationIndex(parameters[0],parameters[1],centroid2D_);//depends on left or right !
