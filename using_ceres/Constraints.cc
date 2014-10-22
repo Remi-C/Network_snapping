@@ -259,7 +259,7 @@ int addManualConstraintsOnSurfDistToObjects(DataStorage * data, Problem * proble
 
         problem->AddResidualBlock(
                     distance_cost_function
-                    ,NULL //loss
+                    ,loss
                     ,start_node->position
                     ,end_node->position
                     ); //note : obj is referring to these nodes.
