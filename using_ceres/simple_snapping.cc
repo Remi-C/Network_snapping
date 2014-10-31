@@ -14,8 +14,11 @@
 
     DONE add a constraint on distance to orginal angles between segements.
 
+    _allow same observation id (allow an observation to be affected to multiple edges)
+
 
   @DEBUG
+    _Border_out non working. Sign problem(again)?
   */
 
 #include "ceres/ceres.h"
