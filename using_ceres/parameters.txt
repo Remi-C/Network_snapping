@@ -4,16 +4,16 @@
 #The parser expects "key = value " followed by anything. Spaces are mandatory
 
 #where are the data files?
-input_file_path = ../../data/data_in_reduced_export_area/reduced_area_4.csv ;
+input_file_path = ../../data/data_in_reduced_export_area/full_area.csv ;
 output_file_path =  ../../data/data_in_reduced_export_area/snapping_output_full.csv ;
 class_definition_path = ../../data/data_in_reduced_export_area/class_definition.csv ;
-objects_path = ../../data/test_object/simple_object.csv ;
+objects_path = ../../data/data_in_reduced_export_area/object_in_export_area.csv ;
 #realtiv weight of constraints
-K_origin = 0.1 ;
-K_spacing = 10;
-K_obs = 10;
-K_angle = 100;
-K_obj = 100;
+K_origin = 10 ;
+K_spacing = 100 ;
+K_obs = 1 ;
+K_angle = 100 ;
+K_obj = 100 ;
 #what constraints to use?
 use_initial_position_constraint = true ;
 use_initial_spacing_constraint = false ; //buggy
