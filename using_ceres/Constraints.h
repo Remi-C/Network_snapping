@@ -272,7 +272,7 @@ public :
         //! @param parameters[2] : other node forming the angle
 
 
-        //        cout << "begining of evaluate" <<endl ;
+        //cout << "begining of evaluate" <<endl ;
         //map the input array into 3 eigen vectors
         ConstVectorRef Nc( parameters[0],3 );
         ConstVectorRef Ni( parameters[1],3 );
@@ -292,54 +292,62 @@ public :
         Eigen::Vector3d Vjc = ((Nc-Ni).normalized() + (Nc-Nj).normalized() ).normalized();
 
         /** value of displacement :
-          lets consider a triangle formed on angle alpha (Ni,Nc,Nj) (upper summit is Nc)
-          but with Ni,Nc and Nc,Nj normalized to 1.
-          we want to find Nc_p, that is the new position of Nc after a move of d along the bissect.
-          the final expected angle (Ni,Nc',Nj) is the original angle beta (caracterized by sin and cos)
-          the distance d = sin(alpha)*tan(beta)-cos(alpha)
-          Note that sign determin which direction it goes
-          Note : in theory every angle shoud be divided by 2,thus we may have ot use sin2x=f(sinx^2, sinx) to have correct result
-          */
+                  lets consider a triangle formed on angle alpha (Ni,Nc,Nj) (upper summit is Nc)
+                  but with Ni,Nc and Nc,Nj normalized to 1.
+                  we want to find Nc_p, that is the new position of Nc after a move of d along the bissect.
+                  the final expected angle (Ni,Nc',Nj) is the original angle beta (caracterized by sin and cos)
+                  the distance d = sin(alpha)*tan(beta)-cos(alpha)
+                  Note that sign determin which direction it goes
+                  Note : in theory every angle shoud be divided by 2,thus we may have ot use sin2x=f(sinx^2, sinx) to have correct result
+                  */
         double d = cross_a * cross_angle/scalar_angle  -scalar_a ;
-        double init[9] = {0,0,0,0,0,0,0,0,0};
 
-        for(int i=0; i<3;++i){
-            for(int j=0; j<6 ; ++j){
-                jacobians[i][j] =0 ;
-                //                cout << i<<"," << j << endl;
-            }
-        }
+        //        for(int i=0; i<3;++i){
+        //            for(int j=0; j<6 ; ++j){
+        //                jacobians[i][j] =0 ;
+        //                //                cout << i<<"," << j << endl;
+        //            }
+        //        }
 
         if (jacobians == NULL) {
-            //cout << "JACOBIAN NULL" <<endl;
-            return 0;
+        //    cout << "JACOBIAN NULL" <<endl;
+            return 1;
         }
 
         if (jacobians != NULL && jacobians[0] != NULL) {
-            //cout << "filled first jac" <<endl;
+        //    cout << "filled first jac" <<endl;
             //note: null jacobian means end of computation?
-            jacobians[0][0] =  Vjc(0) *d; /// @debug : put a d factor here
-            jacobians[0][1] =  Vjc(1) * d;
-            jacobians[0][2]=   Vjc(2) * d;
+            jacobians[0][0] = Vjc(0) * d; /// @debug : put a d factor here
+            jacobians[0][1] = Vjc(1) * d;
+            jacobians[0][2] = Vjc(2) * d;
+            jacobians[0][3] = 0; //  Vjc(2) * d;
+            jacobians[0][4] = 0 ; //  Vjc(2) * d;
+            jacobians[0][5] = 0 ; //  Vjc(2) * d;
 
         }
         if (jacobians != NULL && jacobians[1] != NULL) {
             //note: null jacobian means end of computation?
-            //cout << "filled second jac" <<endl;
-            jacobians[1][0] =  init[0];
-            jacobians[1][1] =  init[0];
-            jacobians[1][2]=   init[0];
+         //   cout << "filled second jac" <<endl;
+            jacobians[1][0] =  0;
+            jacobians[1][1] =  0;
+            jacobians[1][2]=   0;
+            jacobians[1][3] =  0;
+            jacobians[1][4]=   0;
+            jacobians[1][5]=   0;
         }
         if (jacobians != NULL && jacobians[2] != NULL) {
             //note: null jacobian means end of computation?
-            // cout << "filled third jac" <<endl;
-            jacobians[2][0] =  init[0];
-            jacobians[2][1] =  init[0];
-            jacobians[2][2]=   init[0];
+        //    cout << "filled third jac" <<endl;
+            jacobians[2][0] =  0;
+            jacobians[2][1] =  0;
+            jacobians[2][2]=   0;
+            jacobians[2][3] =  0;
+            jacobians[2][4] =  0;
+            jacobians[2][5]=   0;
         }
 
-        //         cout << "end of evaluate" <<endl ;
-        return true;
+        //cout << "end of evaluate" <<endl ;
+        return 1;
     }
 private:
     const double scalar_angle; //! vect_1.vect_2/(norm(vect_1)*norm(vect_2)) (original position)
@@ -449,7 +457,7 @@ public :
         //the parameters is as follow : parameter[0-2] = n_i = first node;parameter[3-5] = n_j = second node;
 
         //map the input array into 2 eigen vectors, plus map observation position into Eigen
-//        cout << "\nbeginning of evaluate" << endl;
+        //        cout << "\nbeginning of evaluate" << endl;
         ConstVectorRef Ni( parameters[0],3 );
         ConstVectorRef Nj( parameters[1],3 );
 
@@ -491,13 +499,13 @@ public :
         Eigen::Vector3d Jj =  sign * Vja * SIGN(cost) * residuals[0];
 
         ////        cout << "  Observation_id : " <<  obs_->obs_id <<std::endl;
-//        cout << "  Ni : " << Ni.transpose() <<std::endl;
-//        cout << " Nj : " << Nj.transpose() <<std::endl;
+        //        cout << "  Ni : " << Ni.transpose() <<std::endl;
+        //        cout << " Nj : " << Nj.transpose() <<std::endl;
         ////        cout << " Vja : " << Vja.transpose() <<std::endl;
-//        cout << "  residual : " << residuals[0] <<std::endl;
-//        cout << "  cost : " << cost <<std::endl;
-//        cout << "   Ji :" << Ji.transpose() <<endl;
-//        cout << "   Jj :" << Jj.transpose() <<endl;
+        //        cout << "  residual : " << residuals[0] <<std::endl;
+        //        cout << "  cost : " << cost <<std::endl;
+        //        cout << "   Ji :" << Ji.transpose() <<endl;
+        //        cout << "   Jj :" << Jj.transpose() <<endl;
         //        // std::cout << "\njac (eigen): \n" << jac << std::endl;
 
         if (jacobians == NULL) {
@@ -521,7 +529,7 @@ public :
         }
 
 
-//        cout << "end of evaluate()\n";
+        //        cout << "end of evaluate()\n";
         return true;
     }
 
