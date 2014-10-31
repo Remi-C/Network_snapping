@@ -81,10 +81,11 @@ int main(int argc, char** argv) {
     data->setMap();
 
     //reading the objects for snapping
-    std::cout << "  \E[34;1m \tconst int Reading Objects\E[m \n" ;
+    std::cout << "  \E[34;1m \t Reading Objects\E[m \n" ;
     data->readObjects();
 
-
+    //reading the objects for snapping
+    std::cout << "  \E[34;1m \tConstructing Problem\E[m \n" ;
     /// clean version to not allow ceres to destroy the memory itself
     Problem::Options pb_options;
     pb_options.local_parameterization_ownership = ceres::DO_NOT_TAKE_OWNERSHIP;
@@ -123,6 +124,8 @@ int main(int argc, char** argv) {
     }
 
     Solver::Options options;
+    Solver::Summary summary;
+
 
     options.max_num_iterations = 50;
     options.linear_solver_type = ceres::DENSE_QR;
@@ -147,8 +150,11 @@ int main(int argc, char** argv) {
     WritingTempResultCallback callback(data->output_file_path(),0);
     options.callbacks.push_back(&callback);
 
-    Solver::Summary summary;
+
+    //reading the objects for snapping
+    std::cout << "  \E[34;1m \tSolving Problem\E[m \n" ;
     Solve(options, &problem, &summary);
+
 
     // std::cout << summary.BriefReport() << "\n";
     std::cout << summary.FullReport() << "\n";
