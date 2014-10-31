@@ -135,6 +135,29 @@ SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, p
 -- 	SELECT ST_AsText(ST_SnapToGrid(geom,0.1))
 -- 	FROM def_zone_export
 
+
+		--importing the sidewalk observation (weighted points ) here
+	
+	DROP MATERIALIZED VIEW IF EXISTS weighted_sidewalk_observation_point ;
+	CREATE MATERIALIZED VIEW weighted_sidewalk_observation_point AS 
+	SELECT *
+	FROM public.dblink( 
+		 'hostaddr=127.0.0.1 port=5433 dbname=TerraMobilita user=postgres password=postgres'::text
+		, 'SELECT * FROM cmm.lines_to_weighted_points '::text
+		,TRUE)  AS   f(
+			 qgis_id bigint,
+			  area_id bigint,
+			  seg_id integer,
+			  geom geometry,
+			  weight numeric
+			 ) ; 
+	CREATE INDEX ON weighted_sidewalk_observation_point (qgis_id) ; 
+	CREATE INDEX ON weighted_sidewalk_observation_point (area_id) ; 
+	CREATE INDEX ON weighted_sidewalk_observation_point (seg_id) ; 
+	CREATE INDEX ON weighted_sidewalk_observation_point (weight) ; 
+	CREATE INDEX ON weighted_sidewalk_observation_point USING GIST  (ST_Transform(geom,932011) ); 
+
+	
 */
 
 	DROP TABLE IF EXISTS nodes_for_output_in_export_area; 
@@ -146,7 +169,7 @@ SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, p
 		,COALESCE(nou.Z,0) AS Z
 		,nou.is_in_intersection
 	FROM nodes_for_output as nou, def_zone_export as dfz
-	WHERE ST_DWITHIN(ST_SetSRID(ST_MakePoint(nou.X,nou.Y,nou.Z),932011) , ST_Transform((dfz.geom),932011),200) = TRUE;
+	WHERE ST_DWITHIN(ST_SetSRID(ST_MakePoint(nou.X,nou.Y,nou.Z),932011) , ST_Transform((dfz.geom),932011),20) = TRUE;
 
 	DROP TABLE IF EXISTS edges_for_output_in_export_area; 
 	CREATE TABLE edges_for_output_in_export_area AS 
@@ -155,34 +178,12 @@ SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, p
 	FROM edges_for_output as eou , nodes_for_output_in_export_area AS nou1, nodes_for_output_in_export_area AS nou2
 	WHERE eou.start_node = nou1.node_id AND eou.end_node = nou2.node_id  ;
 
-	--importing the sidewalk observation (weighted points ) here
--- 	
--- 	DROP MATERIALIZED VIEW IF EXISTS weighted_sidewalk_observation_point ;
--- 	CREATE MATERIALIZED VIEW weighted_sidewalk_observation_point AS 
--- 	SELECT *
--- 	FROM public.dblink( 
--- 		 'hostaddr=127.0.0.1 port=5433 dbname=TerraMobilita user=postgres password=postgres'::text
--- 		, 'SELECT * FROM cmm.lines_to_weighted_points '::text
--- 		,TRUE)  AS   f(
--- 			 qgis_id bigint,
--- 			  area_id bigint,
--- 			  seg_id integer,
--- 			  geom geometry,
--- 			  weight numeric
--- 			 ) ; 
 
 	--getting the observations inside the area 
 
 	DROP TABLE IF EXISTS obs_for_output_in_export_area; 
-	CREATE TABLE obs_for_output_in_export_area AS 
-	WITH obs_in_area AS ( --these are the observations that are inside the defined area
-			SELECT nou.qgis_id, nou.area_id, nou.seg_id
-				, nou.geom AS geom 
-				, nou.weight
-			FROM weighted_sidewalk_observation_point AS  nou , def_zone_export as dfz
-			WHERE ST_WITHIN(nou.geom,  dfz.geom ) = TRUE 
-		)
-	,edge_geom AS ( -- we reconstruct the edge geom to be able to assign observation to edges
+	CREATE TABLE obs_for_output_in_export_area AS  
+	WITH edge_geom AS ( -- we reconstruct the edge geom to be able to assign observation to edges
 		SELECT efo.*, ST_SetSRID(ST_MakeLine(ST_MakePoint(nfo1.X,nfo1.Y,nfo1.Z) ,ST_MakePoint(nfo2.X,nfo2.Y,nfo2.Z)  ),932011) as edge_geom
 		FROM edges_for_output_in_export_area as efo
 			LEFT JOIN nodes_for_output_in_export_area AS nfo1 ON (efo.start_node = nfo1.node_id)
@@ -190,8 +191,9 @@ SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, p
 	)
 	,map AS (--for each edge, we get observation closer than 5 meters
 		SELECT DISTINCT ON (oia.qgis_id) oia.*, eg.edge_id
-		FROM obs_in_area  AS oia ,edge_geom AS eg
-		WHERE ST_DWithin( ST_Transform(oia.geom,932011), eg.edge_geom,10)=TRUE
+		FROM weighted_sidewalk_observation_point   AS oia  , def_zone_export as dfz ,edge_geom AS eg
+		WHERE ST_DWithin( ST_Transform(oia.geom,932011), eg.edge_geom,4+width)=TRUE
+			AND ST_WITHIN(oia.geom,  dfz.geom ) = TRUE 
 		ORDER BY oia.qgis_id ASC, ST_Distance(ST_Transform(oia.geom,932011),eg.edge_geom ) ASC
 			
 	)
