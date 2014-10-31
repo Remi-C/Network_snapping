@@ -20,7 +20,7 @@ CREATE SCHEMA IF NOT EXISTS network_for_snapping;
 SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, public; 
 
 
-
+/*
 --break edges into pair of succesive points
 --we give new node_id over 1000000 to nodes resulting from breaking
 
@@ -88,7 +88,7 @@ SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, p
 	)
 	,new_edges AS (--a pair of nodes is a new edge. We also get the width information.	
 			-- we generate one new edge too much per old edge, we have to remove it using the "WHERE sp.end_node IS NOT NULL"
-		SELECT 1000000+ row_number() over()  AS edge_id
+		SELECT 1000000+ row_number() over()  AS edge_id 
 			,sp.start_node
 			,sp.end_node 
 			,r.largeur AS width
@@ -98,7 +98,7 @@ SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, p
 			LEFT OUTER JOIN road AS  r ON (ed.ign_id = r.id)
 		WHERE sp.end_node IS NOT NULL 
 	)
-		 SELECT ed.edge_id, ed.start_node, ed.end_node, r.largeur AS width
+		 SELECT ed.edge_id, ed.start_node, ed.end_node, r.largeur AS width, ed.edge_id AS old_edge_id
 		FROM edge_data AS ed
 		LEFT OUTER JOIN road AS  r ON (ed.ign_id = r.id)
 		WHERE ST_NumPoints(ed.geom)<=2
@@ -107,6 +107,7 @@ SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, p
 				, start_node
 				, end_node 
 				, width 
+				,old_edge_id
 		FROM new_edges ;
 	 
 
@@ -134,7 +135,7 @@ SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, p
 -- 	SELECT ST_AsText(ST_SnapToGrid(geom,0.1))
 -- 	FROM def_zone_export
 
-
+*/
 
 	DROP TABLE IF EXISTS nodes_for_output_in_export_area; 
 	CREATE TABLE nodes_for_output_in_export_area AS 
@@ -271,4 +272,4 @@ COPY (
 	SELECT obs_id ||';'||edge_id||';'||x||';'||y||';'||z||';'||confidence||';'||weight
 	FROM obs_for_output_in_export_area
 )
-TO '/media/sf_E_RemiCura/PROJETS/snapping/data/data_in_reduced_export_area/all_in_export_area.csv'
+TO '/media/sf_E_RemiCura/PROJETS/snapping/data/data_in_reduced_export_area/full_area.csv' ;
