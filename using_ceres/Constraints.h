@@ -91,7 +91,7 @@ struct DistanceToInitialSpacing{
         T n_i_minus_n_j[3] ;
         soustraction(n_i,n_j,n_i_minus_n_j);
 
-        distance_to_original_spacing[0]=  ceres::pow(squaredNorm(n_i_minus_n_j) - squaredNorm(spac),2)   ;
+        distance_to_original_spacing[0]=  ceres::pow(ceres::sqrt(squaredNorm(n_i_minus_n_j)) - ceres::sqrt(squaredNorm(spac)),2)   ;
         //        //compute the difference with original spacing:
         //        distance_to_original_spacing[0] = T(K_spacing) * ( T(initial_spacing_[0]) - (n_i[0] - n_j[0]) ) ;
         //        distance_to_original_spacing[1] = T(K_spacing) * ( T(initial_spacing_[1]) - (n_i[1] - n_j[1]) );
@@ -205,9 +205,9 @@ public :
         //compute the direction of movement : - = toward the obs, + = away from point
         int sign = ((  residuals[0]  >0) - (residuals[0] <0));
         //compute Jacobian norm for Ni : for test simply take d
-        Eigen::Vector3d Ji = -1 * sign* Vja * SIGN(d) *residuals[0]  ;
+        Eigen::Vector3d Ji = -1 * sign* Vja * SIGN(d) * ceres::sqrt(residuals[0])  ;
         //compute Jacobian norm for Nj : for test simply take d
-        Eigen::Vector3d Jj = -1 * sign * Vja *  SIGN(d) * residuals[0] ;
+        Eigen::Vector3d Jj = -1 * sign * Vja *  SIGN(d) * ceres::sqrt(residuals[0]) ;
 
         //        cout << "  Observation_id : " <<  obs_->obs_id <<std::endl;
         //         cout << "  Ni : " << Ni.transpose() <<std::endl;
@@ -310,12 +310,12 @@ public :
         //        }
 
         if (jacobians == NULL) {
-        //    cout << "JACOBIAN NULL" <<endl;
+            //    cout << "JACOBIAN NULL" <<endl;
             return 1;
         }
 
         if (jacobians != NULL && jacobians[0] != NULL) {
-        //    cout << "filled first jac" <<endl;
+            //    cout << "filled first jac" <<endl;
             //note: null jacobian means end of computation?
             jacobians[0][0] = Vjc(0) * d; /// @debug : put a d factor here
             jacobians[0][1] = Vjc(1) * d;
@@ -327,7 +327,7 @@ public :
         }
         if (jacobians != NULL && jacobians[1] != NULL) {
             //note: null jacobian means end of computation?
-         //   cout << "filled second jac" <<endl;
+            //   cout << "filled second jac" <<endl;
             jacobians[1][0] =  0;
             jacobians[1][1] =  0;
             jacobians[1][2]=   0;
@@ -337,7 +337,7 @@ public :
         }
         if (jacobians != NULL && jacobians[2] != NULL) {
             //note: null jacobian means end of computation?
-        //    cout << "filled third jac" <<endl;
+            //    cout << "filled third jac" <<endl;
             jacobians[2][0] =  0;
             jacobians[2][1] =  0;
             jacobians[2][2]=   0;
@@ -389,8 +389,8 @@ public :
         residuals[0] = pow(cost,2);
 
         //compute Jacobian
-        Eigen::Vector3d Ji = -1 * sign* U * cost/2 ;
-        Eigen::Vector3d Jj = +1 * sign* U * cost/2 ;
+        Eigen::Vector3d Ji = -1 * sign* U * cost  ;// /2
+        Eigen::Vector3d Jj = +1 * sign* U * cost  ;// /2
 
         //        cout << "initial spacing : " << Is.transpose() << endl;
         //        cout << "  Ni : " << Ni.transpose()     << endl;
@@ -488,15 +488,15 @@ public :
                                        ,obj_->geom_border_area
                                        );
 
-        residuals[0] = pow(std::abs(cost * obj_->confidence),2);
-
+        //residuals[0] = pow(std::abs(cost * obj_->confidence),2);
+        residuals[0] = pow(std::abs(cost),2); /// @FIXME @TODO @DEBUG warning : should put the confidence here
 
         int sign =-1* Geometry::orientationIndex(parameters[0],parameters[1],centroid2D_);//depends on left or right !
 
         //compute Jacobian norm for Ni : for test simply take d
-        Eigen::Vector3d Ji =  sign * Vja * SIGN(cost)*  residuals[0];
+        Eigen::Vector3d Ji =  sign * Vja * SIGN(cost)*  ceres::sqrt(residuals[0]);
         //compute Jacobian norm for Nj : for test simply take d
-        Eigen::Vector3d Jj =  sign * Vja * SIGN(cost) * residuals[0];
+        Eigen::Vector3d Jj =  sign * Vja * SIGN(cost) * ceres::sqrt(residuals[0]);
 
         ////        cout << "  Observation_id : " <<  obs_->obs_id <<std::endl;
         //        cout << "  Ni : " << Ni.transpose() <<std::endl;
