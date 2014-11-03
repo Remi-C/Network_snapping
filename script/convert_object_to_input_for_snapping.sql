@@ -59,43 +59,43 @@ gid ,  classification_id ,  classification ,   z_range numrange, geom ,   import
 	DROP TABLE IF EXISTS obj_for_output_in_export_area; 
 	CREATE TABLE obj_for_output_in_export_area AS 
 	WITH obj_in_area AS ( --these are the observations that are inside the defined area
-			SELECT  ao.gid ,  classification_id ,  classification ,  ao.geom , weighted_confidence ,   should_be_used 
-			FROM ashaped_objects AS  ao, def_zone_export as dfz
-			WHERE ST_WITHIN(ao.geom,  ST_Transform(dfz.geom ,932011) )= TRUE 
-				AND (upper(z_range)-lower(z_range)) BETWEEN 0.2 AND 4
-				AND classification = ANY (ARRAY[
-					'bollard'
-					,'other object'
-					,'pedestrian'
-					,'parked bicycle'
-					,'traffic sign'
-					--,'sidewalk'
-					,'walking pedestrian'
-					--,'car'
-					--,'other'
-					--,'tree'
-					,'trash can'
-					,'holding pedestrian'
-					,'scooter without driver'
-					--,'no_classification'
-					--,'building'
-					--,'road'
-					,'meter'
-					--,'ground'
-					,'still pedestrian'
-					,'punctual object'
-					--,'curb'
-					,'potted plant' 
-					])
-			UNION ALL
+-- 			SELECT  ao.gid ,  classification_id ,  classification ,  ST_Envelope(ao.geom) AS geom , weighted_confidence ,   should_be_used 
+-- 			FROM ashaped_objects AS  ao, def_zone_export as dfz
+-- 			WHERE ST_WITHIN(ao.geom,  ST_Transform(dfz.geom ,932011) )= TRUE 
+-- 				AND (upper(z_range)-lower(z_range)) BETWEEN 0.2 AND 4 
+-- 				AND classification = ANY (ARRAY[
+-- 					'bollard'
+-- 					,'other object'
+-- 					,'pedestrian'
+-- 					,'parked bicycle'
+-- 					,'traffic sign'
+-- 					--,'sidewalk'
+-- 					,'walking pedestrian'
+-- 					--,'car'
+-- 					--,'other'
+-- 					--,'tree'
+-- 					,'trash can'
+-- 					,'holding pedestrian'
+-- 					,'scooter without driver'
+-- 					--,'no_classification'
+-- 					--,'building'
+-- 					--,'road'
+-- 					,'meter'
+-- 					--,'ground'
+-- 					,'still pedestrian'
+-- 					,'punctual object'
+-- 					--,'curb'
+-- 					,'potted plant' 
+-- 					])
+-- 			UNION ALL
 				SELECT ao.gid ,  classification_id ,  classification 
 					,  ST_SnapToGrid(ST_SimplifyPreserveTopology(ST_Buffer(ST_Buffer(ao.geom ,2,'quad_segs=4'),-2, 'quad_segs=4'),0.1),0.001) AS geom
 					, weighted_confidence ,   should_be_used 
 			FROM ashaped_objects AS  ao, def_zone_export as dfz
 			WHERE ST_WITHIN(ao.geom,  ST_Transform(dfz.geom ,932011) )= TRUE 
 				AND classification = 'car'
-				AND (upper(z_range)-lower(z_range)) BETWEEN 0.2 AND 4
-				AND ST_Area(ao.geom) BETWEEN 3 AND 30
+				AND (upper(z_range)-lower(z_range)) BETWEEN 0.2 AND 4 
+				AND ST_Area(ao.geom) BETWEEN 3.0 AND 12.0
 		)
 	,edge_geom AS ( -- we reconstruct the edge geom to be able to assign objects to edges
 		SELECT efo.*, ST_SetSRID(ST_MakeLine(ST_MakePoint(nfo1.X,nfo1.Y,nfo1.Z) ,ST_MakePoint(nfo2.X,nfo2.Y,nfo2.Z)  ),932011) as edge_geom
