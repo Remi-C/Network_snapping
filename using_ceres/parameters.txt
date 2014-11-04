@@ -9,13 +9,13 @@ output_file_path =  ../../data/data_in_reduced_export_area/snapping_output_full.
 class_definition_path = ../../data/data_in_reduced_export_area/class_definition.csv ;
 objects_path = ../../data/data_in_reduced_export_area/object_in_export_area.csv ;
 #realtiv weight of constraints
-K_origin = 10 ;
+K_origin = 100 ;
 K_spacing = 100 ;
 K_obs = 1 ;
 K_angle = 100 ;
-K_obj = 100 ;
+K_obj = 2.5  ;
 #what constraints to use?
-use_initial_position_constraint = true ;
+use_initial_position_constraint = false ;
 use_initial_spacing_constraint = false ; //buggy
 use_distance_to_proj_constraint = false ; //buggy
 use_manual_distance_to_proj_constraint = true ;
@@ -25,5 +25,5 @@ use_manual_Surf_Dist_To_Objects_constraint = true ;
 
 
 #about loss function : how shall we remove the outliers?
-useLoss = true ;
-lossScale = 4.0 ;
+useLoss = false ;
+lossScale = 10.0 ;

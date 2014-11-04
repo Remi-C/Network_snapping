@@ -227,6 +227,7 @@ int addManualConstraintsOnOrthDistToObservation(DataStorage * data, Problem * pr
                     ,loss
                     ,start_node->position
                     ,end_node->position
+                    ,&relativ_edge->width
                     ); //note : both observations are referring to these nodes.
     }
 }
@@ -250,7 +251,7 @@ int addManualConstraintsOnSurfDistToObjects(DataStorage * data, Problem * proble
             new  ManualAttr_Rep_Object(i, data ) ;
         //untill 2.0 meters of distance, normal behavior. after that outliers behavior (not square)
         LossFunction* loss = NULL;
-        loss = new ceres::ScaledLoss( g_param->useLoss?(new ceres::SoftLOneLoss(g_param->lossScale)):NULL
+        loss = new ceres::ScaledLoss( g_param->useLoss?(new ceres::SoftLOneLoss(g_param->lossScale/5)):NULL
                                         ,g_param->K_obj,ceres::DO_NOT_TAKE_OWNERSHIP) ;
 
         problem->AddResidualBlock(
@@ -258,6 +259,7 @@ int addManualConstraintsOnSurfDistToObjects(DataStorage * data, Problem * proble
                     ,loss
                     ,start_node->position
                     ,end_node->position
+                    ,&relativ_edge->width
                     ); //note : obj is referring to these nodes.
     }
 }

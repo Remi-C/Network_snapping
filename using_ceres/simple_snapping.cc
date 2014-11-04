@@ -13,12 +13,13 @@
     _ use a 2D cost function output for orthogonal distance, put a term penalyzing being inside an observation width zone
 
     DONE add a constraint on distance to orginal angles between segements.
-
-    _allow same observation id (allow an observation to be affected to multiple edges)
-
+     - allow same observation id (allow an observation to be affected to multiple edges)
+     - Generate visualisation data for every cost and jacobian
+     - Allow fixed nodes for border of the network
+        - Allow different behaviour based on the node being in intersection or not.
 
   @DEBUG
-    _Border_out non working. Sign problem(again)?
+    _Border /in/out/ non working. Sign problem(again)?
   */
 
 #include "ceres/ceres.h"
@@ -132,12 +133,15 @@ int main(int argc, char** argv) {
     options.minimizer_progress_to_stdout = true;
 
     options.minimizer_type = ceres::LINE_SEARCH ; //can also be : TRUST_REGION or LINE_SEARCH
-    //options.num_threads = 2; /// @todo : handy for speed, but makes it hard to understand cout
+//    options.num_threads = 2; /// @todo : handy for speed, but makes it hard to understand cout
 
-    //options.trust_region_strategy_type = ceres::DOGLEG ;
-    //options.dogleg_type = ceres::SUBSPACE_DOGLEG ;
-    //options.use_inner_iterations =true ;
-    //options.use_approximate_eigenvalue_bfgs_scaling = true;
+    options.line_search_direction_type = ceres::BFGS ;//   BFGS and LBFGS
+
+
+//    options.trust_region_strategy_type = ceres::DOGLEG ;
+//    options.dogleg_type = ceres::SUBSPACE_DOGLEG ;
+//    options.use_inner_iterations =true ;
+//    options.use_approximate_eigenvalue_bfgs_scaling = true;
 
     //when stop the solver :
 
