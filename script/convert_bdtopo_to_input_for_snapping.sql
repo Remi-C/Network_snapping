@@ -194,6 +194,11 @@ SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, p
 		FROM weighted_sidewalk_observation_point   AS oia  , def_zone_export as dfz ,edge_geom AS eg
 		WHERE ST_DWithin( ST_Transform(oia.geom,932011), eg.edge_geom,4+width)=TRUE
 			AND ST_WITHIN(oia.geom,  dfz.geom ) = TRUE 
+			AND NOT EXISTS (
+				SELECT 1
+				FROM street_amp.result_intersection as ri
+				WHERE ST_DWithin(ri.intersection_surface,ST_Transform(oia.geom,932011),5)=TRUE
+			)
 		ORDER BY oia.qgis_id ASC, ST_Distance(ST_Transform(oia.geom,932011),eg.edge_geom ) ASC
 			
 	)
