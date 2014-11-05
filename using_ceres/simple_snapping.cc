@@ -4,6 +4,25 @@
 //                                                      //
 //////////////////////////////////////////////////////////
 /**
+
+  @STATE 2014 11 05
+    Some serious issues
+        DONE for sidewalk : should exclude the observations that are close to the intersections
+        for objects, there is a design flaw in surf dist: the jacobian should be geometrical and return the change to do to go to 0 cost.
+        for the moment it returns a somehting proportional to the shared surface !
+        For objects : started a new pure distance to object function, but it seems to be not working
+    It is impossible to properly add new measures and balances cost without a visualization of everything at each step.
+    There is no easy way to visualize.
+    At each iteration, we have to manually evaluate each cost function with proper arguments, then output the processed result into a file to see what are the constraints
+    We woul need : for each cost function : to represent the jacobian
+    for cost function on objects & suidewalk
+        a linestring (oriented) from border of axis (includiong width) with jac direction and norm(jac) size
+        We can create such line  : obs+jac should be a point exactly on axis dilated border. We use this point as first point, of the line, then offset it by -jac to create the line representing jac.
+        we do not represent regularization constraints.
+
+
+
+
   @TODO
     _ use Eigen to perfom all geometrical computation ( in the autodiff functor, seelibmv_homeography))
     DONE _ real using of id of element (not just index in array)
@@ -20,6 +39,10 @@
 
   @DEBUG
     _Border /in/out/ non working. Sign problem(again)?
+    _ surface dist : big design mistake : the jacobian and residual should be proportionnal to the distance between
+       object and edge ofsseted by width, and not proportionnal to area, because
+       The power of the induced moves are not realted to geometric reality
+
   */
 
 #include "ceres/ceres.h"
