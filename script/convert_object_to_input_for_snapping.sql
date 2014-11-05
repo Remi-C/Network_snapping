@@ -105,7 +105,7 @@ gid ,  classification_id ,  classification ,   z_range numrange, geom ,   import
 	)
 	,map AS (--for each edge, we get objects closer than 5 meters
 		SELECT 
-			--DISTINCT ON (oia.gid) --note : enable = object mapped to at most 1 edge
+			DISTINCT ON (oia.gid) --note : enable = object mapped to at most 1 edge
 			oia.*, eg.edge_id
 		FROM obj_in_area  AS oia ,edge_geom AS eg
 		WHERE ST_DWithin( ST_Transform(oia.geom,932011), eg.edge_geom,4+width)=TRUE
