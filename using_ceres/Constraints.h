@@ -53,6 +53,8 @@ int addManualConstraintsOnSurfDistToObjects(DataStorage * , Problem * ) ;
 int addManualConstraintsOnOrthDistToObservation_width(DataStorage * , Problem * ) ;
 int addManualConstraintsOnSurfDistToObjects_width(DataStorage * , Problem * ) ;
 
+
+
 /** functor to compute cost between one node position and this node original position
   */
 
@@ -319,13 +321,6 @@ public :
         Eigen::Vector3d Ji = -1 * sign* U * cost  ;// /2
         Eigen::Vector3d Jj = +1 * sign* U * cost  ;// /2
 
-        //        cout << "initial spacing : " << Is.transpose() << endl;
-        //        cout << "  Ni : " << Ni.transpose()     << endl;
-        //        cout << " Nj : " << Nj.transpose()      << endl;
-        //        cout << "  Cost :" << cost     << endl;
-        //        cout << "   Ji :" << Ji.transpose()     <<endl;
-        //        cout << "   Jj :" << Jj.transpose()     << endl;
-
 
         if (jacobians == NULL) {
             //cout << "JACOBIAN NULL" <<endl;
@@ -386,7 +381,7 @@ public :
         Eigen::Vector3d U = (Nj-Ni)/(Nj-Ni).norm();
         //compute residual = distance from O to NiNj : norm(vect(NiO,NiNj))/norm(NiNj)
         double d = Np.norm()/(Nj-Ni).norm()-  parameters[2][0]/2.0;
-        residuals[0]=  d  ;
+        residuals[0]=  ceres::pow(d ,2)  ;
         //compute Jacobian director vector : vect(u,n)
         Eigen::Vector3d Vja = U.cross(Np/Np.norm());
         //if(obs_->obs_id ==1 ) {Vja << -0.7,-0.7,0;}
@@ -394,7 +389,7 @@ public :
 
         //compute the direction of movement : - = toward the obs, + = away from point
         //compute Jacobian norm for Ni : for test simply take d
-        Eigen::Vector3d Ji = -1 *  Vja * d ;
+        Eigen::Vector3d Ji = -1 *  Vja *  ceres::sqrt(residuals[0])*SIGN(d);
         //compute Jacobian norm for Nj : for test simply take d
         Eigen::Vector3d Jj = Ji ;
 

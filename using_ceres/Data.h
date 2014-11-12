@@ -10,7 +10,7 @@
 
 
   format of the file to be read
-""""""""""""""""""""""""""""""""""""" 
+"""""""""""""""""""""""""""""""""""""
   #header
   num_nodes;num_edges;num_observations
   #header node
@@ -21,15 +21,15 @@
   ...
   #header observations
   obs_id::int;edge_id::int;X::double;Y::double;Z::double;confidence::double;weight::double
-"""""""""""""""""""""""""""""""""""""  
+"""""""""""""""""""""""""""""""""""""
 
   format of the file to be written
-""""""""""""""""""""""""""""""""""""" 
+"""""""""""""""""""""""""""""""""""""
     #geom;width;cost;start_time;end_time;iteration
     LINESTRINGZ(X1 Y1 Z1, X2 Y2 Z2);2.25;12.98;YYYY-MM-DD HH:MM:SS.ssssss;YYYY-MM-DD HH:MM:SS.ssssss;1
     LINESTRINGZ(X1 Y1 Z1, X2 Y2 Z2);2.25;12.98;YYYY-MM-DD HH:MM:SS.ssssss;YYYY-MM-DD HH:MM:SS.ssssss;2
     ...
-"""""""""""""""""""""""""""""""""""""  
+"""""""""""""""""""""""""""""""""""""
 
   */
 #include "Parameters.h"
@@ -39,6 +39,7 @@
 #include <sstream>
 #include <unordered_map> //the hash_table
 #include <math.h> //for
+#include <vector>
 
 #include "Parameters.h"
 #include "enum_functions.h"
@@ -144,12 +145,12 @@ struct classification{
         std::ostringstream nstring;
         //nstring.precision(10);
         nstring  << "class_id : " << int(class_id)  << std::endl
-                   <<"\t class_name : " << class_name << std::endl
-                  << "\t geom_type : " << geom_type<< ":"<<SnapEnums::gt_toString(geom_type) << std::endl
-                  << "\t road_surface_relation :"<<road_surface_relation<< ":"<<SnapEnums::rre_toString(road_surface_relation) << std::endl
-                  << "\t precision : " << precision << std::endl
-                  << "\t importance : " << importance << std::endl
-                  << "\t dist_to_border : " << dist_to_border <<std::endl;
+                 <<"\t class_name : " << class_name << std::endl
+                << "\t geom_type : " << geom_type<< ":"<<SnapEnums::gt_toString(geom_type) << std::endl
+                << "\t road_surface_relation :"<<road_surface_relation<< ":"<<SnapEnums::rre_toString(road_surface_relation) << std::endl
+                << "\t precision : " << precision << std::endl
+                << "\t importance : " << importance << std::endl
+                << "\t dist_to_border : " << dist_to_border <<std::endl;
         return nstring.str() ;
     }
 
@@ -251,6 +252,125 @@ struct street_object{
 };
 
 
+
+
+
+
+/** A class to keep info about cost function so to be able to output constraints at each step
+*/
+class Constraint {
+
+public:
+    //put destructor to virtual
+    Constraint(){};
+    //constructor , do almost nothing
+    Constraint(double node_1[3],double node_2[3],double node_3[3], double * width, ceres::CostFunction * cost_function , double application_point[3] ){
+        node_1_ = node_1;
+        node_2_ = node_2;
+        node_3_ = node_3;
+        width_= width;
+        cost_function_ = cost_function;
+        application_point_ = application_point;
+    }
+    virtual ~Constraint(){
+    };
+
+    // this function should be overcharged by heriting classes to be adapted to each constraints
+   virtual int get_graphical_constraint(double * cost, double * geom ) = 0;
+
+
+    double* node_1_;//nodes used by the cost function
+    double* node_2_;
+    double* node_3_;
+    double * width_; // width of the edge, used by some constraints
+    ceres::CostFunction * cost_function_; //cost function of the constaint, contains the "evaluate" method
+    double * application_point_; //graphical : where should visually the vector start?
+private :
+};
+
+/// heriting from constraints to be adapted to sidewlak distance cost function
+class Constraint_sidewalk : public Constraint{
+public :
+    Constraint_sidewalk(double node_1[3],double node_2[3],double node_3[3], double * width, ceres::CostFunction * cost_function , double application_point[3] )
+        :
+    Constraint( node_1 ,node_2, node_3,  width,  cost_function ,application_point )
+    {
+    }
+
+    int get_graphical_constraint(double * cost, double * geom ){
+
+        double temp_residuals ;
+        double* * temp_jacobian = new double*[3]  ;
+        double* * temp_parameters= new double*[3] ;
+        temp_jacobian[0]=new double[3];temp_jacobian[1]=new double[3];temp_jacobian[2]=new double[3];
+       // temp_parameters[0] = new double[3];temp_parameters[1] = new double[3];temp_parameters[2] = new double[3];
+        temp_parameters[0] =node_1_ ;
+        temp_parameters[1] =node_2_  ;
+        temp_parameters[2]=width_ ;
+
+        cost_function_->Evaluate(temp_parameters,
+                                 &temp_residuals,
+                                 temp_jacobian) ;
+        *cost = temp_residuals;
+        geom[0] =  application_point_[0];
+        geom[1] =  application_point_[1];
+        geom[2] =  application_point_[2];
+
+        geom[3] =  application_point_[0]+temp_jacobian[0][0];
+        geom[4] =  application_point_[1]+temp_jacobian[0][1];
+        geom[5] =  application_point_[2]+temp_jacobian[0][2];
+
+        delete[] temp_jacobian[0];delete[] temp_jacobian[1];delete[] temp_jacobian[2];
+        delete[] temp_jacobian;
+        //delete[] temp_parameters[0];delete[] temp_parameters[1];delete[] temp_parameters[2];
+        delete[] temp_parameters;
+        return -1;
+    };
+};
+
+
+/// heriting from constraints to be adapted to initial position cost function
+class Constraint_spacing : public Constraint{
+public :
+    Constraint_spacing(double node_1[3],double node_2[3],double node_3[3], double * width, ceres::CostFunction * cost_function , double application_point[3] )
+        :
+    Constraint( node_1 ,node_2, node_3,  width,  cost_function ,application_point )
+    {
+    }
+
+    int get_graphical_constraint(double * cost, double * geom ){
+
+        double temp_residuals ;
+        double* * temp_jacobian = new double*[3]  ;
+        double* * temp_parameters= new double*[3] ;
+        temp_jacobian[0]=new double[3];temp_jacobian[1]=new double[3];temp_jacobian[2]=new double[3];
+       // temp_parameters[0] = new double[3];temp_parameters[1] = new double[3];temp_parameters[2] = new double[3];
+        temp_parameters[0] =node_1_ ;
+        temp_parameters[1] =node_2_  ;
+        temp_parameters[2]=width_ ;
+
+        cost_function_->Evaluate(temp_parameters,
+                                 &temp_residuals,
+                                 temp_jacobian) ;
+        *cost = temp_residuals;
+        geom[0] =  (node_1_[0] +node_2_[0])/2 ;
+        geom[1] = (node_1_[1] +node_2_[1])/2 ;
+        geom[2] = (node_1_[2] +node_2_[2])/2 ;
+
+        geom[3] =  (node_1_[0] +node_2_[0])/2+temp_jacobian[0][0];
+        geom[4] =  (node_1_[1] +node_2_[1])/2+temp_jacobian[0][1];
+        geom[5] =  (node_1_[2] +node_2_[2])/2+temp_jacobian[0][2];
+
+        delete[] temp_jacobian[0];delete[] temp_jacobian[1];delete[] temp_jacobian[2];
+        delete[] temp_jacobian;
+        //delete[] temp_parameters[0];delete[] temp_parameters[1];delete[] temp_parameters[2];
+        delete[] temp_parameters;
+        return -1;
+    };
+};
+
+
+
 typedef std::unordered_multimap <int /*node_id*/, edge *> ummap_e;
 
 class DataStorage {
@@ -262,6 +382,7 @@ public:
     void readClassifications();
     void readObjects();
     void writeData(int);
+    void writeConstraints(int);
     void setMap();
 
 
@@ -282,7 +403,8 @@ public:
     classification* classifications(int i)  { return &classifications_[i];}
     street_object* street_objects()  { return street_objects_;}
     street_object* street_objects(int i)  { return &street_objects_[i];}
-
+    std::vector<Constraint*>*  constraints() {return &constraints_;} ;
+    int numConstraintsWritten(){return numConstraintsWritten_ ; };
     node* nbn(int i ) { return nodes_by_node_id_.at(i); }
     std::unordered_map <int /*node_id*/, node *> nodes_by_node_id() {return nodes_by_node_id_;}
     edge* ebe(int i ) { return edges_by_edge_id_.at(i); }
@@ -315,12 +437,14 @@ private:
     int num_classifications_;//! total num of classifications we have read
     int num_street_objects_;
 
+    int numConstraintsWritten_;
+
     node* nodes_;//! an array of node
     edge* edges_;//! an array og edges
     observation* observations_;//! an array of observations
     classification* classifications_; //! an array of classification class.
     street_object * street_objects_;
-    
+
     const string input_file_path_;//! name of the file containing the input data
     const string output_file_path_;//! name of the file where to write results
 
@@ -330,6 +454,8 @@ private:
     ummap_e edges_by_node_id_;
     std::unordered_map <int /*class_id*/, classification *> classification_by_id_;
     std::unordered_map <std::string /*class_name*/, classification *> classification_by_name_;
+
+    std::vector<Constraint*> constraints_ ;  //used to store constraints for output at each step
 };
 
 #endif // DATA_H

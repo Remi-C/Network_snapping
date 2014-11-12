@@ -29,6 +29,10 @@ int addAllConstraints(DataStorage * data, ceres::Problem * problem, Parameter* p
         addConstraintsOnOrthDistToObservation(data , problem) ;
     }
 
+    if(param->use_manual_initial_spacing_constraint == true){
+        addManualConstraintsOnInitialspacing(data, problem);
+    }
+
     // constraints based on initial angle between edges
     if(param->use_manual_distance_to_original_angle == true){
         addManualConstraintsOnDistanceToOriginalAngle(data, problem);
@@ -153,6 +157,19 @@ int addManualConstraintsOnInitialspacing(DataStorage * data, Problem * problem){
                     ,start_node->position
                     ,end_node->position
                     ); //note : both observations are referring to these nodes.
+
+        //saving the constraint for reuse to output at each step
+        //creating the constraint
+        Constraint * n_constraint = new Constraint_spacing(
+                    start_node->position
+                    ,end_node->position
+                    ,start_node->position//useless
+                    ,&edge_to_output->width//useless
+                    ,original_spacing_distance_functor
+                    ,start_node->position //useless
+                    ) ;
+        //adding it to list of constraints
+        data->constraints()->push_back(n_constraint);
     }
 }
 
@@ -273,6 +290,18 @@ int addManualConstraintsOnOrthDistToObservation(DataStorage * data, Problem * pr
                     ,end_node->position
                     ,&relativ_edge->width
                     ); //note : both observations are referring to these nodes.
+
+        //saving the constraint for reuse to output at each step
+        //creating the constraint
+//        Constraint * n_constraint = new Constraint_sidewalk(
+//                    start_node->position
+//                    ,end_node->position
+//                    ,start_node->position
+//                    ,&relativ_edge->width
+//                    ,distance_cost_function
+//                    ,data->observations(i)->position) ;
+//        //adding it to list of constraints
+//        data->constraints()->push_back(n_constraint);
     }
 }
 

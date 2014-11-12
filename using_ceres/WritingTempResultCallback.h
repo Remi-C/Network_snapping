@@ -27,36 +27,37 @@ using namespace std; //maybe we could limit the visibility?
 extern DataStorage * g_data_pointer ;
 
 class WritingTempResultCallback : public ceres::IterationCallback {
- public:
+public:
 
-  //! constructor : open the file, write the csv header in it
-  WritingTempResultCallback(string file_n,int i_)
-      : file_name(file_n) ,  i(i_) {
-  }
+    //! constructor : open the file, write the csv header in it
+    WritingTempResultCallback(string file_n,int i_)
+        : file_name(file_n) ,  i(i_) {
+    }
 
-  ~WritingTempResultCallback(){
-      //closing the connection to file system :
-      file.close();
-  }
+    ~WritingTempResultCallback(){
+        //closing the connection to file system :
+        file.close();
+    }
 
-  virtual ceres::CallbackReturnType operator(
+    virtual ceres::CallbackReturnType operator(
     )(
-          const ceres::IterationSummary& summary
-     //arg for the functor. needed because it is the prototype of this functor
-          ) {
-    //writing edge with updated node position in the file :
-      ++i;
-      g_data_pointer->writeData(i);
-      //std::cout << "  \E[34;1mWriting data for loop \E[m"<< i << endl ;
-      //file << " i : " << i << "some values : "<<"\n" ;
+            const ceres::IterationSummary& summary
+            //arg for the functor. needed because it is the prototype of this functor
+            ) {
+        //writing edge with updated node position in the file :
+        ++i;
+        g_data_pointer->writeData(i);
+        //std::cout << "  \E[34;1mWriting data for loop \E[m"<< i << endl ;
+        //file << " i : " << i << "some values : "<<"\n" ;
 
+        g_data_pointer->writeConstraints(i);
         return ceres::SOLVER_CONTINUE;
-     }
+    }
 
- private:
-   const string file_name;
-   ofstream file;
-   int i;
+private:
+    const string file_name;
+    ofstream file;
+    int i;
 
 };
 

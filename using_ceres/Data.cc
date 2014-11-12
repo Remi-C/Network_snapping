@@ -25,6 +25,9 @@ DataStorage::DataStorage(const string i_filename, const string o_filename )
     edges_ = 0x0;
     observations_ = 0x0;
     classifications_ = 0x0;
+
+    numConstraintsWritten_ = 0;
+
 }
 DataStorage::~DataStorage(){
     delete[] nodes_;
@@ -201,7 +204,7 @@ void DataStorage::readObjects(){
     rewind(i_fptr);
     while (fgets(line, sizeof line, i_fptr) != NULL ) {
 
-//        cout << "readed line: " << line ;
+        //        cout << "readed line: " << line ;
         if (
                 sscanf( line , "%d;%d;%[^;];%d;%[^;];%lG"
                         ,&obj_id
@@ -216,12 +219,12 @@ void DataStorage::readObjects(){
             //std::cout << "reading comment line : " << line ;
         } else {
 
-//            cout <<obj_id << endl
-//                << "\t"<<  class_id << endl
-//                << "\t"<< string(class_name) << " " <<   endl
-//                << "\t"<< edge_id  <<endl
-//                << "\t"<< geom_wkt << endl
-//                << "\t"<< confidence <<endl ;
+            //            cout <<obj_id << endl
+            //                << "\t"<<  class_id << endl
+            //                << "\t"<< string(class_name) << " " <<   endl
+            //                << "\t"<< edge_id  <<endl
+            //                << "\t"<< geom_wkt << endl
+            //                << "\t"<< confidence <<endl ;
 
             classification * object_classification = this->cbn(class_name);
 
@@ -429,7 +432,101 @@ void DataStorage::setMap(){
         classification_by_name_.insert(std::pair<string,classification*>(classifications_[i].class_name,&classifications_[i] ));
     }//loop on all classifications
 
-
     return;
 }
 
+
+
+void DataStorage::writeConstraints(int iteration){
+    //opening files
+    FILE* o_fptr ;
+    string output_file_path_ = "../../data/data_in_reduced_export_area/snapping_constraints.csv" ; /// @todo : put a parameter here
+
+    if(iteration == 1){ //we clean the file at first writting, after we append
+        o_fptr = fopen(output_file_path_.c_str(), "w");
+    }
+    else {
+        o_fptr = fopen(output_file_path_.c_str(), "a+");
+    }
+    if (o_fptr == NULL) {
+        std::cerr << "Error: unable to open file " << output_file_path_;
+        return;
+    }
+
+    //writing the header if needed :
+    if(iteration == 1){ // no need to write the header each time
+        fprintf(o_fptr, "#gid;edge_id;type;cost;geom;start_time;end_time;iteration\n") ;
+    }
+
+    //writing data . Example of what we want :
+    //1;1;SURF_DIST;3.76;LINESTRINGZ(X1 Y1 Z1, X2 Y2 Z2);YYYY-MM-DD HH:MM:SS.ssssss;YYYY-MM-DD HH:MM:SS.ssssss;1
+    int hours_c = int( iteration/(60*60) ) ;
+    int minutes_c = int( iteration/(60) ) ;
+    int seconds_c = iteration%60 ;
+    //same based on iteration+1, for next time.
+    int hours_n = int( (iteration+1)/(60*60) ) ;
+    int minutes_n = int( (iteration+1)/(60) ) ;
+    int seconds_n = (iteration+1)%60 ;
+
+    //loop on all constraints to be outputted
+    int old_gid = numConstraintsWritten();
+    int gid = numConstraintsWritten()+1;
+
+    for(auto& constraint : constraints_){
+
+        //allocate memory for cost and geom
+        double t_c[2] = {0,0} ;
+        double t_g[6] = {0,0,0,1,1,1};
+        //get the cost and geom associated to this constraint for this step
+        constraint->get_graphical_constraint(t_c, t_g );
+
+
+        //this allows to represent 60*60*60 iterations
+        //we compute the H:M:S based on number of iteration.
+        //Note : we rely on cast to int : int(A/B) is going to return rest of euclidian div.
+
+        fprintf(o_fptr,"%d;edge_id;%s;%lG;LINESTRINGZ(%lG %lG %lG, %lG %lG %lG);2014-08-30 %02d:%02d:%02d;2014-08-30 %02d:%02d:%02d;%d\n"
+                , gid
+                , "sidewalk"
+                , t_c[0]
+                , t_g[0], t_g[1], t_g[2], t_g[3], t_g[4], t_g[5]
+                , hours_c
+                , minutes_c
+                , seconds_c
+                , hours_n
+                , minutes_n
+                , seconds_n
+                , iteration
+                );
+        gid ++;
+        numConstraintsWritten_++;
+        // for
+        //    for(const auto& element : this->edges_by_edge_id_){
+        //        //std::cout << element.second->end_node << std::endl;
+        //        edge * edge_to_output = element.second;
+        //        node * start_node = nbn(edge_to_output->start_node) ;
+        //        node * end_node = nbn(edge_to_output->end_node) ;
+        //        double cost = 10.0 ;
+        //        fprintf(o_fptr,"LINESTRINGZ(%lG %lG %lG, %lG %lG %lG);%lG;%lG;2014-08-30 %02d:%02d:%02d;2014-08-30 %02d:%02d:%02d;%d\n"
+        //                , start_node->position[0]
+        //                , start_node->position[1]
+        //                , start_node->position[2]
+        //                , end_node->position[0]
+        //                , end_node->position[1]
+        //                , end_node->position[2]
+        //                , edge_to_output->width
+        //                , cost
+        //                , hours_c
+        //                , minutes_c
+        //                , seconds_c
+        //                , hours_n
+        //                , minutes_n
+        //                , seconds_n
+        //                , iteration
+        //                );
+        //    }
+    }
+    std::cout << (gid - old_gid)  <<" constraints written to file : " << output_file_path_ << "\n";
+    fclose(o_fptr);
+    return;
+}

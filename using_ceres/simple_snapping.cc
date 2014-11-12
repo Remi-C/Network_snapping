@@ -42,6 +42,7 @@
     _ surface dist : big design mistake : the jacobian and residual should be proportionnal to the distance between
        object and edge ofsseted by width, and not proportionnal to area, because
        The power of the induced moves are not realted to geometric reality
+    _big problem with all edges becoming verticals. A mistake somewhere in the jac evaluation?
 
   */
 
@@ -110,7 +111,7 @@ int main(int argc, char** argv) {
 
     //reading the objects for snapping
     std::cout << "  \E[34;1m \tConstructing Problem\E[m \n" ;
-    /// clean version to not allow ceres to destroy the memory itself
+    /// clean version to not allow ceres to destroyTRUST_REGION the memory itself
     Problem::Options pb_options;
     pb_options.local_parameterization_ownership = ceres::DO_NOT_TAKE_OWNERSHIP;
     //creating the problem to be solved
@@ -130,7 +131,7 @@ int main(int argc, char** argv) {
     options.minimizer_type = ceres::LINE_SEARCH ; //can also be : TRUST_REGION or LINE_SEARCH
 //    options.num_threads = 2; /// @todo : handy for speed, but makes it hard to understand cout
 
-    options.line_search_direction_type = ceres::BFGS ;//   BFGS and LBFGS
+   // options.line_search_direction_type = ceres::BFGS ;//   BFGS and LBFGS
 
 
 //    options.trust_region_strategy_type = ceres::DOGLEG ;
