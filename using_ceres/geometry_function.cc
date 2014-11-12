@@ -59,7 +59,7 @@ void EigenToCoordinate_Seq(Eigen::Vector3d tmp_point, GEOSCoordSequence GEOS_DLL
 }
 
 
-geometry axis_to_rectangle(const double * pt1, const double * pt2, double axis_width){
+geometry axis_to_rectangle(const double * pt1, const double * pt2, double axis_width, geometry * axis_to_be_filled){
 
     //cout << "computing the rectangle" << endl;
     //    GEOSMessageHandler notice_function;
@@ -69,9 +69,17 @@ geometry axis_to_rectangle(const double * pt1, const double * pt2, double axis_w
 
     ConstVectorRef Ni( pt1 ,3 );
     ConstVectorRef Nj( pt2 ,3 );
+    GEOSCoordSequence GEOS_DLL * axis_points;
     GEOSCoordSequence GEOS_DLL * rectangle_points;
     Eigen::Vector3d tmp_point;
     geometry rectangle;
+
+    axis_points = GEOSCoordSeq_create(2,2);
+
+    EigenToCoordinate_Seq(Ni,axis_points,0);
+    EigenToCoordinate_Seq(Nj,axis_points,1);
+
+    * axis_to_be_filled = GEOSGeom_createLineString(axis_points);
 
     Eigen::Vector3d u = (Ni-Nj).normalized(); //director vector of segment, normalized
     Eigen::Vector3d normal = u.cross(Eigen::Vector3d::UnitZ()); //normal of segment
@@ -122,6 +130,7 @@ double shared_area_cost(SnapEnums::road_relation_enum road_relation, const doubl
     //    initGEOS(notice_function,error_function);
 
     geometry street_rectangle;
+    geometry axis;
     int intersects ; // 1 = true
     double distance_to_shell =  100 ;
     SnapEnums::attractive_repulsive attractive ;
@@ -131,12 +140,13 @@ double shared_area_cost(SnapEnums::road_relation_enum road_relation, const doubl
     //{IN=1 ,OUT=-1 ,BORDER=0, BORDER_IN = 10, BORDER_OUT= -10, UNDEF=-110 } ;
 
     //compute the rectangle from pts
-    street_rectangle = axis_to_rectangle(pt1,pt2, axis_width/2.0) ;
+    street_rectangle = axis_to_rectangle(pt1,pt2, axis_width/2.0,&axis) ;
+    double dist_to_axis = 0;
     double cost_surface  = 0 ;
     double cost_distance = 0;
     double shared_area = 0 ;
 
-
+    //cout << "axis : " <<  write_WKT(axis,2) << endl;
     //cout << "working on geom : rectangle, obj : " << write_WKT(street_rectangle,3)
     //     << " , " << write_WKT(object_snapping_surface,3) << endl;
 
@@ -146,6 +156,8 @@ double shared_area_cost(SnapEnums::road_relation_enum road_relation, const doubl
 
     //road relation must be IN=1 ,OUT=-1 ,BORDER=0, BORDER_IN = 10, BORDER_OUT
 
+    //need to compute dist_to_axis : NOTE : could be done only when half within
+    GEOSDistance(axis, street_rectangle, &dist_to_axis);
 
     intersects = GEOSIntersects(street_rectangle , object_snapping_surface) ;
 
@@ -161,6 +173,7 @@ double shared_area_cost(SnapEnums::road_relation_enum road_relation, const doubl
 
         }else{//half within, no need to compute distance, it's 0
             distance_to_shell = 0;
+
         }
     }else{ //fully outside
         //, no need to compute intersection, but need to compute distance
@@ -276,84 +289,196 @@ void finish_geom_computation(){
 }
 
 
-//bool read_WKT(std::string s){
 
-//    GEOSContextHandle_t handle;
-//    GEOSMessageHandler notice_function;
-//    GEOSMessageHandler error_function;
-//    GEOSWKTReader GEOS_DLL* reader ;
-//    GEOSWKTWriter GEOS_DLL * writer ;
+double signed_dist_to_border(SnapEnums::road_relation_enum road_relation, const double* pt1, const double* pt2, double axis_width, geometry object_snapping_surface , double object_snapping_surface_area   ){
+    /**
+      @param road_relation : what is the behaviour of the object toward road surface
+      @param pt1 : first node
+      @param pt2 : second node
+      @param axis_to_rectangle(const double * pt1, const double * pt2, double axis_width){ pt2 : second node
+      @param axis_width : width of the segment [pt1,pt2]
+      @param object_snapping_surface : the surface of the object dilated by distance to border
+    */
+    //    GEOSMessageHandler notice_function;
+    //    GEOSMessageHandler error_function;
+    //    initGEOS(notice_function,error_function);
 
-//    GEOSGeometry GEOS_DLL* parsed_geom;
-//    GEOSGeometry GEOS_DLL* obj_buff;
-//    GEOSGeometry GEOS_DLL* street_rectangle;
-//    GEOSGeometry GEOS_DLL* intersection;
+    geometry street_rectangle;
+    geometry axis;
+    int intersects ; // 1 = true
+    double distance_to_shell =  100 ;
+    SnapEnums::attractive_repulsive attractive ;
+    if(road_relation==SnapEnums::IN || road_relation==SnapEnums::BORDER_IN ){attractive = SnapEnums::ATTRACTIVE;}
+    if(road_relation==SnapEnums::OUT || road_relation==SnapEnums::BORDER_OUT ){attractive = SnapEnums::REPULSIVE;}
+    if(road_relation==SnapEnums::BORDER){attractive = SnapEnums::ATTR_AND_REP;};
+    //{IN=1 ,OUT=-1 ,BORDER=0, BORDER_IN = 10, BORDER_OUT= -10, UNDEF=-110 } ;
 
-//    initGEOS(notice_function,error_function);
-//    printf("begginnign of reading WKT \n");
-//    std::cout << "wkt_geom : " << s << endl;
+    //compute the rectangle from pts
+    street_rectangle = axis_to_rectangle(pt1,pt2, axis_width/2.0,&axis) ;
+    double dist_to_axis = 0;
+    double cost_surface  = 0 ;
+    double cost_distance = 0;
+    double shared_area = 0 ;
 
+    //cout << "axis : " <<  write_WKT(axis,2) << endl;
+    //cout << "working on geom : rectangle, obj : " << write_WKT(street_rectangle,3)
+    //     << " , " << write_WKT(object_snapping_surface,3) << endl;
 
-//    /// simulating the reading of an object (polygon) : we want to buffer it using the distance to border of 0.2
-
-//    //parsing the geom
-//    reader = GEOSWKTReader_create();
-//    writer = GEOSWKTWriter_create_r(handle);
-//    GEOSWKTWriter_setOutputDimension_r( handle, writer, 3);
-//    GEOSWKTWriter_setTrim_r(handle,writer,1);
-//    GEOSWKTWriter_setRoundingPrecision_r(handle,writer,10);
-
-
-//    parsed_geom = GEOSWKTReader_read(reader, s.c_str());
-
-
-//    //processing the geom
-//    //buffer:
-
-//    obj_buff = GEOSBufferWithStyle(parsed_geom
-//                                   ,0.2 //width
-//                                   ,1 //quadsegs
-//                                   ,CAP_FLAT//endCapStyle
-//                                   ,0 // int joinStyle
-//                                   ,0.2//double mitreLimit
-//                                   );
+    //possibilities
+    if(road_relation == SnapEnums::UNDEF){return 0 ; } //nothing to do
 
 
-//    //parsed_geom = GEOSBuffer(parsed_geom,0.2 , 2);
+    //road relation must be IN=1 ,OUT=-1 ,BORDER=0, BORDER_IN = 10, BORDER_OUT
+
+    //need to compute dist_to_axis : NOTE : could be done only when half within
+    GEOSDistance(axis, object_snapping_surface, &dist_to_axis);
+    intersects = GEOSIntersects(street_rectangle , object_snapping_surface) ;
+    GEOSDistance( GEOSGetExteriorRing(street_rectangle) , object_snapping_surface, &distance_to_shell);
+
+
+    double intensity = 0;
+    int activating =0 ;
+    int sign;
+
+    /// Only dealing with REPULSIVE  : OUT and BORDER_OUT for the moment
+    if(attractive == SnapEnums::REPULSIVE){
+       //out or border_out
+        intensity =std::max( std::abs(dist_to_axis-axis_width/2), distance_to_shell)  ;
+        activating  = 1 ;
+        if(road_relation==SnapEnums::OUT){//we need to say that being fully outside is 0
+            if( (dist_to_axis-axis_width/2) > 0 ){//we are fully outside
+                activating  =0 ;
+            }
+        }
+    }
+
+    if(intersects==1){
+        sign = -1;
+    }else{
+        sign=+1;
+    }
+
+    /*
 
 
 
-//    /// A  : now we get the rectangle of the street axis dilated with street width
-//    std::string street = "POLYGON((0 -4, 7 -4, 7 4, 0 4 , 0 -4))";
-//    street_rectangle = GEOSWKTReader_read(reader, street.c_str());
+    //this is a shortcut trick to avoid computing intersection and/or distance when not necessary
+    if(intersects==1){  //fully or half within
 
-//    /// C : computing area of intersection between object geom and street_rectangle geom
+        GEOSArea(GEOSIntersection(street_rectangle, object_snapping_surface)
+                 , &shared_area) ;
 
-//    //only computing if the geom intersects :
-//    if( GEOSIntersects(street_rectangle , obj_buff)==1){
-//        cout << "the obejct and street_ractangle intersects, computing the shared surface" <<endl;
-//        intersection = GEOSIntersection(street_rectangle, obj_buff);
-//        cout << " \t intersection " << GEOSWKTWriter_write_r( handle, writer, intersection)<< endl;
-//        double* area = new double();
-//        int area_return  =  GEOSArea_r(handle,intersection, area) ;
-//        cout << " \t area return : " <<  area_return << ", area computed : " << *area << endl;
-//    }
-//    else{//the two geom are not intersecting.
-//        //computing the distance between the 2 geoms, this is the cost modulo area of object buff
-//        cout << "the two geoms are not intersecting" << endl ;
-//        cout << " \t cost = area(object) * (x 1+dist(object,erctangle) obj_buff: " ;
+        if( TOLERANCY_EQUAL(object_snapping_surface_area,shared_area) ){//fully within, need to compute distance
 
-//    }
-//    //writting the geom
-//    //cleaning the reader
+            GEOSDistance( GEOSGetExteriorRing(street_rectangle) , object_snapping_surface, &distance_to_shell);
+
+        }else{//half within, no need to compute distance, it's 0
+            distance_to_shell = 0;
+
+        }
+    }else{ //fully outside
+        //, no need to compute intersection, but need to compute distance
+        shared_area = 0 ;
+        GEOSDistance( GEOSGetExteriorRing(street_rectangle) , object_snapping_surface, &distance_to_shell);
+    }
+    int sign=0;
 
 
+    //putting a cost based on shared area.
+    //we take some shortcuts to avoid computing intersection if it's not necessary
 
-//    //cout <<  GEOSWKTWriter_write_r( handle, writer, obj_buff)<< endl;
-//    GEOSWKTReader_destroy(reader);
-//    GEOSWKTWriter_destroy_r(handle, writer);
-//    //mandatory
-//    finishGEOS();
-//    cout << "end of reading_wkt"  << endl;
-//    return false;
-//}
+    if(distance_to_shell!=0){//the object is either fully inside or fully outside
+        if(intersects==1){//the object is fully inside
+            if(road_relation==SnapEnums::BORDER){
+                cost_surface = object_snapping_surface_area;
+                sign= +1;
+            }
+            if(attractive==SnapEnums::ATTRACTIVE){
+                cost_surface = 0;
+                sign = 1;//is no 0 because of BORDER_IN case
+            }
+            if(attractive==SnapEnums::REPULSIVE){
+                cost_surface = object_snapping_surface_area;
+                cost_distance = (distance_to_shell) * object_snapping_surface_area ;
+                sign = +1 ;
+            }
+        }else{//the object is fully outside
+            if(road_relation==SnapEnums::BORDER){
+                cost_surface = object_snapping_surface_area;
+                sign = -1;
+            }
+            if(attractive==SnapEnums::ATTRACTIVE){
+                cost_surface = object_snapping_surface_area;
+                cost_distance = (distance_to_shell) * object_snapping_surface_area ;
+                sign = -1;
+            }
+            if(attractive==SnapEnums::REPULSIVE){
+                cost_surface = 0;
+                sign = -1;//is not 0 because of border_out
+            }
+
+        }
+    }else{//the object intersects the border
+        //we must compute the shared surface
+
+        if(road_relation==SnapEnums::BORDER){//cost is 0 when object is centered on border
+            cost_surface = object_snapping_surface_area-2*shared_area ;
+            sign = -1*SIGN(cost_surface);//this is the sign function
+            cost_surface = std::abs(cost_surface);
+        }
+        if(attractive==SnapEnums::ATTRACTIVE){//Cost is high when object is outside
+            cost_surface = object_snapping_surface_area-shared_area;
+            sign = -1;
+        }
+        if(attractive==SnapEnums::REPULSIVE){//cost is high when object is inside
+            cost_surface = shared_area;
+            sign = +1;
+        }
+
+    }
+
+    if(road_relation == SnapEnums::BORDER || road_relation == SnapEnums::BORDER_IN || road_relation == SnapEnums::BORDER_OUT){
+        //we add a term to cost that is proprortionnal to the distance to border
+
+        if(distance_to_shell==0){
+            //the distance to border is null, no modification of the cost
+        }else{//the object is either fully inside or fully outside
+            //the cost is proportionnal to its distance to border
+            cost_distance = (distance_to_shell) * object_snapping_surface_area ;
+        }
+    }
+    */
+    /** we compute a sign that gives the direction into witch make the modification
+
+        CASE(object left of axis) : A : object fully outside. B : object hlaf inside, C: object fully inside
+        CASE                A   B   C
+        INTERSECTION==TRUE  0   1   1
+        DISTANCE==0         0   1   0
+
+        ATTRACTIVE==TRUE    1   1   0
+        REPULSIVE==TRUE     1   0   0
+
+        Thus, ATTRACTIVE = ((INTERSECTION==TRUE) != (DISTANCE==0))
+        REPULSIVE = (!(INTERSECTION)) && (!(DISTANCE==0))
+    */
+    //bool att = (attractive==SnapEnums::ATTRACTIVE) && ((intersects==1)!=(distance_to_shell==0));//0 or 1
+
+    //int sign = !att;//only one of the 2 may contribute at the same time
+    //sign= (sign*2)-1;//putting sign to value -1 or 1
+
+//    cout << "\t  total_cost : " << sign *( cost_surface + cost_distance) <<endl;
+//    cout << "\t  cost_surface : " << cost_surface
+//         <<" , cost_distance : " << cost_distance <<endl ;
+    //    cout << "\t \t road_relation type :" << road_relation  <<endl ;
+    //    cout << "\t \t attractivity ; " <<  attractive <<endl;
+//    cout << "\t \t distance_to_shell : " << distance_to_shell
+            //         << " , intersects? "<< intersects
+//         <<endl ;
+
+    //return sign* (cost_surface+cost_distance) ;
+
+    return sign*activating * intensity;
+
+}
+
+

@@ -125,8 +125,8 @@ SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, p
 	INSERT INTO def_zone_export (id, geom) 
 		VALUES( 1 , ST_GeomFromText('POLYGON((650907.6  6860870.6 ,650956.9  6860895.8 ,651036.0  6860757.1 ,650983.7  6860736.6 ,650907.6  6860870.6 ))',931008) );
 
--- 	INSERT INTO def_zone_export (id, geom)  --all_of_acquisition
--- 		VALUES( 1 , ST_GeomFromText('POLYGON((650637.4 6861097.2,650909.8 6861534.1,651068.6 6861638.3,651365.1 6861697.3,651410.3 6861270.3,651544.3 6861218.2,651498.6 6861178.5,651288.1 6861198.7,650863.3 6861051.6,651004.5 6860830.8,651063.1 6860739.1,651421.5 6860706.1,651347.3 6860611.3,651030.6 6860666.2,650657 6861002.8,650637.4 6861097.2))',931008) );
+ 	INSERT INTO def_zone_export (id, geom)  --all_of_acquisition
+ 		VALUES( 1 , ST_GeomFromText('POLYGON((650637.4 6861097.2,650909.8 6861534.1,651068.6 6861638.3,651365.1 6861697.3,651410.3 6861270.3,651544.3 6861218.2,651498.6 6861178.5,651288.1 6861198.7,650863.3 6861051.6,651004.5 6860830.8,651063.1 6860739.1,651421.5 6860706.1,651347.3 6860611.3,651030.6 6860666.2,650657 6861002.8,650637.4 6861097.2))',931008) );
 
 	
 
@@ -252,6 +252,18 @@ SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, p
 		,ST_SetSRID(ST_MakePoint(X::float,Y::float,Z::float),932011) AS sgeom;  
 
 
+	--visualize observation relating to street gen
+	DROP TABLE IF EXISTS obs_r_street_gen_in_export_area; 
+	CREATE TABLE obs_r_street_gen_in_export_area AS 
+	SELECT DISTINCT ON (obs_id) obs_id,  sgeom AS geom
+		, confidence, weight
+		, ST_SHortestLine(sgeom, ST_ExteriorRing(ra.section2_surface)) AS sline_to_edge
+		,ST_Intersects(ra.section2_surface, sgeom) as is_inside
+	FROM obs_for_output_in_export_area AS obf
+		,ST_SetSRID(ST_MakePoint(X::float,Y::float,Z::float),932011) AS sgeom 
+		INNER JOIN  street_amp.result_axis as ra ON ST_DWithin(ra.section2_surface, sgeom, 5)   
+	ORDER BY obs_id , ST_Distance(ra.section2_surface, sgeom) ASC
+		 
 
 ---test to export the whole file complete, no 3 separated files :
 

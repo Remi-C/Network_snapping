@@ -14,6 +14,7 @@
 #include <iomanip>
 #include <cstdlib>
 #include <cmath>
+//#include <algorithm> //for max
 
 
 #include "eigen3/Eigen/Eigen"
@@ -56,6 +57,8 @@ void axis_to_rectangle(const double* pt1,const double* pt2, double axis_width, g
     Else, it returns the shared area
   */
 double shared_area_cost( SnapEnums::road_relation_enum road_relation , const double* pt1, const double* pt2, double axis_width, geometry object_snapping_surface, double object_snapping_surface_area);
+double signed_dist_to_border( SnapEnums::road_relation_enum road_relation , const double* pt1, const double* pt2, double axis_width, geometry object_snapping_surface, double object_snapping_surface_area);
+
 
 void initialize_geom_computation();
 void finish_geom_computation() ;

@@ -4,10 +4,10 @@
     <mapcanvas>
         <units>meters</units>
         <extent>
-            <xmin>650955.67755604803096503</xmin>
-            <ymin>6861296.00457276031374931</ymin>
-            <xmax>650977.86701553489547223</xmax>
-            <ymax>6861308.22823991626501083</ymax>
+            <xmin>650901.43424963776487857</xmin>
+            <ymin>6861235.32941839750856161</ymin>
+            <xmax>651062.66892906383145601</xmax>
+            <ymax>6861344.14018168952316046</ymax>
         </extent>
         <projections>1</projections>
         <destinationsrs>
@@ -23,8 +23,8 @@
             </spatialrefsys>
         </destinationsrs>
     </mapcanvas>
-    <legend updateDrawingOrder="false" activeLayer="snapping_output_full_copier20141006120345370">
-        <legendlayer drawingOrder="14" open="true" checked="Qt::Unchecked" name="def_zone_export" showFeatureCount="0">
+    <legend updateDrawingOrder="false" activeLayer="snapping_output_full_220141104083153178">
+        <legendlayer drawingOrder="13" open="true" checked="Qt::Unchecked" name="def_zone_export" showFeatureCount="0">
             <filegroup open="true" hidden="false">
                 <legendlayerfile isInOverview="0" layerid="def_zone_export20140903141413468" visible="0"/>
             </filegroup>
@@ -35,61 +35,50 @@
                     <legendlayerfile isInOverview="0" layerid="edge_data20141031160751312" visible="0"/>
                 </filegroup>
             </legendlayer>
-            <legendgroup open="true" checked="Qt::Unchecked" name="ortho">
-                <legendlayer drawingOrder="2" open="false" checked="Qt::Unchecked" name="ORTHO_MNE_650-6860" showFeatureCount="0">
-                    <filegroup open="false" hidden="false">
-                        <legendlayerfile isInOverview="0" layerid="ORTHO_MNE_650_686020141006102146400" visible="0"/>
-                    </filegroup>
-                </legendlayer>
-                <legendlayer drawingOrder="3" open="false" checked="Qt::Unchecked" name="ORTHO_MNE_650-6861" showFeatureCount="0">
-                    <filegroup open="false" hidden="false">
-                        <legendlayerfile isInOverview="0" layerid="ORTHO_MNE_650_686120141006102149062" visible="0"/>
-                    </filegroup>
-                </legendlayer>
-            </legendgroup>
-            <legendlayer drawingOrder="4" open="false" checked="Qt::Unchecked" name="volume_non_bati" showFeatureCount="0">
+            <legendgroup open="true" checked="Qt::PartiallyChecked" name="ortho"/>
+            <legendlayer drawingOrder="2" open="false" checked="Qt::Unchecked" name="volume_non_bati" showFeatureCount="0">
                 <filegroup open="false" hidden="false">
                     <legendlayerfile isInOverview="0" layerid="volume_non_bati20141001133620079" visible="0"/>
                 </filegroup>
             </legendlayer>
-            <legendlayer drawingOrder="5" open="false" checked="Qt::Unchecked" name="volume_bati" showFeatureCount="0">
+            <legendlayer drawingOrder="3" open="false" checked="Qt::Unchecked" name="volume_bati" showFeatureCount="0">
                 <filegroup open="false" hidden="false">
                     <legendlayerfile isInOverview="0" layerid="volume_bati20141001133619797" visible="0"/>
                 </filegroup>
             </legendlayer>
-            <legendlayer drawingOrder="6" open="false" checked="Qt::Unchecked" name="traj_paris_extract" showFeatureCount="0">
+            <legendlayer drawingOrder="4" open="false" checked="Qt::Unchecked" name="traj_paris_extract" showFeatureCount="0">
                 <filegroup open="false" hidden="false">
                     <legendlayerfile isInOverview="0" layerid="traj_paris_extract20141001132651759" visible="0"/>
                 </filegroup>
             </legendlayer>
-            <legendlayer drawingOrder="7" open="false" checked="Qt::Unchecked" name="traj_paris_extract" showFeatureCount="0">
+            <legendlayer drawingOrder="5" open="false" checked="Qt::Unchecked" name="traj_paris_extract" showFeatureCount="0">
                 <filegroup open="false" hidden="false">
                     <legendlayerfile isInOverview="0" layerid="traj_paris_extract20140930163032006" visible="0"/>
                 </filegroup>
             </legendlayer>
-            <legendlayer drawingOrder="8" open="false" checked="Qt::Unchecked" name="road" showFeatureCount="0">
+            <legendlayer drawingOrder="6" open="false" checked="Qt::Unchecked" name="road" showFeatureCount="0">
                 <filegroup open="false" hidden="false">
                     <legendlayerfile isInOverview="0" layerid="road20140903141042781" visible="0"/>
                 </filegroup>
             </legendlayer>
-            <legendlayer drawingOrder="9" open="false" checked="Qt::Unchecked" name="road copier" showFeatureCount="0">
+            <legendlayer drawingOrder="7" open="false" checked="Qt::Unchecked" name="road copier" showFeatureCount="0">
                 <filegroup open="false" hidden="false">
                     <legendlayerfile isInOverview="0" layerid="road_copier20140903172235031" visible="0"/>
                 </filegroup>
             </legendlayer>
-            <legendlayer drawingOrder="11" open="true" checked="Qt::Checked" name="trottoir" showFeatureCount="0">
+            <legendlayer drawingOrder="9" open="true" checked="Qt::Checked" name="trottoir" showFeatureCount="0">
                 <filegroup open="true" hidden="false">
                     <legendlayerfile isInOverview="0" layerid="trottoir20140903141138000" visible="1"/>
                 </filegroup>
             </legendlayer>
         </legendgroup>
         <legendgroup open="true" checked="Qt::Unchecked" name="obs">
-            <legendlayer drawingOrder="12" open="false" checked="Qt::Unchecked" name="curbs" showFeatureCount="0">
+            <legendlayer drawingOrder="11" open="false" checked="Qt::Unchecked" name="curbs" showFeatureCount="0">
                 <filegroup open="false" hidden="false">
                     <legendlayerfile isInOverview="0" layerid="curbs20141001132515867" visible="0"/>
                 </filegroup>
             </legendlayer>
-            <legendlayer drawingOrder="13" open="false" checked="Qt::Unchecked" name="lines_to_weighted_points" showFeatureCount="0">
+            <legendlayer drawingOrder="12" open="false" checked="Qt::Unchecked" name="lines_to_weighted_points" showFeatureCount="0">
                 <filegroup open="false" hidden="false">
                     <legendlayerfile isInOverview="0" layerid="lines_to_weighted_points20140903141500203" visible="0"/>
                 </filegroup>
@@ -103,180 +92,80 @@
             </legendlayer>
         </legendgroup>
         <legendgroup open="true" checked="Qt::PartiallyChecked" name="result"/>
-        <legendgroup open="true" checked="Qt::Unchecked" name="visu">
-            <legendlayer drawingOrder="16" open="false" checked="Qt::Unchecked" name="obs_for_visu_in_export_area copier" showFeatureCount="0">
+        <legendgroup open="true" checked="Qt::PartiallyChecked" name="visu">
+            <legendlayer drawingOrder="15" open="false" checked="Qt::Unchecked" name="obs_for_visu_in_export_area copier" showFeatureCount="0">
                 <filegroup open="false" hidden="false">
                     <legendlayerfile isInOverview="0" layerid="obs_for_visu_in_export_area_copier20140930170423892" visible="0"/>
                 </filegroup>
             </legendlayer>
-            <legendlayer drawingOrder="17" open="false" checked="Qt::Unchecked" name="obs_for_visu_in_export_area" showFeatureCount="0">
+            <legendlayer drawingOrder="10" open="false" checked="Qt::Checked" name="obs_for_visu_in_export_area" showFeatureCount="0">
                 <filegroup open="false" hidden="false">
-                    <legendlayerfile isInOverview="0" layerid="obs_for_visu_in_export_area20140904145637890" visible="0"/>
+                    <legendlayerfile isInOverview="0" layerid="obs_for_visu_in_export_area20140904145637890" visible="1"/>
                 </filegroup>
             </legendlayer>
-            <legendlayer drawingOrder="18" open="true" checked="Qt::Unchecked" name="nodes_for_visu_in_export_area" showFeatureCount="0">
+            <legendlayer drawingOrder="16" open="true" checked="Qt::Unchecked" name="nodes_for_visu_in_export_area" showFeatureCount="0">
                 <filegroup open="true" hidden="false">
                     <legendlayerfile isInOverview="0" layerid="nodes_for_visu_in_export_area20140904145637843" visible="0"/>
                 </filegroup>
             </legendlayer>
-            <legendlayer drawingOrder="19" open="true" checked="Qt::Unchecked" name="edges_for_visu_in_export_area" showFeatureCount="0">
+            <legendlayer drawingOrder="17" open="true" checked="Qt::Unchecked" name="edges_for_visu_in_export_area" showFeatureCount="0">
                 <filegroup open="true" hidden="false">
                     <legendlayerfile isInOverview="0" layerid="edges_for_visu_in_export_area20140904145637781" visible="0"/>
                 </filegroup>
             </legendlayer>
         </legendgroup>
-        <legendlayer drawingOrder="20" open="true" checked="Qt::Unchecked" name="QuickWKT 1" showFeatureCount="0">
+        <legendlayer drawingOrder="18" open="true" checked="Qt::Unchecked" name="QuickWKT 1" showFeatureCount="0">
             <filegroup open="true" hidden="false">
                 <legendlayerfile isInOverview="0" layerid="QuickWKT_120140903181259125" visible="0"/>
             </filegroup>
         </legendlayer>
-        <legendlayer drawingOrder="21" open="false" checked="Qt::Unchecked" name="QuickWKT 4" showFeatureCount="0">
+        <legendlayer drawingOrder="19" open="false" checked="Qt::Unchecked" name="QuickWKT 4" showFeatureCount="0">
             <filegroup open="false" hidden="false">
                 <legendlayerfile isInOverview="0" layerid="QuickWKT_420140905143702875" visible="0"/>
             </filegroup>
         </legendlayer>
-        <legendlayer drawingOrder="22" open="false" checked="Qt::Unchecked" name="QuickWKT 5" showFeatureCount="0">
+        <legendlayer drawingOrder="20" open="false" checked="Qt::Unchecked" name="QuickWKT 5" showFeatureCount="0">
             <filegroup open="false" hidden="false">
                 <legendlayerfile isInOverview="0" layerid="QuickWKT_520140905180657859" visible="0"/>
             </filegroup>
         </legendlayer>
-        <legendlayer drawingOrder="23" open="false" checked="Qt::Unchecked" name="QuickWKT 6" showFeatureCount="0">
+        <legendlayer drawingOrder="21" open="false" checked="Qt::Unchecked" name="QuickWKT 6" showFeatureCount="0">
             <filegroup open="false" hidden="false">
                 <legendlayerfile isInOverview="0" layerid="QuickWKT_620140905183639156" visible="0"/>
             </filegroup>
         </legendlayer>
-        <legendlayer drawingOrder="24" open="true" checked="Qt::Unchecked" name="QuickWKT 1" showFeatureCount="0">
+        <legendlayer drawingOrder="22" open="true" checked="Qt::Unchecked" name="QuickWKT 1" showFeatureCount="0">
             <filegroup open="true" hidden="false">
                 <legendlayerfile isInOverview="0" layerid="QuickWKT_120140910170257649" visible="0"/>
             </filegroup>
         </legendlayer>
-        <legendlayer drawingOrder="25" open="true" checked="Qt::Unchecked" name="reduced_area_4_obs" showFeatureCount="0">
+        <legendlayer drawingOrder="23" open="true" checked="Qt::Unchecked" name="reduced_area_4_obs" showFeatureCount="0">
             <filegroup open="true" hidden="false">
                 <legendlayerfile isInOverview="0" layerid="reduced_area_4_obs20141006103258536" visible="0"/>
             </filegroup>
         </legendlayer>
-        <legendlayer drawingOrder="10" open="false" checked="Qt::Unchecked" name="snapping_output_full" showFeatureCount="0">
+        <legendlayer drawingOrder="8" open="false" checked="Qt::Unchecked" name="snapping_output_full" showFeatureCount="0">
             <filegroup open="false" hidden="false">
                 <legendlayerfile isInOverview="0" layerid="snapping_output_full20140930164110061" visible="0"/>
             </filegroup>
         </legendlayer>
-        <legendlayer drawingOrder="26" open="true" checked="Qt::Unchecked" name="QuickWKT 1" showFeatureCount="0">
-            <filegroup open="true" hidden="false">
-                <legendlayerfile isInOverview="0" layerid="QuickWKT_120141022125441138" visible="0"/>
-            </filegroup>
-        </legendlayer>
-        <legendlayer drawingOrder="27" open="false" checked="Qt::Checked" name="output_width" showFeatureCount="0">
+        <legendlayer drawingOrder="24" open="false" checked="Qt::Unchecked" name="output_width" showFeatureCount="0">
             <filegroup open="false" hidden="false">
-                <legendlayerfile isInOverview="0" layerid="snapping_output_full_copier20141006120345370" visible="1"/>
+                <legendlayerfile isInOverview="0" layerid="snapping_output_full_copier20141006120345370" visible="0"/>
             </filegroup>
         </legendlayer>
-        <legendlayer drawingOrder="15" open="false" checked="Qt::Unchecked" name="old_style" showFeatureCount="0">
+        <legendlayer drawingOrder="14" open="false" checked="Qt::Unchecked" name="old_style" showFeatureCount="0">
             <filegroup open="false" hidden="false">
                 <legendlayerfile isInOverview="0" layerid="snapping_output20140903141947750" visible="0"/>
             </filegroup>
         </legendlayer>
+        <legendlayer drawingOrder="25" open="false" checked="Qt::Checked" name="snapping_output_full_2" showFeatureCount="0">
+            <filegroup open="false" hidden="false">
+                <legendlayerfile isInOverview="0" layerid="snapping_output_full_220141104083153178" visible="1"/>
+            </filegroup>
+        </legendlayer>
     </legend>
-    <projectlayers layercount="28">
-        <maplayer minimumScale="0" maximumScale="1e+08" type="raster" hasScaleBasedVisibilityFlag="0">
-            <id>ORTHO_MNE_650_686020141006102146400</id>
-            <datasource>../../../../DATA/Donnees_IGN/orthoParisBati3d/ORTHO_MNE_650-6860.TIF</datasource>
-            <title></title>
-            <abstract></abstract>
-            <keywordList>
-                <value></value>
-            </keywordList>
-            <layername>ORTHO_MNE_650-6860</layername>
-            <srs>
-                <spatialrefsys>
-                    <proj4>+proj=lcc +lat_1=44 +lat_2=49 +lat_0=46.5 +lon_0=3 +x_0=700000 +y_0=6600000 +ellps=GRS80 +nadgrids=@null +units=m +no_defs</proj4>
-                    <srsid>10089</srsid>
-                    <srid>310024140</srid>
-                    <authid>IGNF:LAMB93</authid>
-                    <description>Lambert 93</description>
-                    <projectionacronym>lcc</projectionacronym>
-                    <ellipsoidacronym>IGNF:ELG037</ellipsoidacronym>
-                    <geographicflag>false</geographicflag>
-                </spatialrefsys>
-            </srs>
-            <customproperties>
-                <property key="identify/format" value="Value"/>
-            </customproperties>
-            <provider>gdal</provider>
-            <pipe>
-                <rasterrenderer opacity="1" alphaBand="-1" blueBand="3" greenBand="2" type="multibandcolor" redBand="1">
-                    <rasterTransparency/>
-                    <redContrastEnhancement>
-                        <minValue>26</minValue>
-                        <maxValue>3557</maxValue>
-                        <algorithm>StretchAndClipToMinimumMaximum</algorithm>
-                    </redContrastEnhancement>
-                    <greenContrastEnhancement>
-                        <minValue>31</minValue>
-                        <maxValue>4095</maxValue>
-                        <algorithm>StretchAndClipToMinimumMaximum</algorithm>
-                    </greenContrastEnhancement>
-                    <blueContrastEnhancement>
-                        <minValue>26</minValue>
-                        <maxValue>4089</maxValue>
-                        <algorithm>StretchAndClipToMinimumMaximum</algorithm>
-                    </blueContrastEnhancement>
-                </rasterrenderer>
-                <brightnesscontrast brightness="0" contrast="0"/>
-                <huesaturation colorizeGreen="128" colorizeOn="0" colorizeRed="255" colorizeBlue="128" grayscaleMode="0" saturation="0" colorizeStrength="100"/>
-                <rasterresampler maxOversampling="2"/>
-            </pipe>
-            <blendMode>0</blendMode>
-        </maplayer>
-        <maplayer minimumScale="0" maximumScale="1e+08" type="raster" hasScaleBasedVisibilityFlag="0">
-            <id>ORTHO_MNE_650_686120141006102149062</id>
-            <datasource>../../../../DATA/Donnees_IGN/orthoParisBati3d/ORTHO_MNE_650-6861.TIF</datasource>
-            <title></title>
-            <abstract></abstract>
-            <keywordList>
-                <value></value>
-            </keywordList>
-            <layername>ORTHO_MNE_650-6861</layername>
-            <srs>
-                <spatialrefsys>
-                    <proj4>+proj=lcc +lat_1=44 +lat_2=49 +lat_0=46.5 +lon_0=3 +x_0=700000 +y_0=6600000 +ellps=GRS80 +nadgrids=@null +units=m +no_defs</proj4>
-                    <srsid>10089</srsid>
-                    <srid>310024140</srid>
-                    <authid>IGNF:LAMB93</authid>
-                    <description>Lambert 93</description>
-                    <projectionacronym>lcc</projectionacronym>
-                    <ellipsoidacronym>IGNF:ELG037</ellipsoidacronym>
-                    <geographicflag>false</geographicflag>
-                </spatialrefsys>
-            </srs>
-            <customproperties>
-                <property key="identify/format" value="Value"/>
-            </customproperties>
-            <provider>gdal</provider>
-            <pipe>
-                <rasterrenderer opacity="1" alphaBand="-1" blueBand="3" greenBand="2" type="multibandcolor" redBand="1">
-                    <rasterTransparency/>
-                    <redContrastEnhancement>
-                        <minValue>0</minValue>
-                        <maxValue>3832</maxValue>
-                        <algorithm>StretchAndClipToMinimumMaximum</algorithm>
-                    </redContrastEnhancement>
-                    <greenContrastEnhancement>
-                        <minValue>0</minValue>
-                        <maxValue>4030</maxValue>
-                        <algorithm>StretchAndClipToMinimumMaximum</algorithm>
-                    </greenContrastEnhancement>
-                    <blueContrastEnhancement>
-                        <minValue>0</minValue>
-                        <maxValue>4095</maxValue>
-                        <algorithm>StretchAndClipToMinimumMaximum</algorithm>
-                    </blueContrastEnhancement>
-                </rasterrenderer>
-                <brightnesscontrast brightness="0" contrast="0"/>
-                <huesaturation colorizeGreen="128" colorizeOn="0" colorizeRed="255" colorizeBlue="128" grayscaleMode="0" saturation="0" colorizeStrength="100"/>
-                <rasterresampler maxOversampling="2"/>
-            </pipe>
-            <blendMode>0</blendMode>
-        </maplayer>
+    <projectlayers layercount="26">
         <maplayer minimumScale="0" maximumScale="1e+08" minLabelScale="0" maxLabelScale="1e+08" geometry="Point" type="vector" hasScaleBasedVisibilityFlag="0" scaleBasedLabelVisibilityFlag="0">
             <id>QuickWKT_120140903181259125</id>
             <datasource>Point</datasource>
@@ -528,82 +417,6 @@
                             <prop k="scale_method" v="area"/>
                             <prop k="size" v="2"/>
                             <prop k="size_unit" v="MM"/>
-                        </layer>
-                    </symbol>
-                </symbols>
-                <rotation field=""/>
-                <sizescale field="" scalemethod="area"/>
-            </renderer-v2>
-            <customproperties/>
-            <blendMode>0</blendMode>
-            <featureBlendMode>0</featureBlendMode>
-            <layerTransparency>0</layerTransparency>
-            <displayfield></displayfield>
-            <label>0</label>
-            <labelattributes>
-                <label fieldname="" text="Étiquette"/>
-                <family fieldname="" name="MS Shell Dlg 2"/>
-                <size fieldname="" units="pt" value="12"/>
-                <bold fieldname="" on="0"/>
-                <italic fieldname="" on="0"/>
-                <underline fieldname="" on="0"/>
-                <strikeout fieldname="" on="0"/>
-                <color fieldname="" red="0" blue="0" green="0"/>
-                <x fieldname=""/>
-                <y fieldname=""/>
-                <offset x="0" y="0" units="pt" yfieldname="" xfieldname=""/>
-                <angle fieldname="" value="0" auto="0"/>
-                <alignment fieldname="" value="center"/>
-                <buffercolor fieldname="" red="255" blue="255" green="255"/>
-                <buffersize fieldname="" units="pt" value="1"/>
-                <bufferenabled fieldname="" on=""/>
-                <multilineenabled fieldname="" on=""/>
-                <selectedonly on=""/>
-            </labelattributes>
-            <editform>.</editform>
-            <editforminit></editforminit>
-            <annotationform>.</annotationform>
-            <editorlayout>generatedlayout</editorlayout>
-            <excludeAttributesWMS/>
-            <excludeAttributesWFS/>
-            <attributeactions/>
-        </maplayer>
-        <maplayer minimumScale="0" maximumScale="1e+08" minLabelScale="0" maxLabelScale="1e+08" geometry="Polygon" type="vector" hasScaleBasedVisibilityFlag="0" scaleBasedLabelVisibilityFlag="0">
-            <id>QuickWKT_120141022125441138</id>
-            <datasource>Polygon</datasource>
-            <title></title>
-            <abstract></abstract>
-            <keywordList>
-                <value></value>
-            </keywordList>
-            <layername>QuickWKT 1</layername>
-            <srs>
-                <spatialrefsys>
-                    <proj4>+proj=lcc +lat_1=44 +lat_2=49 +lat_0=46.5 +lon_0=3 +x_0=51000 +y_0=-240000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs</proj4>
-                    <srsid>100000</srsid>
-                    <srid>0</srid>
-                    <authid>USER:100000</authid>
-                    <description> * SCR généré (+proj=lcc +lat_1=44 +lat_2=49 +lat_0=46.5 +lon_0=3 +x_0=51000 +y_0=-240000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs)</description>
-                    <projectionacronym>lcc</projectionacronym>
-                    <ellipsoidacronym>GRS80</ellipsoidacronym>
-                    <geographicflag>false</geographicflag>
-                </spatialrefsys>
-            </srs>
-            <provider encoding="ISO-8859-1">memory</provider>
-            <previewExpression></previewExpression>
-            <vectorjoins/>
-            <renderer-v2 symbollevels="0" type="singleSymbol">
-                <symbols>
-                    <symbol alpha="1" type="fill" name="0">
-                        <layer pass="0" class="SimpleFill" locked="0">
-                            <prop k="border_width_unit" v="MM"/>
-                            <prop k="color" v="146,35,29,255"/>
-                            <prop k="color_border" v="0,0,0,255"/>
-                            <prop k="offset" v="0,0"/>
-                            <prop k="offset_unit" v="MM"/>
-                            <prop k="style" v="solid"/>
-                            <prop k="style_border" v="solid"/>
-                            <prop k="width_border" v="0.26"/>
                         </layer>
                     </symbol>
                 </symbols>
@@ -1680,7 +1493,7 @@
             <excludeAttributesWFS/>
             <attributeactions/>
         </maplayer>
-        <maplayer minimumScale="0" maximumScale="1e+08" minLabelScale="0" maxLabelScale="1e+08" geometry="Line" type="vector" hasScaleBasedVisibilityFlag="0" scaleBasedLabelVisibilityFlag="0">
+        <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" minLabelScale="0" maxLabelScale="1e+08" geometry="Line" type="vector" hasScaleBasedVisibilityFlag="0" scaleBasedLabelVisibilityFlag="0">
             <id>edge_data20141031160751312</id>
             <datasource>dbname='street_gen_3' host=localhost port=5433 user='postgres' password='postgres' sslmode=disable key='edge_id' srid=932011 type=LINESTRING table="bdtopo_topological"."edge_data" (geom) sql=</datasource>
             <title></title>
@@ -1732,6 +1545,29 @@
                             <prop k="use_custom_dash" v="0"/>
                             <prop k="width" v="1.9"/>
                             <prop k="width_unit" v="MM"/>
+                        </layer>
+                        <layer pass="0" class="MarkerLine" locked="0">
+                            <prop k="interval" v="3"/>
+                            <prop k="interval_unit" v="MM"/>
+                            <prop k="offset" v="0"/>
+                            <prop k="offset_unit" v="MM"/>
+                            <prop k="placement" v="interval"/>
+                            <prop k="rotate" v="1"/>
+                            <symbol alpha="1" type="marker" name="@0@2">
+                                <layer pass="0" class="SimpleMarker" locked="0">
+                                    <prop k="angle" v="0"/>
+                                    <prop k="color" v="255,127,0,255"/>
+                                    <prop k="color_border" v="0,0,0,255"/>
+                                    <prop k="name" v="filled_arrowhead"/>
+                                    <prop k="offset" v="0,0"/>
+                                    <prop k="offset_unit" v="MM"/>
+                                    <prop k="outline_width" v="0"/>
+                                    <prop k="outline_width_unit" v="MM"/>
+                                    <prop k="scale_method" v="area"/>
+                                    <prop k="size" v="4"/>
+                                    <prop k="size_unit" v="MM"/>
+                                </layer>
+                            </symbol>
                         </layer>
                     </symbol>
                 </symbols>
@@ -1929,7 +1765,7 @@
                 <symbols>
                     <symbol alpha="1" type="line" name="0">
                         <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
+                            <prop k="capstyle" v="flat"/>
                             <prop k="color" v="48,83,97,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
@@ -2090,7 +1926,7 @@
             </customproperties>
             <blendMode>0</blendMode>
             <featureBlendMode>0</featureBlendMode>
-            <layerTransparency>0</layerTransparency>
+            <layerTransparency>37</layerTransparency>
             <displayfield>edge_id</displayfield>
             <label>0</label>
             <labelattributes>
@@ -3141,7 +2977,7 @@
             <excludeAttributesWFS/>
             <attributeactions/>
         </maplayer>
-        <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" minLabelScale="0" maxLabelScale="1e+08" geometry="Line" type="vector" hasScaleBasedVisibilityFlag="0" scaleBasedLabelVisibilityFlag="0">
+        <maplayer minimumScale="0" maximumScale="1e+08" minLabelScale="0" maxLabelScale="1e+08" geometry="Line" type="vector" hasScaleBasedVisibilityFlag="0" scaleBasedLabelVisibilityFlag="0">
             <id>obs_for_visu_in_export_area_copier20140930170423892</id>
             <datasource>dbname='street_gen_3' host=localhost port=5433 user='postgres' password='postgres' sslmode=disable key='tid' srid=932011 type=LINESTRING table="network_for_snapping"."obs_for_visu_in_export_area" (sline_to_edge) sql=</datasource>
             <title></title>
@@ -3170,7 +3006,7 @@
                     <symbol alpha="1" type="line" name="0">
                         <layer pass="0" class="SimpleLine" locked="0">
                             <prop k="capstyle" v="square"/>
-                            <prop k="color" v="93,91,22,255"/>
+                            <prop k="color" v="3,5,93,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
                             <prop k="joinstyle" v="bevel"/>
@@ -5470,7 +5306,7 @@
             <excludeAttributesWFS/>
             <attributeactions/>
         </maplayer>
-        <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" minLabelScale="0" maxLabelScale="1e+08" geometry="Line" type="vector" hasScaleBasedVisibilityFlag="0" scaleBasedLabelVisibilityFlag="0">
+        <maplayer minimumScale="0" maximumScale="1e+08" minLabelScale="0" maxLabelScale="1e+08" geometry="Line" type="vector" hasScaleBasedVisibilityFlag="0" scaleBasedLabelVisibilityFlag="0">
             <id>snapping_output_full20140930164110061</id>
             <datasource>file:../../data/data_in_reduced_export_area/snapping_output_full.csv?type=csv&amp;delimiter=;%7C&amp;wktField=%23geom&amp;spatialIndex=no&amp;subsetIndex=no&amp;watchFile=no&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=</datasource>
             <title></title>
@@ -5505,40 +5341,7 @@
                     <category symbol="6" value="7" label="7"/>
                     <category symbol="7" value="8" label="8"/>
                     <category symbol="8" value="9" label="9"/>
-                    <category symbol="9" value="10" label="10"/>
-                    <category symbol="10" value="11" label="11"/>
-                    <category symbol="11" value="12" label="12"/>
-                    <category symbol="12" value="13" label="13"/>
-                    <category symbol="13" value="14" label="14"/>
-                    <category symbol="14" value="15" label="15"/>
-                    <category symbol="15" value="16" label="16"/>
-                    <category symbol="16" value="17" label="17"/>
-                    <category symbol="17" value="18" label="18"/>
-                    <category symbol="18" value="19" label="19"/>
-                    <category symbol="19" value="20" label="20"/>
-                    <category symbol="20" value="21" label="21"/>
-                    <category symbol="21" value="22" label="22"/>
-                    <category symbol="22" value="23" label="23"/>
-                    <category symbol="23" value="24" label="24"/>
-                    <category symbol="24" value="25" label="25"/>
-                    <category symbol="25" value="26" label="26"/>
-                    <category symbol="26" value="27" label="27"/>
-                    <category symbol="27" value="28" label="28"/>
-                    <category symbol="28" value="29" label="29"/>
-                    <category symbol="29" value="30" label="30"/>
-                    <category symbol="30" value="31" label="31"/>
-                    <category symbol="31" value="32" label="32"/>
-                    <category symbol="32" value="33" label="33"/>
-                    <category symbol="33" value="34" label="34"/>
-                    <category symbol="34" value="35" label="35"/>
-                    <category symbol="35" value="36" label="36"/>
-                    <category symbol="36" value="37" label="37"/>
-                    <category symbol="37" value="38" label="38"/>
-                    <category symbol="38" value="39" label="39"/>
-                    <category symbol="39" value="40" label="40"/>
-                    <category symbol="40" value="41" label="41"/>
-                    <category symbol="41" value="42" label="42"/>
-                    <category symbol="42" value="" label=""/>
+                    <category symbol="9" value="" label=""/>
                 </categories>
                 <symbols>
                     <symbol alpha="1" type="line" name="0">
@@ -5552,14 +5355,14 @@
                             <prop k="offset_unit" v="MM"/>
                             <prop k="penstyle" v="solid"/>
                             <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.5"/>
+                            <prop k="width" v="1"/>
                             <prop k="width_unit" v="MM"/>
                         </layer>
                     </symbol>
                     <symbol alpha="1" type="line" name="1">
                         <layer pass="0" class="SimpleLine" locked="0">
                             <prop k="capstyle" v="square"/>
-                            <prop k="color" v="255,229,149,255"/>
+                            <prop k="color" v="255,208,136,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
                             <prop k="joinstyle" v="bevel"/>
@@ -5567,14 +5370,14 @@
                             <prop k="offset_unit" v="MM"/>
                             <prop k="penstyle" v="solid"/>
                             <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.5"/>
+                            <prop k="width" v="1"/>
                             <prop k="width_unit" v="MM"/>
                         </layer>
                     </symbol>
-                    <symbol alpha="1" type="line" name="10">
+                    <symbol alpha="1" type="line" name="2">
                         <layer pass="0" class="SimpleLine" locked="0">
                             <prop k="capstyle" v="square"/>
-                            <prop k="color" v="255,179,116,255"/>
+                            <prop k="color" v="255,182,119,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
                             <prop k="joinstyle" v="bevel"/>
@@ -5582,56 +5385,11 @@
                             <prop k="offset_unit" v="MM"/>
                             <prop k="penstyle" v="solid"/>
                             <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.5"/>
+                            <prop k="width" v="1"/>
                             <prop k="width_unit" v="MM"/>
                         </layer>
                     </symbol>
-                    <symbol alpha="1" type="line" name="11">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="255,173,112,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="customdash_unit" v="MM"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="offset_unit" v="MM"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.5"/>
-                            <prop k="width_unit" v="MM"/>
-                        </layer>
-                    </symbol>
-                    <symbol alpha="1" type="line" name="12">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="255,167,109,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="customdash_unit" v="MM"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="offset_unit" v="MM"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.5"/>
-                            <prop k="width_unit" v="MM"/>
-                        </layer>
-                    </symbol>
-                    <symbol alpha="1" type="line" name="13">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="255,162,105,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="customdash_unit" v="MM"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="offset_unit" v="MM"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.5"/>
-                            <prop k="width_unit" v="MM"/>
-                        </layer>
-                    </symbol>
-                    <symbol alpha="1" type="line" name="14">
+                    <symbol alpha="1" type="line" name="3">
                         <layer pass="0" class="SimpleLine" locked="0">
                             <prop k="capstyle" v="square"/>
                             <prop k="color" v="255,156,102,255"/>
@@ -5642,14 +5400,14 @@
                             <prop k="offset_unit" v="MM"/>
                             <prop k="penstyle" v="solid"/>
                             <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.5"/>
+                            <prop k="width" v="1"/>
                             <prop k="width_unit" v="MM"/>
                         </layer>
                     </symbol>
-                    <symbol alpha="1" type="line" name="15">
+                    <symbol alpha="1" type="line" name="4">
                         <layer pass="0" class="SimpleLine" locked="0">
                             <prop k="capstyle" v="square"/>
-                            <prop k="color" v="255,151,98,255"/>
+                            <prop k="color" v="255,130,85,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
                             <prop k="joinstyle" v="bevel"/>
@@ -5657,14 +5415,14 @@
                             <prop k="offset_unit" v="MM"/>
                             <prop k="penstyle" v="solid"/>
                             <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.5"/>
+                            <prop k="width" v="1"/>
                             <prop k="width_unit" v="MM"/>
                         </layer>
                     </symbol>
-                    <symbol alpha="1" type="line" name="16">
+                    <symbol alpha="1" type="line" name="5">
                         <layer pass="0" class="SimpleLine" locked="0">
                             <prop k="capstyle" v="square"/>
-                            <prop k="color" v="255,145,94,255"/>
+                            <prop k="color" v="255,104,68,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
                             <prop k="joinstyle" v="bevel"/>
@@ -5672,191 +5430,11 @@
                             <prop k="offset_unit" v="MM"/>
                             <prop k="penstyle" v="solid"/>
                             <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.5"/>
+                            <prop k="width" v="1"/>
                             <prop k="width_unit" v="MM"/>
                         </layer>
                     </symbol>
-                    <symbol alpha="1" type="line" name="17">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="255,139,91,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="customdash_unit" v="MM"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="offset_unit" v="MM"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.5"/>
-                            <prop k="width_unit" v="MM"/>
-                        </layer>
-                    </symbol>
-                    <symbol alpha="1" type="line" name="18">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="255,134,87,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="customdash_unit" v="MM"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="offset_unit" v="MM"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.5"/>
-                            <prop k="width_unit" v="MM"/>
-                        </layer>
-                    </symbol>
-                    <symbol alpha="1" type="line" name="19">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="255,128,83,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="customdash_unit" v="MM"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="offset_unit" v="MM"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.5"/>
-                            <prop k="width_unit" v="MM"/>
-                        </layer>
-                    </symbol>
-                    <symbol alpha="1" type="line" name="2">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="255,223,145,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="customdash_unit" v="MM"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="offset_unit" v="MM"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.5"/>
-                            <prop k="width_unit" v="MM"/>
-                        </layer>
-                    </symbol>
-                    <symbol alpha="1" type="line" name="20">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="255,123,80,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="customdash_unit" v="MM"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="offset_unit" v="MM"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.5"/>
-                            <prop k="width_unit" v="MM"/>
-                        </layer>
-                    </symbol>
-                    <symbol alpha="1" type="line" name="21">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="255,117,76,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="customdash_unit" v="MM"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="offset_unit" v="MM"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.5"/>
-                            <prop k="width_unit" v="MM"/>
-                        </layer>
-                    </symbol>
-                    <symbol alpha="1" type="line" name="22">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="255,111,72,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="customdash_unit" v="MM"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="offset_unit" v="MM"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.5"/>
-                            <prop k="width_unit" v="MM"/>
-                        </layer>
-                    </symbol>
-                    <symbol alpha="1" type="line" name="23">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="255,106,69,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="customdash_unit" v="MM"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="offset_unit" v="MM"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.5"/>
-                            <prop k="width_unit" v="MM"/>
-                        </layer>
-                    </symbol>
-                    <symbol alpha="1" type="line" name="24">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="255,100,65,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="customdash_unit" v="MM"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="offset_unit" v="MM"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.5"/>
-                            <prop k="width_unit" v="MM"/>
-                        </layer>
-                    </symbol>
-                    <symbol alpha="1" type="line" name="25">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="255,95,61,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="customdash_unit" v="MM"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="offset_unit" v="MM"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.5"/>
-                            <prop k="width_unit" v="MM"/>
-                        </layer>
-                    </symbol>
-                    <symbol alpha="1" type="line" name="26">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="255,89,58,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="customdash_unit" v="MM"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="offset_unit" v="MM"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.5"/>
-                            <prop k="width_unit" v="MM"/>
-                        </layer>
-                    </symbol>
-                    <symbol alpha="1" type="line" name="27">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="255,83,54,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="customdash_unit" v="MM"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="offset_unit" v="MM"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.5"/>
-                            <prop k="width_unit" v="MM"/>
-                        </layer>
-                    </symbol>
-                    <symbol alpha="1" type="line" name="28">
+                    <symbol alpha="1" type="line" name="6">
                         <layer pass="0" class="SimpleLine" locked="0">
                             <prop k="capstyle" v="square"/>
                             <prop k="color" v="255,78,51,255"/>
@@ -5867,14 +5445,14 @@
                             <prop k="offset_unit" v="MM"/>
                             <prop k="penstyle" v="solid"/>
                             <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.5"/>
+                            <prop k="width" v="1"/>
                             <prop k="width_unit" v="MM"/>
                         </layer>
                     </symbol>
-                    <symbol alpha="1" type="line" name="29">
+                    <symbol alpha="1" type="line" name="7">
                         <layer pass="0" class="SimpleLine" locked="0">
                             <prop k="capstyle" v="square"/>
-                            <prop k="color" v="255,72,47,255"/>
+                            <prop k="color" v="255,52,34,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
                             <prop k="joinstyle" v="bevel"/>
@@ -5882,14 +5460,14 @@
                             <prop k="offset_unit" v="MM"/>
                             <prop k="penstyle" v="solid"/>
                             <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.5"/>
+                            <prop k="width" v="1"/>
                             <prop k="width_unit" v="MM"/>
                         </layer>
                     </symbol>
-                    <symbol alpha="1" type="line" name="3">
+                    <symbol alpha="1" type="line" name="8">
                         <layer pass="0" class="SimpleLine" locked="0">
                             <prop k="capstyle" v="square"/>
-                            <prop k="color" v="255,218,142,255"/>
+                            <prop k="color" v="255,26,17,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
                             <prop k="joinstyle" v="bevel"/>
@@ -5897,206 +5475,11 @@
                             <prop k="offset_unit" v="MM"/>
                             <prop k="penstyle" v="solid"/>
                             <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.5"/>
+                            <prop k="width" v="1"/>
                             <prop k="width_unit" v="MM"/>
                         </layer>
                     </symbol>
-                    <symbol alpha="1" type="line" name="30">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="255,67,43,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="customdash_unit" v="MM"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="offset_unit" v="MM"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.5"/>
-                            <prop k="width_unit" v="MM"/>
-                        </layer>
-                    </symbol>
-                    <symbol alpha="1" type="line" name="31">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="255,61,40,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="customdash_unit" v="MM"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="offset_unit" v="MM"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.5"/>
-                            <prop k="width_unit" v="MM"/>
-                        </layer>
-                    </symbol>
-                    <symbol alpha="1" type="line" name="32">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="255,55,36,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="customdash_unit" v="MM"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="offset_unit" v="MM"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.5"/>
-                            <prop k="width_unit" v="MM"/>
-                        </layer>
-                    </symbol>
-                    <symbol alpha="1" type="line" name="33">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="255,50,32,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="customdash_unit" v="MM"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="offset_unit" v="MM"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.5"/>
-                            <prop k="width_unit" v="MM"/>
-                        </layer>
-                    </symbol>
-                    <symbol alpha="1" type="line" name="34">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="255,44,29,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="customdash_unit" v="MM"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="offset_unit" v="MM"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.5"/>
-                            <prop k="width_unit" v="MM"/>
-                        </layer>
-                    </symbol>
-                    <symbol alpha="1" type="line" name="35">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="255,39,25,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="customdash_unit" v="MM"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="offset_unit" v="MM"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.5"/>
-                            <prop k="width_unit" v="MM"/>
-                        </layer>
-                    </symbol>
-                    <symbol alpha="1" type="line" name="36">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="255,33,21,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="customdash_unit" v="MM"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="offset_unit" v="MM"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.5"/>
-                            <prop k="width_unit" v="MM"/>
-                        </layer>
-                    </symbol>
-                    <symbol alpha="1" type="line" name="37">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="255,27,18,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="customdash_unit" v="MM"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="offset_unit" v="MM"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.5"/>
-                            <prop k="width_unit" v="MM"/>
-                        </layer>
-                    </symbol>
-                    <symbol alpha="1" type="line" name="38">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="255,22,14,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="customdash_unit" v="MM"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="offset_unit" v="MM"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.5"/>
-                            <prop k="width_unit" v="MM"/>
-                        </layer>
-                    </symbol>
-                    <symbol alpha="1" type="line" name="39">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="255,16,10,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="customdash_unit" v="MM"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="offset_unit" v="MM"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.5"/>
-                            <prop k="width_unit" v="MM"/>
-                        </layer>
-                    </symbol>
-                    <symbol alpha="1" type="line" name="4">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="255,212,138,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="customdash_unit" v="MM"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="offset_unit" v="MM"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.5"/>
-                            <prop k="width_unit" v="MM"/>
-                        </layer>
-                    </symbol>
-                    <symbol alpha="1" type="line" name="40">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="255,11,7,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="customdash_unit" v="MM"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="offset_unit" v="MM"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.5"/>
-                            <prop k="width_unit" v="MM"/>
-                        </layer>
-                    </symbol>
-                    <symbol alpha="1" type="line" name="41">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="255,5,3,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="customdash_unit" v="MM"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="offset_unit" v="MM"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.5"/>
-                            <prop k="width_unit" v="MM"/>
-                        </layer>
-                    </symbol>
-                    <symbol alpha="1" type="line" name="42">
+                    <symbol alpha="1" type="line" name="9">
                         <layer pass="0" class="SimpleLine" locked="0">
                             <prop k="capstyle" v="square"/>
                             <prop k="color" v="255,0,0,255"/>
@@ -6107,82 +5490,7 @@
                             <prop k="offset_unit" v="MM"/>
                             <prop k="penstyle" v="solid"/>
                             <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.5"/>
-                            <prop k="width_unit" v="MM"/>
-                        </layer>
-                    </symbol>
-                    <symbol alpha="1" type="line" name="5">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="255,207,134,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="customdash_unit" v="MM"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="offset_unit" v="MM"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.5"/>
-                            <prop k="width_unit" v="MM"/>
-                        </layer>
-                    </symbol>
-                    <symbol alpha="1" type="line" name="6">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="255,201,131,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="customdash_unit" v="MM"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="offset_unit" v="MM"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.5"/>
-                            <prop k="width_unit" v="MM"/>
-                        </layer>
-                    </symbol>
-                    <symbol alpha="1" type="line" name="7">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="255,195,127,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="customdash_unit" v="MM"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="offset_unit" v="MM"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.5"/>
-                            <prop k="width_unit" v="MM"/>
-                        </layer>
-                    </symbol>
-                    <symbol alpha="1" type="line" name="8">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="255,190,123,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="customdash_unit" v="MM"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="offset_unit" v="MM"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.5"/>
-                            <prop k="width_unit" v="MM"/>
-                        </layer>
-                    </symbol>
-                    <symbol alpha="1" type="line" name="9">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="square"/>
-                            <prop k="color" v="255,184,120,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="customdash_unit" v="MM"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="offset_unit" v="MM"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.5"/>
+                            <prop k="width" v="1"/>
                             <prop k="width_unit" v="MM"/>
                         </layer>
                     </symbol>
@@ -6371,6 +5679,254 @@
             <attributeactions/>
         </maplayer>
         <maplayer minimumScale="0" maximumScale="1e+08" minLabelScale="0" maxLabelScale="1e+08" geometry="Line" type="vector" hasScaleBasedVisibilityFlag="0" scaleBasedLabelVisibilityFlag="0">
+            <id>snapping_output_full_220141104083153178</id>
+            <datasource>file:../../data/data_in_reduced_export_area/snapping_output_full.csv?type=csv&amp;delimiter=;%7C&amp;wktField=%23geom&amp;geomType=Ligne&amp;spatialIndex=yes&amp;subsetIndex=no&amp;watchFile=no</datasource>
+            <title></title>
+            <abstract></abstract>
+            <keywordList>
+                <value></value>
+            </keywordList>
+            <layername>snapping_output_full_2</layername>
+            <srs>
+                <spatialrefsys>
+                    <proj4>+proj=lcc +lat_1=44 +lat_2=49 +lat_0=46.5 +lon_0=3 +x_0=51000 +y_0=-240000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs</proj4>
+                    <srsid>100003</srsid>
+                    <srid>0</srid>
+                    <authid>USER:100003</authid>
+                    <description>Laser_Riegl_TMob_Fevrier_2013</description>
+                    <projectionacronym>lcc</projectionacronym>
+                    <ellipsoidacronym></ellipsoidacronym>
+                    <geographicflag>false</geographicflag>
+                </spatialrefsys>
+            </srs>
+            <provider encoding="ISO-8859-1">delimitedtext</provider>
+            <previewExpression></previewExpression>
+            <vectorjoins/>
+            <renderer-v2 attr="iteration" symbollevels="0" type="categorizedSymbol">
+                <categories>
+                    <category symbol="0" value="1" label="1"/>
+                    <category symbol="1" value="24" label="16"/>
+                </categories>
+                <symbols>
+                    <symbol alpha="1" type="line" name="0">
+                        <layer pass="0" class="SimpleLine" locked="0">
+                            <prop k="capstyle" v="flat"/>
+                            <prop k="color" v="191,191,12,255"/>
+                            <prop k="customdash" v="5;2"/>
+                            <prop k="customdash_unit" v="MM"/>
+                            <prop k="joinstyle" v="bevel"/>
+                            <prop k="offset" v="0"/>
+                            <prop k="offset_unit" v="MapUnit"/>
+                            <prop k="penstyle" v="solid"/>
+                            <prop k="use_custom_dash" v="0"/>
+                            <prop k="width" v="0.26"/>
+                            <prop k="width_expression" v="&quot;width&quot;"/>
+                            <prop k="width_unit" v="MapUnit"/>
+                        </layer>
+                    </symbol>
+                    <symbol alpha="1" type="line" name="1">
+                        <layer pass="0" class="SimpleLine" locked="0">
+                            <prop k="capstyle" v="flat"/>
+                            <prop k="color" v="240,45,2,255"/>
+                            <prop k="customdash" v="5;2"/>
+                            <prop k="customdash_unit" v="MM"/>
+                            <prop k="joinstyle" v="bevel"/>
+                            <prop k="offset" v="0"/>
+                            <prop k="offset_unit" v="MapUnit"/>
+                            <prop k="penstyle" v="solid"/>
+                            <prop k="use_custom_dash" v="0"/>
+                            <prop k="width" v="0.26"/>
+                            <prop k="width_expression" v="&quot;width&quot;"/>
+                            <prop k="width_unit" v="MapUnit"/>
+                        </layer>
+                    </symbol>
+                </symbols>
+                <source-symbol>
+                    <symbol alpha="1" type="line" name="0">
+                        <layer pass="0" class="SimpleLine" locked="0">
+                            <prop k="capstyle" v="flat"/>
+                            <prop k="color" v="31,239,111,255"/>
+                            <prop k="customdash" v="5;2"/>
+                            <prop k="customdash_unit" v="MM"/>
+                            <prop k="joinstyle" v="bevel"/>
+                            <prop k="offset" v="0"/>
+                            <prop k="offset_unit" v="MapUnit"/>
+                            <prop k="penstyle" v="solid"/>
+                            <prop k="use_custom_dash" v="0"/>
+                            <prop k="width" v="0.26"/>
+                            <prop k="width_expression" v="&quot;width&quot;"/>
+                            <prop k="width_unit" v="MapUnit"/>
+                        </layer>
+                    </symbol>
+                </source-symbol>
+                <colorramp type="gradient" name="[source]">
+                    <prop k="color1" v="191,191,12,255"/>
+                    <prop k="color2" v="255,0,4,255"/>
+                    <prop k="discrete" v="0"/>
+                    <prop k="stops" v="0.8;208,146,0,255"/>
+                </colorramp>
+                <rotation field=""/>
+                <sizescale field="" scalemethod="area"/>
+            </renderer-v2>
+            <customproperties>
+                <property key="labeling" value="pal"/>
+                <property key="labeling/addDirectionSymbol" value="false"/>
+                <property key="labeling/angleOffset" value="0"/>
+                <property key="labeling/blendMode" value="0"/>
+                <property key="labeling/bufferBlendMode" value="0"/>
+                <property key="labeling/bufferColorA" value="255"/>
+                <property key="labeling/bufferColorB" value="255"/>
+                <property key="labeling/bufferColorG" value="255"/>
+                <property key="labeling/bufferColorR" value="255"/>
+                <property key="labeling/bufferDraw" value="false"/>
+                <property key="labeling/bufferJoinStyle" value="64"/>
+                <property key="labeling/bufferNoFill" value="false"/>
+                <property key="labeling/bufferSize" value="1"/>
+                <property key="labeling/bufferSizeInMapUnits" value="false"/>
+                <property key="labeling/bufferTransp" value="0"/>
+                <property key="labeling/centroidWhole" value="false"/>
+                <property key="labeling/decimals" value="3"/>
+                <property key="labeling/displayAll" value="false"/>
+                <property key="labeling/dist" value="0"/>
+                <property key="labeling/distInMapUnits" value="false"/>
+                <property key="labeling/enabled" value="true"/>
+                <property key="labeling/fieldName" value="width"/>
+                <property key="labeling/fontBold" value="false"/>
+                <property key="labeling/fontCapitals" value="0"/>
+                <property key="labeling/fontFamily" value="MS Shell Dlg 2"/>
+                <property key="labeling/fontItalic" value="false"/>
+                <property key="labeling/fontLetterSpacing" value="0"/>
+                <property key="labeling/fontLimitPixelSize" value="false"/>
+                <property key="labeling/fontMaxPixelSize" value="10000"/>
+                <property key="labeling/fontMinPixelSize" value="3"/>
+                <property key="labeling/fontSize" value="8.25"/>
+                <property key="labeling/fontSizeInMapUnits" value="false"/>
+                <property key="labeling/fontStrikeout" value="false"/>
+                <property key="labeling/fontUnderline" value="false"/>
+                <property key="labeling/fontWeight" value="50"/>
+                <property key="labeling/fontWordSpacing" value="0"/>
+                <property key="labeling/formatNumbers" value="false"/>
+                <property key="labeling/isExpression" value="false"/>
+                <property key="labeling/labelOffsetInMapUnits" value="true"/>
+                <property key="labeling/labelPerPart" value="false"/>
+                <property key="labeling/leftDirectionSymbol" value="&lt;"/>
+                <property key="labeling/limitNumLabels" value="false"/>
+                <property key="labeling/maxCurvedCharAngleIn" value="20"/>
+                <property key="labeling/maxCurvedCharAngleOut" value="-20"/>
+                <property key="labeling/maxNumLabels" value="2000"/>
+                <property key="labeling/mergeLines" value="false"/>
+                <property key="labeling/minFeatureSize" value="0"/>
+                <property key="labeling/multilineAlign" value="0"/>
+                <property key="labeling/multilineHeight" value="1"/>
+                <property key="labeling/namedStyle" value="Normal"/>
+                <property key="labeling/obstacle" value="true"/>
+                <property key="labeling/placeDirectionSymbol" value="0"/>
+                <property key="labeling/placement" value="2"/>
+                <property key="labeling/placementFlags" value="10"/>
+                <property key="labeling/plussign" value="false"/>
+                <property key="labeling/preserveRotation" value="true"/>
+                <property key="labeling/previewBkgrdColor" value="#ffffff"/>
+                <property key="labeling/priority" value="5"/>
+                <property key="labeling/quadOffset" value="4"/>
+                <property key="labeling/reverseDirectionSymbol" value="false"/>
+                <property key="labeling/rightDirectionSymbol" value=">"/>
+                <property key="labeling/scaleMax" value="10000000"/>
+                <property key="labeling/scaleMin" value="1"/>
+                <property key="labeling/scaleVisibility" value="false"/>
+                <property key="labeling/shadowBlendMode" value="6"/>
+                <property key="labeling/shadowColorB" value="0"/>
+                <property key="labeling/shadowColorG" value="0"/>
+                <property key="labeling/shadowColorR" value="0"/>
+                <property key="labeling/shadowDraw" value="false"/>
+                <property key="labeling/shadowOffsetAngle" value="135"/>
+                <property key="labeling/shadowOffsetDist" value="1"/>
+                <property key="labeling/shadowOffsetGlobal" value="true"/>
+                <property key="labeling/shadowOffsetUnits" value="1"/>
+                <property key="labeling/shadowRadius" value="1.5"/>
+                <property key="labeling/shadowRadiusAlphaOnly" value="false"/>
+                <property key="labeling/shadowRadiusUnits" value="1"/>
+                <property key="labeling/shadowScale" value="100"/>
+                <property key="labeling/shadowTransparency" value="30"/>
+                <property key="labeling/shadowUnder" value="0"/>
+                <property key="labeling/shapeBlendMode" value="0"/>
+                <property key="labeling/shapeBorderColorA" value="255"/>
+                <property key="labeling/shapeBorderColorB" value="128"/>
+                <property key="labeling/shapeBorderColorG" value="128"/>
+                <property key="labeling/shapeBorderColorR" value="128"/>
+                <property key="labeling/shapeBorderWidth" value="0"/>
+                <property key="labeling/shapeBorderWidthUnits" value="1"/>
+                <property key="labeling/shapeDraw" value="false"/>
+                <property key="labeling/shapeFillColorA" value="255"/>
+                <property key="labeling/shapeFillColorB" value="255"/>
+                <property key="labeling/shapeFillColorG" value="255"/>
+                <property key="labeling/shapeFillColorR" value="255"/>
+                <property key="labeling/shapeJoinStyle" value="64"/>
+                <property key="labeling/shapeOffsetUnits" value="1"/>
+                <property key="labeling/shapeOffsetX" value="0"/>
+                <property key="labeling/shapeOffsetY" value="0"/>
+                <property key="labeling/shapeRadiiUnits" value="1"/>
+                <property key="labeling/shapeRadiiX" value="0"/>
+                <property key="labeling/shapeRadiiY" value="0"/>
+                <property key="labeling/shapeRotation" value="0"/>
+                <property key="labeling/shapeRotationType" value="0"/>
+                <property key="labeling/shapeSVGFile" value=""/>
+                <property key="labeling/shapeSizeType" value="0"/>
+                <property key="labeling/shapeSizeUnits" value="1"/>
+                <property key="labeling/shapeSizeX" value="0"/>
+                <property key="labeling/shapeSizeY" value="0"/>
+                <property key="labeling/shapeTransparency" value="0"/>
+                <property key="labeling/shapeType" value="0"/>
+                <property key="labeling/textColorA" value="255"/>
+                <property key="labeling/textColorB" value="0"/>
+                <property key="labeling/textColorG" value="0"/>
+                <property key="labeling/textColorR" value="0"/>
+                <property key="labeling/textTransp" value="0"/>
+                <property key="labeling/upsidedownLabels" value="0"/>
+                <property key="labeling/wrapChar" value=""/>
+                <property key="labeling/xOffset" value="0"/>
+                <property key="labeling/yOffset" value="0"/>
+            </customproperties>
+            <blendMode>0</blendMode>
+            <featureBlendMode>0</featureBlendMode>
+            <layerTransparency>0</layerTransparency>
+            <displayfield>width</displayfield>
+            <label>0</label>
+            <labelattributes>
+                <label fieldname="" text="Étiquette"/>
+                <family fieldname="" name="MS Shell Dlg 2"/>
+                <size fieldname="" units="pt" value="12"/>
+                <bold fieldname="" on="0"/>
+                <italic fieldname="" on="0"/>
+                <underline fieldname="" on="0"/>
+                <strikeout fieldname="" on="0"/>
+                <color fieldname="" red="0" blue="0" green="0"/>
+                <x fieldname=""/>
+                <y fieldname=""/>
+                <offset x="0" y="0" units="pt" yfieldname="" xfieldname=""/>
+                <angle fieldname="" value="0" auto="0"/>
+                <alignment fieldname="" value="center"/>
+                <buffercolor fieldname="" red="255" blue="255" green="255"/>
+                <buffersize fieldname="" units="pt" value="1"/>
+                <bufferenabled fieldname="" on=""/>
+                <multilineenabled fieldname="" on=""/>
+                <selectedonly on=""/>
+            </labelattributes>
+            <edittypes>
+                <edittype labelontop="0" editable="1" type="0" name="cost"/>
+                <edittype labelontop="0" editable="1" type="0" name="end_time"/>
+                <edittype labelontop="0" editable="1" type="0" name="iteration"/>
+                <edittype labelontop="0" editable="1" type="0" name="start_time"/>
+                <edittype labelontop="0" editable="1" type="0" name="width"/>
+            </edittypes>
+            <editform>.</editform>
+            <editforminit></editforminit>
+            <annotationform>.</annotationform>
+            <editorlayout>generatedlayout</editorlayout>
+            <excludeAttributesWMS/>
+            <excludeAttributesWFS/>
+            <attributeactions/>
+        </maplayer>
+        <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" minLabelScale="0" maxLabelScale="1e+08" geometry="Line" type="vector" hasScaleBasedVisibilityFlag="0" scaleBasedLabelVisibilityFlag="0">
             <id>snapping_output_full_copier20141006120345370</id>
             <datasource>file:../../data/data_in_reduced_export_area/snapping_output_full.csv?type=csv&amp;delimiter=;%7C&amp;wktField=%23geom&amp;spatialIndex=no&amp;subsetIndex=no&amp;watchFile=no&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=&amp;=</datasource>
             <title></title>
@@ -6392,7 +5948,7 @@
                 </spatialrefsys>
             </srs>
             <provider encoding="ISO-8859-1">delimitedtext</provider>
-            <previewExpression></previewExpression>
+            <previewExpression>COALESCE( "width", '&lt;NULL>' )</previewExpression>
             <vectorjoins/>
             <renderer-v2 attr="iteration" symbollevels="0" type="categorizedSymbol">
                 <categories>
@@ -6406,9 +5962,7 @@
                     <category symbol="7" value="8" label="8"/>
                     <category symbol="8" value="9" label="9"/>
                     <category symbol="9" value="10" label="10"/>
-                    <category symbol="10" value="11" label="11"/>
-                    <category symbol="11" value="12" label="12"/>
-                    <category symbol="12" value="" label=""/>
+                    <category symbol="10" value="" label=""/>
                 </categories>
                 <symbols>
                     <symbol alpha="1" type="line" name="0">
@@ -6430,7 +5984,7 @@
                     <symbol alpha="1" type="line" name="1">
                         <layer pass="0" class="SimpleLine" locked="0">
                             <prop k="capstyle" v="flat"/>
-                            <prop k="color" v="255,215,140,255"/>
+                            <prop k="color" v="255,211,137,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
                             <prop k="joinstyle" v="bevel"/>
@@ -6444,38 +5998,6 @@
                         </layer>
                     </symbol>
                     <symbol alpha="1" type="line" name="10">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="flat"/>
-                            <prop k="color" v="255,39,25,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="customdash_unit" v="MM"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="offset_unit" v="MapUnit"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.26"/>
-                            <prop k="width_expression" v="&quot;width&quot;"/>
-                            <prop k="width_unit" v="MapUnit"/>
-                        </layer>
-                    </symbol>
-                    <symbol alpha="1" type="line" name="11">
-                        <layer pass="0" class="SimpleLine" locked="0">
-                            <prop k="capstyle" v="flat"/>
-                            <prop k="color" v="255,19,12,255"/>
-                            <prop k="customdash" v="5;2"/>
-                            <prop k="customdash_unit" v="MM"/>
-                            <prop k="joinstyle" v="bevel"/>
-                            <prop k="offset" v="0"/>
-                            <prop k="offset_unit" v="MapUnit"/>
-                            <prop k="penstyle" v="solid"/>
-                            <prop k="use_custom_dash" v="0"/>
-                            <prop k="width" v="0.26"/>
-                            <prop k="width_expression" v="&quot;width&quot;"/>
-                            <prop k="width_unit" v="MapUnit"/>
-                        </layer>
-                    </symbol>
-                    <symbol alpha="1" type="line" name="12">
                         <layer pass="0" class="SimpleLine" locked="0">
                             <prop k="capstyle" v="flat"/>
                             <prop k="color" v="255,0,0,255"/>
@@ -6494,7 +6016,7 @@
                     <symbol alpha="1" type="line" name="2">
                         <layer pass="0" class="SimpleLine" locked="0">
                             <prop k="capstyle" v="flat"/>
-                            <prop k="color" v="255,195,127,255"/>
+                            <prop k="color" v="255,188,122,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
                             <prop k="joinstyle" v="bevel"/>
@@ -6510,7 +6032,7 @@
                     <symbol alpha="1" type="line" name="3">
                         <layer pass="0" class="SimpleLine" locked="0">
                             <prop k="capstyle" v="flat"/>
-                            <prop k="color" v="255,176,114,255"/>
+                            <prop k="color" v="255,164,107,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
                             <prop k="joinstyle" v="bevel"/>
@@ -6526,7 +6048,7 @@
                     <symbol alpha="1" type="line" name="4">
                         <layer pass="0" class="SimpleLine" locked="0">
                             <prop k="capstyle" v="flat"/>
-                            <prop k="color" v="255,156,102,255"/>
+                            <prop k="color" v="255,141,91,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
                             <prop k="joinstyle" v="bevel"/>
@@ -6542,7 +6064,7 @@
                     <symbol alpha="1" type="line" name="5">
                         <layer pass="0" class="SimpleLine" locked="0">
                             <prop k="capstyle" v="flat"/>
-                            <prop k="color" v="255,137,89,255"/>
+                            <prop k="color" v="255,117,76,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
                             <prop k="joinstyle" v="bevel"/>
@@ -6558,7 +6080,7 @@
                     <symbol alpha="1" type="line" name="6">
                         <layer pass="0" class="SimpleLine" locked="0">
                             <prop k="capstyle" v="flat"/>
-                            <prop k="color" v="255,117,76,255"/>
+                            <prop k="color" v="255,94,61,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
                             <prop k="joinstyle" v="bevel"/>
@@ -6574,7 +6096,7 @@
                     <symbol alpha="1" type="line" name="7">
                         <layer pass="0" class="SimpleLine" locked="0">
                             <prop k="capstyle" v="flat"/>
-                            <prop k="color" v="255,97,63,255"/>
+                            <prop k="color" v="255,70,45,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
                             <prop k="joinstyle" v="bevel"/>
@@ -6590,7 +6112,7 @@
                     <symbol alpha="1" type="line" name="8">
                         <layer pass="0" class="SimpleLine" locked="0">
                             <prop k="capstyle" v="flat"/>
-                            <prop k="color" v="255,78,51,255"/>
+                            <prop k="color" v="255,47,30,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
                             <prop k="joinstyle" v="bevel"/>
@@ -6606,7 +6128,7 @@
                     <symbol alpha="1" type="line" name="9">
                         <layer pass="0" class="SimpleLine" locked="0">
                             <prop k="capstyle" v="flat"/>
-                            <prop k="color" v="255,58,38,255"/>
+                            <prop k="color" v="255,23,15,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
                             <prop k="joinstyle" v="bevel"/>
@@ -7106,7 +6628,7 @@
             <excludeAttributesWFS/>
             <attributeactions/>
         </maplayer>
-        <maplayer minimumScale="0" maximumScale="1e+08" minLabelScale="0" maxLabelScale="1e+08" geometry="Line" type="vector" hasScaleBasedVisibilityFlag="0" scaleBasedLabelVisibilityFlag="0">
+        <maplayer minimumScale="-4.65661e-10" maximumScale="1e+08" minLabelScale="0" maxLabelScale="1e+08" geometry="Line" type="vector" hasScaleBasedVisibilityFlag="0" scaleBasedLabelVisibilityFlag="0">
             <id>trottoir20140903141138000</id>
             <datasource>dbname='odparis' host=localhost port=5433 user='postgres' password='postgres' sslmode=disable key='gid' estimatedmetadata=true srid=932001 type=MULTILINESTRING table="odparis_corrected"."trottoir" (geom) sql=</datasource>
             <title></title>
@@ -7135,7 +6657,7 @@
                     <symbol alpha="1" type="line" name="0">
                         <layer pass="0" class="SimpleLine" locked="0">
                             <prop k="capstyle" v="square"/>
-                            <prop k="color" v="111,111,111,255"/>
+                            <prop k="color" v="61,0,244,255"/>
                             <prop k="customdash" v="5;2"/>
                             <prop k="customdash_unit" v="MM"/>
                             <prop k="joinstyle" v="bevel"/>
@@ -7721,7 +7243,7 @@
         <WFSUrl type="QString"></WFSUrl>
         <TimeManager>
             <timeFrameSize type="int">1000</timeFrameSize>
-            <timeLayerManager type="QString">2014-08-30 00:00:01.000000;2014-08-30 00:00:13.000000;2014-08-30 00:00:01.000000;</timeLayerManager>
+            <timeLayerManager type="QString">2014-08-30 00:00:01.000000;2014-08-30 00:00:08.000000;2014-08-30 00:00:01.000000;</timeLayerManager>
             <active type="int">0</active>
             <timeFrameType type="QString">milliseconds</timeFrameType>
             <loopAnimation type="int">0</loopAnimation>

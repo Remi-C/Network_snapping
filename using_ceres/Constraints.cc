@@ -220,7 +220,9 @@ int addManualConstraintsOnOrthDistToObservation(DataStorage * data, Problem * pr
         //untill 2.0 meters of distance, normal behavior. after that outliers behavior (not square)
         LossFunction* loss = NULL;
         loss = new ceres::ScaledLoss( g_param->useLoss?(new ceres::SoftLOneLoss(g_param->lossScale)):NULL
-                                        ,g_param->K_obs,ceres::DO_NOT_TAKE_OWNERSHIP) ;
+                                        ,g_param->K_obs
+                                       *data->observations(i)->confidence * data->observations(i)->weight /// @FIXEME @TEMP @TODO :
+                                      ,ceres::DO_NOT_TAKE_OWNERSHIP) ;
 
         problem->AddResidualBlock(
                     distance_cost_function
@@ -249,6 +251,69 @@ int addManualConstraintsOnSurfDistToObjects(DataStorage * data, Problem * proble
 
         CostFunction* distance_cost_function=
             new  ManualAttr_Rep_Object(i, data ) ;
+        //untill 2.0 meters of distance, normal behavior. after that outliers behavior (not square)
+        LossFunction* loss = NULL;
+        loss = new ceres::ScaledLoss( g_param->useLoss?(new ceres::SoftLOneLoss(g_param->lossScale/5)):NULL
+                                        ,g_param->K_obj,ceres::DO_NOT_TAKE_OWNERSHIP) ;
+
+        problem->AddResidualBlock(
+                    distance_cost_function
+                    ,loss
+                    ,start_node->position
+                    ,end_node->position
+                    ,&relativ_edge->width
+                    ); //note : obj is referring to these nodes.
+    }
+}
+
+
+
+
+
+
+//! manual constraint based on distance between observation and edges
+int addManualConstraintsOnOrthDistToObservation_width(DataStorage * data, Problem * problem){
+    for (int i = 0; i < data->num_observations(); ++i) {
+
+        //finding the 2 nodes concerned by this observations
+        edge * relativ_edge = data->ebe(data->observations(i)->edge_id) ;
+        node * start_node = data->nbn(relativ_edge->start_node)  ;
+        node * end_node = data->nbn(relativ_edge->end_node)  ;
+
+        CostFunction* distance_cost_function=
+            new  ManualOrthDistanceToObservation_width( data->observations(i)->position, &relativ_edge->width, data->observations(i)  ) ;
+        //untill 2.0 meters of distance, normal behavior. after that outliers behavior (not square)
+        LossFunction* loss = NULL;
+        loss = new ceres::ScaledLoss( g_param->useLoss?(new ceres::SoftLOneLoss(g_param->lossScale)):NULL
+                                        ,g_param->K_obs ,ceres::DO_NOT_TAKE_OWNERSHIP) ;
+
+        problem->AddResidualBlock(
+                    distance_cost_function
+                    ,loss
+                    ,start_node->position
+                    ,end_node->position
+                    ,&relativ_edge->width
+                    ); //note : both observations are referring to these nodes.
+    }
+}
+
+
+
+
+//! manual constraint based on surf distance between object and and edge
+int addManualConstraintsOnSurfDistToObjects_width(DataStorage * data, Problem * problem){
+    for (int i = 0; i < data->num_street_objects(); ++i) {
+
+        //finding the street_object
+        //finding the 2 nodes concerned by this observations
+        street_object * obj = data->street_objects(i) ;
+
+        edge * relativ_edge = data->ebe(obj->edge_id) ;
+        node * start_node = data->nbn(relativ_edge->start_node)  ;
+        node * end_node = data->nbn(relativ_edge->end_node)  ;
+
+        CostFunction* distance_cost_function=
+            new  ManualAttr_Rep_Object_width(i, data ) ;
         //untill 2.0 meters of distance, normal behavior. after that outliers behavior (not square)
         LossFunction* loss = NULL;
         loss = new ceres::ScaledLoss( g_param->useLoss?(new ceres::SoftLOneLoss(g_param->lossScale/5)):NULL

@@ -132,26 +132,36 @@ int main(int argc, char** argv) {
         addConstraintsOnOrthDistToObservation(data , &problem) ;
     }
 
-    // constraints based on observation : oth distance from observation to segment
-    if(g_param->use_manual_distance_to_proj_constraint == true){
-        addManualConstraintsOnOrthDistToObservation(data, &problem);
-    }
-
     // constraints based on initial angle between edges
     if(g_param->use_manual_distance_to_original_angle == true){
         addManualConstraintsOnDistanceToOriginalAngle(data, &problem);
     }
 
-    //manual constraints regularisation on distance between nodes
+    // constraints based on observation : oth distance from observation to segment
+    if(g_param->use_manual_distance_to_proj_constraint == true){
+        addManualConstraintsOnOrthDistToObservation(data, &problem);
+    }
+
+    //manual constraints regularisation on shared surface (plus maybe distance to border)
     if(g_param->use_manual_Surf_Dist_To_Objects_constraint == true){
         addManualConstraintsOnSurfDistToObjects(data, &problem);
+    }
+
+    // constraints based on observation for width : oth distance from observation to segment
+    if(g_param->use_manual_distance_to_proj_constraint_width == true){
+        addManualConstraintsOnOrthDistToObservation_width(data, &problem);
+    }
+
+    //manual constraints regularisation on shared surface (plus maybe distance to border)
+    if(g_param->use_manual_Surf_Dist_To_Objects_constraint_width == true){
+        addManualConstraintsOnSurfDistToObjects_width(data, &problem);
     }
 
     Solver::Options options;
     Solver::Summary summary;
 
 
-    options.max_num_iterations = 50;
+    options.max_num_iterations = 500;
     options.linear_solver_type = ceres::DENSE_QR;
     options.minimizer_progress_to_stdout = true;
 
