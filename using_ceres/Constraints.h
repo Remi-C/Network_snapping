@@ -39,6 +39,7 @@ using ceres::Problem;
 using ceres::LossFunction;
 
 
+int addAllConstraints(DataStorage * data, ceres::Problem * problem, Parameter* param);
 
 int addConstraintsOnInitialPosition(DataStorage *, ceres::Problem * );
 int addConstraintsOnInitialspacing( DataStorage *, ceres::Problem * );

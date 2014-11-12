@@ -117,45 +117,7 @@ int main(int argc, char** argv) {
     Problem problem(pb_options);
 
 
-    //setting constraint on initial position for each node.
-    if (g_param->use_initial_position_constraint == true) {
-        addConstraintsOnInitialPosition( data, &problem) ;
-    }
-
-    //setting constraint on initial spacing between nodes for each pair of node.
-    if(g_param->use_initial_spacing_constraint==true){
-        addConstraintsOnInitialspacing( data, &problem) ;
-    }
-
-    // constraints based on observation : oth distance from observation to segment
-    if(g_param->use_distance_to_proj_constraint == true){
-        addConstraintsOnOrthDistToObservation(data , &problem) ;
-    }
-
-    // constraints based on initial angle between edges
-    if(g_param->use_manual_distance_to_original_angle == true){
-        addManualConstraintsOnDistanceToOriginalAngle(data, &problem);
-    }
-
-    // constraints based on observation : oth distance from observation to segment
-    if(g_param->use_manual_distance_to_proj_constraint == true){
-        addManualConstraintsOnOrthDistToObservation(data, &problem);
-    }
-
-    //manual constraints regularisation on shared surface (plus maybe distance to border)
-    if(g_param->use_manual_Surf_Dist_To_Objects_constraint == true){
-        addManualConstraintsOnSurfDistToObjects(data, &problem);
-    }
-
-    // constraints based on observation for width : oth distance from observation to segment
-    if(g_param->use_manual_distance_to_proj_constraint_width == true){
-        addManualConstraintsOnOrthDistToObservation_width(data, &problem);
-    }
-
-    //manual constraints regularisation on shared surface (plus maybe distance to border)
-    if(g_param->use_manual_Surf_Dist_To_Objects_constraint_width == true){
-        addManualConstraintsOnSurfDistToObjects_width(data, &problem);
-    }
+    addAllConstraints(data,&problem,g_param);
 
     Solver::Options options;
     Solver::Summary summary;
