@@ -131,6 +131,8 @@ int addConstraintsOnInitialspacing(DataStorage * data, Problem * problem){
 
 //! manual constraint based on regularisation of distance between nodes
 int addManualConstraintsOnInitialspacing(DataStorage * data, Problem * problem){
+    double* neg = new double(-1);
+    double* pos = new double(+1);
     for(const auto& element : data->edges_by_edge_id()){
         //std::cout << element.second->end_node << std::endl;
 
@@ -159,17 +161,27 @@ int addManualConstraintsOnInitialspacing(DataStorage * data, Problem * problem){
                     ); //note : both observations are referring to these nodes.
 
         //saving the constraint for reuse to output at each step
-        //creating the constraint
+        //creating the constraint 2 times, so visualisation is easier
         Constraint * n_constraint = new Constraint_spacing(
                     start_node->position
                     ,end_node->position
                     ,start_node->position//useless
-                    ,&edge_to_output->width//useless
+                    ,neg//useless
                     ,original_spacing_distance_functor
                     ,start_node->position //useless
                     ) ;
+
+        Constraint * n_constraint2 = new Constraint_spacing(
+                    start_node->position
+                    ,end_node->position
+                    ,start_node->position//useless
+                    ,pos//useless
+                    ,original_spacing_distance_functor
+                    ,end_node->position //useless
+                    ) ;
         //adding it to list of constraints
         data->constraints()->push_back(n_constraint);
+        data->constraints()->push_back(n_constraint2);
     }
 }
 
