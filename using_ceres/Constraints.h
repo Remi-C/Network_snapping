@@ -318,8 +318,8 @@ public :
         residuals[0] = pow(cost,2);
 
         //compute Jacobian
-        Eigen::Vector3d Ji = -1 * sign* U * cost  ;// /2
-        Eigen::Vector3d Jj = +1 * sign* U * cost  ;// /2
+        Eigen::Vector3d Ji = -1 * sign* U * cost /2.0  ;// /2
+        Eigen::Vector3d Jj = +1 * sign* U * cost /2.0 ;// /2
 
 
         if (jacobians == NULL) {
