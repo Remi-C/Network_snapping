@@ -20,8 +20,8 @@ K_obj =20 ;
 use_initial_position_constraint = false ;
 use_initial_spacing_constraint = false ; //buggy
 use_distance_to_proj_constraint = false ; //buggy
-use_manual_distance_to_original_angle = false ;
-use_manual_initial_spacing_constraint = true ;
+use_manual_distance_to_original_angle = true ;
+use_manual_initial_spacing_constraint = false ;
 
 use_manual_distance_to_proj_constraint = true ;
 use_manual_Surf_Dist_To_Objects_constraint = false ;
