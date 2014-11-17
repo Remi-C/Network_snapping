@@ -34,15 +34,25 @@
     DONE add a constraint on distance to orginal angles between segements.
      - allow same observation id (allow an observation to be affected to multiple edges)
      - Generate visualisation data for every cost and jacobian
+        DONE DistToObs
+        DONE OriginalSpacing
+        DONE OriginalAngle
+        TODO OjectDistSurf
+
      - Allow fixed nodes for border of the network
         - Allow different behaviour based on the node being in intersection or not.
 
   @DEBUG
+    _cosntraint on angle --> jacobians are way way too big.
+     probably a math error somewhere
+
     _Border /in/out/ non working. Sign problem(again)?
     _ surface dist : big design mistake : the jacobian and residual should be proportionnal to the distance between
        object and edge ofsseted by width, and not proportionnal to area, because
        The power of the induced moves are not realted to geometric reality
+
     _big problem with all edges becoming verticals. A mistake somewhere in the jac evaluation?
+
 
   */
 
