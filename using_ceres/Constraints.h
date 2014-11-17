@@ -238,6 +238,7 @@ public :
         //            }
         //        }
 
+        Vjc = Vjc * sqrt(abs(d));
         if (jacobians == NULL) {
             //    cout << "JACOBIAN NULL" <<endl;
             return 1;
@@ -246,9 +247,9 @@ public :
         if (jacobians != NULL && jacobians[0] != NULL) {
             //    cout << "filled first jac" <<endl;
             //note: null jacobian means end of computation?
-            jacobians[0][0] = Vjc(0) * d; /// @debug : put a d factor here
-            jacobians[0][1] = Vjc(1) * d;
-            jacobians[0][2] = Vjc(2) * d;
+            jacobians[0][0] = Vjc(0) ;
+            jacobians[0][1] = Vjc(1) ;
+            jacobians[0][2] = Vjc(2) ;
             jacobians[0][3] = 0; //  Vjc(2) * d;
             jacobians[0][4] = 0 ; //  Vjc(2) * d;
             jacobians[0][5] = 0 ; //  Vjc(2) * d;

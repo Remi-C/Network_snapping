@@ -166,18 +166,18 @@ int addManualConstraintsOnInitialspacing(DataStorage * data, Problem * problem){
                     start_node->position
                     ,end_node->position
                     ,start_node->position//useless
-                    ,neg//useless
+                    ,neg
                     ,original_spacing_distance_functor
-                    ,start_node->position //useless
+                    ,start_node->position
                     ) ;
 
         Constraint * n_constraint2 = new Constraint_spacing(
                     start_node->position
                     ,end_node->position
                     ,start_node->position//useless
-                    ,pos//useless
+                    ,pos
                     ,original_spacing_distance_functor
-                    ,end_node->position //useless
+                    ,end_node->position
                     ) ;
         //adding it to list of constraints
         data->constraints()->push_back(n_constraint);
@@ -218,7 +218,7 @@ int addConstraintsOnOrthDistToObservation(DataStorage * data, Problem * problem)
 
 //! manual constraint based original angles in network
 int addManualConstraintsOnDistanceToOriginalAngle(DataStorage * data, Problem * problem){
-
+    double * zer = new double(0);
     for (int i = 0 ; i< data->num_nodes(); ++i){//for every node,
         int current_node_id = data->nodes(i)->node_id ;
         //std::cout << "curr node " << current_node_id <<std::endl;
@@ -267,6 +267,21 @@ int addManualConstraintsOnDistanceToOriginalAngle(DataStorage * data, Problem * 
                                 ,first_node->position
                                 ,sec_node->position
                                 );
+
+
+
+                    //saving the constraint for reuse to output at each step
+                    Constraint * n_constraint = new Constraint_angle(
+                                data->nbn(current_node_id)->position
+                                ,first_node->position
+                                ,sec_node->position
+                                ,zer //useless
+                                ,distance_cost_function
+                                ,data->nbn(current_node_id)->position
+                                ) ;
+
+                    //adding it to list of constraints
+                    data->constraints()->push_back(n_constraint);
                 }
             }
         }

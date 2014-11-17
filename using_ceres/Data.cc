@@ -472,11 +472,13 @@ void DataStorage::writeConstraints(int iteration){
     int old_gid = numConstraintsWritten();
     int gid = numConstraintsWritten()+1;
 
+    double t_c[2] = {0,0} ;
+    double * t_g = new double[6];
+
     for(auto& constraint : constraints_){
 
         //allocate memory for cost and geom
-        double t_c[2] = {0,0} ;
-        double t_g[6] = {0,0,0,1,1,1};
+
         //get the cost and geom associated to this constraint for this step
         constraint->get_graphical_constraint(t_c, t_g );
 
