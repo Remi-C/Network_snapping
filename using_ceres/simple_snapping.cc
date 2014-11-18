@@ -51,7 +51,8 @@
        object and edge ofsseted by width, and not proportionnal to area, because
        The power of the induced moves are not realted to geometric reality
 
-    _big problem with all edges becoming verticals. A mistake somewhere in the jac evaluation?
+    _OrthDist : big problem with all edges becoming verticals. A mistake somewhere in the jac evaluation?
+       Cost and jac remains small even if the network is radically modified, what's wrong?
 
 
   */
