@@ -12,7 +12,7 @@ objects_path = ../../data/data_in_reduced_export_area/object_in_export_area.csv 
 K_origin = 10 ;
 K_spacing = 50 ;
 K_obs = 1 ;
-K_angle = 50000 ;
+K_angle = 100 ;
 K_obj =20 ;
 
 
