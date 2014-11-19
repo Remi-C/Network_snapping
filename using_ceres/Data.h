@@ -40,6 +40,9 @@
 #include <unordered_map> //the hash_table
 #include <math.h> //for
 #include <vector>
+#include <typeinfo> //to get the name of a class
+#include <cxxabi.h> // to translate name of class into human language
+
 
 #include "Parameters.h"
 #include "enum_functions.h"
@@ -329,6 +332,47 @@ public :
 };
 
 
+/// heriting from constraints to be adapted to sidewlak distance cost function
+class Constraint_objects : public Constraint{
+public :
+    Constraint_objects(double node_1[3],double node_2[3],double node_3[3], double * width, ceres::CostFunction * cost_function , double application_point[3] )
+        :
+    Constraint( node_1 ,node_2, node_3,  width,  cost_function ,application_point )
+    {
+    }
+
+    int get_graphical_constraint(double * cost, double * geom ){
+
+        double temp_residuals ;
+        double* * temp_jacobian = new double*[3]  ;
+        double* * temp_parameters= new double*[3] ;
+        temp_jacobian[0]=new double[3];temp_jacobian[1]=new double[3];temp_jacobian[2]=new double[3];
+       // temp_parameters[0] = new double[3];temp_parameters[1] = new double[3];temp_parameters[2] = new double[3];
+        temp_parameters[0] =node_1_ ;
+        temp_parameters[1] =node_2_  ;
+        temp_parameters[2]=width_ ;
+
+        cost_function_->Evaluate(temp_parameters,
+                                 &temp_residuals,
+                                 temp_jacobian) ;
+        *cost = temp_residuals;
+        geom[0] =  application_point_[0];
+        geom[1] =  application_point_[1];
+        geom[2] =  application_point_[2];
+
+        geom[3] =  application_point_[0]+temp_jacobian[0][0];
+        geom[4] =  application_point_[1]+temp_jacobian[0][1];
+        geom[5] =  application_point_[2]+temp_jacobian[0][2];
+
+        delete[] temp_jacobian[0];delete[] temp_jacobian[1];delete[] temp_jacobian[2];
+        delete[] temp_jacobian;
+        //delete[] temp_parameters[0];delete[] temp_parameters[1];delete[] temp_parameters[2];
+        delete[] temp_parameters;
+        return -1;
+    };
+};
+
+
 /// heriting from constraints to be adapted to initial position cost function
 class Constraint_spacing : public Constraint{
 public :
@@ -357,9 +401,9 @@ public :
         geom[1] = application_point_[1] ;
         geom[2] = application_point_[2] ;
 
-        geom[3] =  application_point_[0]+temp_jacobian[0][0] * temp_parameters[2][0];
-        geom[4] =  application_point_[1]+temp_jacobian[0][1] * temp_parameters[2][0];
-        geom[5] =  application_point_[2]+temp_jacobian[0][2] * temp_parameters[2][0];
+        geom[3] =  application_point_[0]+temp_jacobian[0][0]  ;
+        geom[4] =  application_point_[1]+temp_jacobian[0][1]  ;
+        geom[5] =  application_point_[2]+temp_jacobian[0][2]  ;
 
         delete[] temp_jacobian[0];delete[] temp_jacobian[1];delete[] temp_jacobian[2];
         delete[] temp_jacobian;

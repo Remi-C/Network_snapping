@@ -54,6 +54,8 @@
     _OrthDist : big problem with all edges becoming verticals. A mistake somewhere in the jac evaluation?
        Cost and jac remains small even if the network is radically modified, what's wrong?
 
+    _surfDist :
+        some Z coordinates of the Jac are put to Nan
 
   */
 

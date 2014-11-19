@@ -320,15 +320,15 @@ int addManualConstraintsOnOrthDistToObservation(DataStorage * data, Problem * pr
 
         //saving the constraint for reuse to output at each step
         //creating the constraint
-//        Constraint * n_constraint = new Constraint_sidewalk(
-//                    start_node->position
-//                    ,end_node->position
-//                    ,start_node->position
-//                    ,&relativ_edge->width
-//                    ,distance_cost_function
-//                    ,data->observations(i)->position) ;
-//        //adding it to list of constraints
-//        data->constraints()->push_back(n_constraint);
+        Constraint * n_constraint = new Constraint_sidewalk(
+                    start_node->position
+                    ,end_node->position
+                    ,start_node->position
+                    ,&relativ_edge->width
+                    ,distance_cost_function
+                    ,data->observations(i)->position) ;
+        //adding it to list of constraints
+        data->constraints()->push_back(n_constraint);
     }
 }
 
@@ -361,6 +361,23 @@ int addManualConstraintsOnSurfDistToObjects(DataStorage * data, Problem * proble
                     ,end_node->position
                     ,&relativ_edge->width
                     ); //note : obj is referring to these nodes.
+
+        //saving the constraint for reuse to output at each step
+        double* obj_centroid_double = new double[3] ;
+
+         Geometry::geomPoint2Double(obj->geom_centroid,obj_centroid_double) ;
+        //creating the constraint
+        Constraint * n_constraint = new Constraint_objects(
+                    start_node->position
+                    ,end_node->position
+                    ,start_node->position
+                    ,&relativ_edge->width
+                    ,distance_cost_function
+                    ,obj_centroid_double) ;
+        //adding it to list of constraints
+        data->constraints()->push_back(n_constraint);
+
+
     }
 }
 

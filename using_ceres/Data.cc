@@ -35,6 +35,7 @@ DataStorage::~DataStorage(){
     delete[] observations_;
     delete[] classifications_;
     delete[] street_objects_;
+    /// @TODO loop on constraint vector, for surface_objects, free applciation point
 }
 
 //! unit test for node to string
@@ -481,7 +482,13 @@ void DataStorage::writeConstraints(int iteration){
 
         //get the cost and geom associated to this constraint for this step
         constraint->get_graphical_constraint(t_c, t_g );
-
+        //getting the name of the class of constraint :
+        int status = 0;
+        char* constraint_name = abi::__cxa_demangle(
+                    typeid( *constraint ).name()
+                                ,NULL
+                                ,0
+                                ,&status) ;
 
         //this allows to represent 60*60*60 iterations
         //we compute the H:M:S based on number of iteration.
@@ -489,7 +496,7 @@ void DataStorage::writeConstraints(int iteration){
 
         fprintf(o_fptr,"%d;edge_id;%s;%lG;LINESTRINGZ(%lG %lG %lG, %lG %lG %lG);2014-08-30 %02d:%02d:%02d;2014-08-30 %02d:%02d:%02d;%d\n"
                 , gid
-                , "sidewalk"
+                , constraint_name
                 , t_c[0]
                 , t_g[0], t_g[1], t_g[2], t_g[3], t_g[4], t_g[5]
                 , hours_c

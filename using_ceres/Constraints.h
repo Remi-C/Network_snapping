@@ -500,7 +500,7 @@ public :
         int sign = Geometry::orientationIndex(parameters[0],parameters[1],centroid2D_);//depends on left or right !
 
         //compute Jacobian norm for Ni
-        Eigen::Vector3d Ji =  sign * Vja * SIGN(cost) * residuals[0]  ;
+        Eigen::Vector3d Ji = sign * Vja * SIGN(cost) * residuals[0]  ;
         //compute Jacobian norm for Nj
         Eigen::Vector3d Jj =  Ji ;
 
