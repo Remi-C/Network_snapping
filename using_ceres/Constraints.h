@@ -436,139 +436,139 @@ private:
 
 
 
-//! trying to replace the auto computation of Jacobian by a custom one
-class ManualAttr_Rep_Object  : public ceres::SizedCostFunction<1,3,3,1> {
+////! trying to replace the auto computation of Jacobian by a custom one
+//class ManualAttr_Rep_Object  : public ceres::SizedCostFunction<1,3,3,1> {
 
-public :
-    //! this is the constructor, it expects the index of the street_object
+//public :
+//    //! this is the constructor, it expects the index of the street_object
 
-    ManualAttr_Rep_Object(const unsigned int index, DataStorage * data)
-        : object_index_(index)
-        , obj_(data->street_objects(index))
-        ,classification_(data->cbn(obj_->class_name))
-        ,centroid2D_{0,0}
-    ,axis_width_(&data->ebe(obj_->edge_id)->width)
-    {
-        Geometry::geomPoint2Double( obj_->geom_centroid
-                                    , this->centroid2D_  );
-    }
+//    ManualAttr_Rep_Object(const unsigned int index, DataStorage * data)
+//        : object_index_(index)
+//        , obj_(data->street_objects(index))
+//        ,classification_(data->cbn(obj_->class_name))
+//        ,centroid2D_{0,0}
+//    ,axis_width_(&data->ebe(obj_->edge_id)->width)
+//    {
+//        Geometry::geomPoint2Double( obj_->geom_centroid
+//                                    , this->centroid2D_  );
+//    }
 
-    /** this is the operator computing the cost,
-        Here the cost depends on the type of object, and is proportionnal to the distance to border)
-        Refer to geometry_function for better description of this cost.
-    */
-    virtual bool Evaluate(double const* const* parameters,
-                          double* residuals,
-                          double** jacobians) const {
-        //the parameters is as follow : parameter[0-2] = n_i = first node;parameter[3-5] = n_j = second node;
+//    /** this is the operator computing the cost,
+//        Here the cost depends on the type of object, and is proportionnal to the distance to border)
+//        Refer to geometry_function for better description of this cost.
+//    */
+//    virtual bool Evaluate(double const* const* parameters,
+//                          double* residuals,
+//                          double** jacobians) const {
+//        //the parameters is as follow : parameter[0-2] = n_i = first node;parameter[3-5] = n_j = second node;
 
-        //map the input array into 2 eigen vectors, plus map observation position into Eigen
-        //        cout << "\nbeginning of evaluate" << endl;
-        ConstVectorRef Ni( parameters[0],3 );
-        ConstVectorRef Nj( parameters[1],3 );
+//        //map the input array into 2 eigen vectors, plus map observation position into Eigen
+//        //        cout << "\nbeginning of evaluate" << endl;
+//        ConstVectorRef Ni( parameters[0],3 );
+//        ConstVectorRef Nj( parameters[1],3 );
 
-        //cout << centroid2D_[0] << " " << centroid2D_[1] << endl;
-        //center of object : ConstVectorRef Ob(position_,3);
-        Eigen::Vector3d Obj_center;
-        Obj_center[0] = centroid2D_[0] ;
-        Obj_center[1] = centroid2D_[1] ;
-        Obj_center[2] = 0 ;
-
-
-        //the jacobian should be in the plan normal to Z vector
-        // we can't correct Z because of the variety of possible objects. Some may not be at road height
-        Eigen::Vector3d Np = Eigen::Vector3d::UnitZ() ;
-
-        //compute director vector of (NiNj) ie : NiNj/norm(NiNj) = u
-        Eigen::Vector3d U = (Nj-Ni)/(Nj-Ni).norm();
-
-        //the direction of change should be :
-        Eigen::Vector3d Vja = (U.cross(Np)).normalized();
-
-        //compute the cost using the geometric distance
-        double cost = signed_dist_to_border(classification_->road_surface_relation
-                                       ,parameters[0]
-                                       ,parameters[1]
-                                       ,parameters[2][0]
-                                       ,obj_->geom_border_surface
-                                       ,obj_->geom_border_area
-                                       );
-
-        //residuals[0] = pow(std::abs(cost * obj_->confidence),2);
-        residuals[0] = ceres::pow(cost,2) ; /// @FIXME @TODO @DEBUG warning : should put the confidence here
-
-        int sign = Geometry::orientationIndex(parameters[0],parameters[1],centroid2D_);//depends on left or right !
-
-        //compute Jacobian norm for Ni
-        Eigen::Vector3d Ji = sign * Vja * SIGN(cost) * residuals[0]  ;
-        //compute Jacobian norm for Nj
-        Eigen::Vector3d Jj =  Ji ;
-
-        ////        cout << "  Observation_id : " <<  obs_->obs_id <<std::endl;
-        //        cout << "  Ni : " << Ni.transpose() <<std::endl;
-        //        cout << " Nj : " << Nj.transpose() <<std::endl;
-        ////        cout << " Vja : " << Vja.transpose() <<std::endl;
-        //        cout << "  residual : " << residuals[0] <<std::endl;
-        //        cout << "  cost : " << cost <<std::endl;
-        //        cout << "   Ji :" << Ji.transpose() <<endl;
-        //        cout << "   Jj :" << Jj.transpose() <<endl;
-        //        // std::cout << "\njac (eigen): \n" << jac << std::endl;
-
-        if (jacobians == NULL) {
-            //cout << "JACOBIAN NULL" <<endl;
-            return true;
-        }
-
-        if (jacobians != NULL && jacobians[0] != NULL) {
-            //note: null jacobian means end of computation?
-            jacobians[0][0] =  Ji(0);
-            jacobians[0][1] =  Ji(1);
-            jacobians[0][2]=   Ji(2);
-
-        }
-        if (jacobians != NULL && jacobians[1] != NULL) {
-            //note: null jacobian means end of computation?
-            jacobians[1][0] =  Jj(0);
-            jacobians[1][1] =  Jj(1);
-            jacobians[1][2]=   Jj(2);
-
-        }
-        if (jacobians != NULL && jacobians[2] != NULL) {
-            //note: null jacobian means end of computation?
-            jacobians[2][0] = 0; //-1 * SIGN(cost)*  ceres::sqrt(residuals[0])/10 ;
-
-        }
+//        //cout << centroid2D_[0] << " " << centroid2D_[1] << endl;
+//        //center of object : ConstVectorRef Ob(position_,3);
+//        Eigen::Vector3d Obj_center;
+//        Obj_center[0] = centroid2D_[0] ;
+//        Obj_center[1] = centroid2D_[1] ;
+//        Obj_center[2] = 0 ;
 
 
-        //        cout << "end of evaluate()\n";
-        return true;
-    }
+//        //the jacobian should be in the plan normal to Z vector
+//        // we can't correct Z because of the variety of possible objects. Some may not be at road height
+//        Eigen::Vector3d Np = Eigen::Vector3d::UnitZ() ;
 
-    std::string ToString() const {
-        std::ostringstream nstring;
+//        //compute director vector of (NiNj) ie : NiNj/norm(NiNj) = u
+//        Eigen::Vector3d U = (Nj-Ni)/(Nj-Ni).norm();
+
+//        //the direction of change should be :
+//        Eigen::Vector3d Vja = (U.cross(Np)).normalized();
+
+//        //compute the cost using the geometric distance
+//        double cost = signed_dist_to_border(classification_->road_surface_relation
+//                                       ,parameters[0]
+//                                       ,parameters[1]
+//                                       ,parameters[2][0]
+//                                       ,obj_->geom_border_surface
+//                                       ,obj_->geom_border_area
+//                                       );
+
+//        //residuals[0] = pow(std::abs(cost * obj_->confidence),2);
+//        residuals[0] = ceres::pow(cost,2) ; /// @FIXME @TODO @DEBUG warning : should put the confidence here
+
+//        int sign = Geometry::orientationIndex(parameters[0],parameters[1],centroid2D_);//depends on left or right !
+
+//        //compute Jacobian norm for Ni
+//        Eigen::Vector3d Ji = sign * Vja * SIGN(cost) * residuals[0]  ;
+//        //compute Jacobian norm for Nj
+//        Eigen::Vector3d Jj =  Ji ;
+
+//        ////        cout << "  Observation_id : " <<  obs_->obs_id <<std::endl;
+//        //        cout << "  Ni : " << Ni.transpose() <<std::endl;
+//        //        cout << " Nj : " << Nj.transpose() <<std::endl;
+//        ////        cout << " Vja : " << Vja.transpose() <<std::endl;
+//        //        cout << "  residual : " << residuals[0] <<std::endl;
+//        //        cout << "  cost : " << cost <<std::endl;
+//        //        cout << "   Ji :" << Ji.transpose() <<endl;
+//        //        cout << "   Jj :" << Jj.transpose() <<endl;
+//        //        // std::cout << "\njac (eigen): \n" << jac << std::endl;
+
+//        if (jacobians == NULL) {
+//            //cout << "JACOBIAN NULL" <<endl;
+//            return true;
+//        }
+
+//        if (jacobians != NULL && jacobians[0] != NULL) {
+//            //note: null jacobian means end of computation?
+//            jacobians[0][0] =  Ji(0);
+//            jacobians[0][1] =  Ji(1);
+//            jacobians[0][2]=   Ji(2);
+
+//        }
+//        if (jacobians != NULL && jacobians[1] != NULL) {
+//            //note: null jacobian means end of computation?
+//            jacobians[1][0] =  Jj(0);
+//            jacobians[1][1] =  Jj(1);
+//            jacobians[1][2]=   Jj(2);
+
+//        }
+//        if (jacobians != NULL && jacobians[2] != NULL) {
+//            //note: null jacobian means end of computation?
+//            jacobians[2][0] = 0; //-1 * SIGN(cost)*  ceres::sqrt(residuals[0])/10 ;
+
+//        }
 
 
-        //nstring.precision(10);
-        nstring <<  "object_index_ : ";
-        nstring << int(object_index_);
-        nstring << std::endl ;
-        nstring << "\t obj_ : "<<obj_->street_objectsToString() << std::endl;
-        nstring << "\t classification_ : "<<classification_->classificationToString()<<std::endl;
-        nstring << "\t centroid2D_ : "<<"\t\t X :"<<centroid2D_[0]
-                <<"\t\t  Y :"<<centroid2D_[1]
-               <<std::endl;
-        nstring << "\t axis_width_ :"<<axis_width_[0]  <<std::endl ;
-        return nstring.str() ;
-    }
+//        //        cout << "end of evaluate()\n";
+//        return true;
+//    }
 
-private:
-    const int object_index_ ; // store the index of this object into the object array
-    const street_object * obj_;//link to the observation, for easy use of confidence and weight.
-    const classification * classification_; // link to the class of the object
-    double centroid2D_[2]; // X and Y of the centroid of the geom.
-    const double* axis_width_; // points to the edge-> width memory
-    ///  @TODO : should be const
-};
+//    std::string ToString() const {
+//        std::ostringstream nstring;
+
+
+//        //nstring.precision(10);
+//        nstring <<  "object_index_ : ";
+//        nstring << int(object_index_);
+//        nstring << std::endl ;
+//        nstring << "\t obj_ : "<<obj_->street_objectsToString() << std::endl;
+//        nstring << "\t classification_ : "<<classification_->classificationToString()<<std::endl;
+//        nstring << "\t centroid2D_ : "<<"\t\t X :"<<centroid2D_[0]
+//                <<"\t\t  Y :"<<centroid2D_[1]
+//               <<std::endl;
+//        nstring << "\t axis_width_ :"<<axis_width_[0]  <<std::endl ;
+//        return nstring.str() ;
+//    }
+
+//private:
+//    const int object_index_ ; // store the index of this object into the object array
+//    const street_object * obj_;//link to the observation, for easy use of confidence and weight.
+//    const classification * classification_; // link to the class of the object
+//    double centroid2D_[2]; // X and Y of the centroid of the geom.
+//    const double* axis_width_; // points to the edge-> width memory
+//    ///  @TODO : should be const
+//};
 
 
 
@@ -756,111 +756,111 @@ private:
 
 
 
-////! trying to replace the auto computation of Jacobian by a custom one
-//class ManualAttr_Rep_Object  : public ceres::SizedCostFunction<1,3,3,1> {
+//! trying to replace the auto computation of Jacobian by a custom one
+class ManualAttr_Rep_Object  : public ceres::SizedCostFunction<1,3,3,1> {
 
-//public :
-//    //! this is the constructor, it expects the index of the street_object
+public :
+    //! this is the constructor, it expects the index of the street_object
 
-//    ManualAttr_Rep_Object(const unsigned int index, DataStorage * data)
-//        : object_index_(index)
-//        , obj_(data->street_objects(index))
-//        ,classification_(data->cbn(obj_->class_name))
-//        ,centroid2D_{0,0}
-//    ,axis_width_(&data->ebe(obj_->edge_id)->width)
-//    {
-//        Geometry::geomPoint2Double( obj_->geom_centroid
-//                                    , this->centroid2D_  );
-//    }
+    ManualAttr_Rep_Object(const unsigned int index, DataStorage * data)
+        : object_index_(index)
+        , obj_(data->street_objects(index))
+        ,classification_(data->cbn(obj_->class_name))
+        ,centroid2D_{0,0}
+    ,axis_width_(&data->ebe(obj_->edge_id)->width)
+    {
+        Geometry::geomPoint2Double( obj_->geom_centroid
+                                    , this->centroid2D_  );
+    }
 
-//    /** this is the operator computing the cost,
-//        Here the cost depends on the type of object, and is proportionnal to the shared surface (+ maybe the distance to border)
-//        Refer to geometry_function for better description of this cost.
-//    */
-//    virtual bool Evaluate(double const* const* parameters,
-//                          double* residuals,
-//                          double** jacobians) const {
-//        //the parameters is as follow : parameter[0-2] = n_i = first node;parameter[3-5] = n_j = second node;
+    /** this is the operator computing the cost,
+        Here the cost depends on the type of object, and is proportionnal to the shared surface (+ maybe the distance to border)
+        Refer to geometry_function for better description of this cost.
+    */
+    virtual bool Evaluate(double const* const* parameters,
+                          double* residuals,
+                          double** jacobians) const {
+        //the parameters is as follow : parameter[0-2] = n_i = first node;parameter[3-5] = n_j = second node;
 
-//        //map the input array into 2 eigen vectors, plus map observation position into Eigen
-//        //        cout << "\nbeginning of evaluate" << endl;
-//        ConstVectorRef Ni( parameters[0],3 );
-//        ConstVectorRef Nj( parameters[1],3 );
+        //map the input array into 2 eigen vectors, plus map observation position into Eigen
+        //        cout << "\nbeginning of evaluate" << endl;
+        ConstVectorRef Ni( parameters[0],3 );
+        ConstVectorRef Nj( parameters[1],3 );
 
-//        //cout << centroid2D_[0] << " " << centroid2D_[1] << endl;
-//        //center of object : ConstVectorRef Ob(position_,3);
-//        Eigen::Vector3d Obj_center;
-//        Obj_center[0] = centroid2D_[0] ;
-//        Obj_center[1] = centroid2D_[1] ;
-//        Obj_center[2] = 0 ;
-
-
-//        //the jacobian should be in the plan normal to Z vector
-//        // we can't correct Z because of the variety of possible objects. Some may not be at road height
-//        Eigen::Vector3d Np = Eigen::Vector3d::UnitZ() ;
-
-//        //compute director vector of (NiNj) ie : NiNj/norm(NiNj) = u
-//        Eigen::Vector3d U = (Nj-Ni)/(Nj-Ni).norm();
-
-//        //the direction of change should be :
-//        Eigen::Vector3d Vja = (U.cross(Np)).normalized();
-
-//        //compute the cost using the geometric distance
-//        double cost = shared_area_cost(classification_->road_surface_relation
-//                                       ,parameters[0]
-//                                       ,parameters[1]
-//                                       ,parameters[2][0]
-//                                       ,obj_->geom_border_surface
-//                                       ,obj_->geom_border_area
-//                                       );
-
-//        //residuals[0] = pow(std::abs(cost * obj_->confidence),2);
-//        residuals[0] = pow(std::abs(cost),2) /25; /// @FIXME @TODO @DEBUG warning : should put the confidence here
-
-//        int sign =-1* Geometry::orientationIndex(parameters[0],parameters[1],centroid2D_);//depends on left or right !
-
-//        //compute Jacobian norm for Ni
-//        Eigen::Vector3d Ji =  sign * Vja * SIGN(cost)*  ceres::sqrt(residuals[0]) /5;
-//        //compute Jacobian norm for Nj
-//        Eigen::Vector3d Jj =  Ji ;
-//        if (jacobians == NULL) {
-//            //cout << "JACOBIAN NULL" <<endl;
-//            return 1;
-//        }
-
-//        if (jacobians != NULL && jacobians[0] != NULL) {
-//            //note: null jacobian means end of computation?
-//            jacobians[0][0] =  Ji(0);
-//            jacobians[0][1] =  Ji(1);
-//            jacobians[0][2]=   Ji(2);
-
-//        }
-//        if (jacobians != NULL && jacobians[1] != NULL) {
-//            //note: null jacobian means end of computation?
-//            jacobians[1][0] =  Jj(0);
-//            jacobians[1][1] =  Jj(1);
-//            jacobians[1][2]=   Jj(2);
-
-//        }
-//        if (jacobians != NULL && jacobians[2] != NULL) {
-//            //note: null jacobian means end of computation?
-//            jacobians[2][0] = 0; //-1 * SIGN(cost)*  ceres::sqrt(residuals[0])/10 ;
-
-//        }
+        //cout << centroid2D_[0] << " " << centroid2D_[1] << endl;
+        //center of object : ConstVectorRef Ob(position_,3);
+        Eigen::Vector3d Obj_center;
+        Obj_center[0] = centroid2D_[0] ;
+        Obj_center[1] = centroid2D_[1] ;
+        Obj_center[2] = 0 ;
 
 
-//        //        cout << "end of evaluate()\n";
-//        return true;
-//    }
+        //the jacobian should be in the plan normal to Z vector
+        // we can't correct Z because of the variety of possible objects. Some may not be at road height
+        Eigen::Vector3d Np = Eigen::Vector3d::UnitZ() ;
 
-//private:
-//    const int object_index_ ; // store the index of this object into the object array
-//    const street_object * obj_;//link to the observation, for easy use of confidence and weight.
-//    const classification * classification_; // link to the class of the object
-//    double centroid2D_[2]; // X and Y of the centroid of the geom.
-//    const double* axis_width_; // points to the edge-> width memory
-//    ///  @TODO : should be const
-//};
+        //compute director vector of (NiNj) ie : NiNj/norm(NiNj) = u
+        Eigen::Vector3d U = (Nj-Ni)/(Nj-Ni).norm();
+
+        //the direction of change should be :
+        Eigen::Vector3d Vja = (U.cross(Np)).normalized();
+
+        //compute the cost using the geometric distance
+        double cost = shared_area_cost(classification_->road_surface_relation
+                                       ,parameters[0]
+                                       ,parameters[1]
+                                       ,parameters[2][0]
+                                       ,obj_->geom_border_surface
+                                       ,obj_->geom_border_area
+                                       );
+
+        //residuals[0] = pow(std::abs(cost * obj_->confidence),2);
+        residuals[0] = pow(std::abs(cost),2) ; /// @FIXME @TODO @DEBUG warning : should put the confidence here
+
+        int sign =-1* Geometry::orientationIndex(parameters[0],parameters[1],centroid2D_);//depends on left or right !
+
+        //compute Jacobian norm for Ni
+        Eigen::Vector3d Ji =  sign * Vja * SIGN(cost)*  ceres::sqrt(residuals[0]) ;
+        //compute Jacobian norm for Nj
+        Eigen::Vector3d Jj =  Ji ;
+        if (jacobians == NULL) {
+            //cout << "JACOBIAN NULL" <<endl;
+            return 1;
+        }
+
+        if (jacobians != NULL && jacobians[0] != NULL) {
+            //note: null jacobian means end of computation?
+            jacobians[0][0] =  Ji(0);
+            jacobians[0][1] =  Ji(1);
+            jacobians[0][2]=   Ji(2);
+
+        }
+        if (jacobians != NULL && jacobians[1] != NULL) {
+            //note: null jacobian means end of computation?
+            jacobians[1][0] =  Jj(0);
+            jacobians[1][1] =  Jj(1);
+            jacobians[1][2]=   Jj(2);
+
+        }
+        if (jacobians != NULL && jacobians[2] != NULL) {
+            //note: null jacobian means end of computation?
+            jacobians[2][0] = 0; //-1 * SIGN(cost)*  ceres::sqrt(residuals[0])/10 ;
+
+        }
+
+
+        //        cout << "end of evaluate()\n";
+        return true;
+    }
+
+private:
+    const int object_index_ ; // store the index of this object into the object array
+    const street_object * obj_;//link to the observation, for easy use of confidence and weight.
+    const classification * classification_; // link to the class of the object
+    double centroid2D_[2]; // X and Y of the centroid of the geom.
+    const double* axis_width_; // points to the edge-> width memory
+    ///  @TODO : should be const
+};
 
 
 

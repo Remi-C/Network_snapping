@@ -189,7 +189,7 @@ double shared_area_cost(SnapEnums::road_relation_enum road_relation, const doubl
     if(distance_to_shell!=0){//the object is either fully inside or fully outside
         if(intersects==1){//the object is fully inside
             if(road_relation==SnapEnums::BORDER){
-                cost_surface = object_snapping_surface_area;
+                cost_surface = 1;//object_snapping_surface_area;
                 sign= +1;
             }
             if(attractive==SnapEnums::ATTRACTIVE){
@@ -197,18 +197,18 @@ double shared_area_cost(SnapEnums::road_relation_enum road_relation, const doubl
                 sign = 1;//is no 0 because of BORDER_IN case
             }
             if(attractive==SnapEnums::REPULSIVE){
-                cost_surface = object_snapping_surface_area;
-                cost_distance = (distance_to_shell) * object_snapping_surface_area ;
+                cost_surface = 1  ;//object_snapping_surface_area;
+                cost_distance = (distance_to_shell) * 1 ; //object_snapping_surface_area ;
                 sign = +1 ;
             }
         }else{//the object is fully outside
             if(road_relation==SnapEnums::BORDER){
-                cost_surface = object_snapping_surface_area;
+                cost_surface = 1;// object_snapping_surface_area;
                 sign = -1;
             }
             if(attractive==SnapEnums::ATTRACTIVE){
-                cost_surface = object_snapping_surface_area;
-                cost_distance = (distance_to_shell) * object_snapping_surface_area ;
+                cost_surface = 1;//object_snapping_surface_area;
+                cost_distance = (distance_to_shell) * 1;//object_snapping_surface_area ;
                 sign = -1;
             }
             if(attractive==SnapEnums::REPULSIVE){
@@ -221,16 +221,16 @@ double shared_area_cost(SnapEnums::road_relation_enum road_relation, const doubl
         //we must compute the shared surface
 
         if(road_relation==SnapEnums::BORDER){//cost is 0 when object is centered on border
-            cost_surface = object_snapping_surface_area-2*shared_area ;
+            cost_surface = (object_snapping_surface_area-2*shared_area)/object_snapping_surface_area ;
             sign = -1*SIGN(cost_surface);//this is the sign function
             cost_surface = std::abs(cost_surface);
         }
         if(attractive==SnapEnums::ATTRACTIVE){//Cost is high when object is outside
-            cost_surface = object_snapping_surface_area-shared_area;
+            cost_surface = (object_snapping_surface_area-shared_area)/object_snapping_surface_area;
             sign = -1;
         }
         if(attractive==SnapEnums::REPULSIVE){//cost is high when object is inside
-            cost_surface = shared_area;
+            cost_surface = shared_area/object_snapping_surface_area;
             sign = +1;
         }
 
@@ -243,7 +243,7 @@ double shared_area_cost(SnapEnums::road_relation_enum road_relation, const doubl
             //the distance to border is null, no modification of the cost
         }else{//the object is either fully inside or fully outside
             //the cost is proportionnal to its distance to border
-            cost_distance = (distance_to_shell) * object_snapping_surface_area ;
+            cost_distance = (distance_to_shell) * 1 ; //object_snapping_surface_area ;
         }
     }
 
