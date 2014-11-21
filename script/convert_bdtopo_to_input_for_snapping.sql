@@ -77,6 +77,7 @@ SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, p
 			--60 k lines
 
 	CREATE INDEX ON  nodes_for_output USING GIST(ST_SetSRID(ST_MakePoint(X,Y,Z),932011));
+	CREATE INDEX ON nodes_for_output (node_id) 
 
 	DROP TABLE IF EXISTS edges_for_output ; 
 	CREATE TABLE edges_for_output AS  
@@ -98,6 +99,7 @@ SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, p
 			LEFT OUTER JOIN road AS  r ON (ed.ign_id = r.id)
 		WHERE sp.end_node IS NOT NULL 
 	)
+	,edges AS (
 		 SELECT ed.edge_id, ed.start_node, ed.end_node, r.largeur AS width, ed.edge_id AS old_edge_id
 		FROM edge_data AS ed
 		LEFT OUTER JOIN road AS  r ON (ed.ign_id = r.id)
@@ -107,9 +109,23 @@ SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, p
 				, start_node
 				, end_node 
 				, width 
+				,old_edge_id 
+		FROM new_edges
+	)
+	SELECT edge_id
+				, start_node
+				, end_node 
+				, width 
 				,old_edge_id
-		FROM new_edges ;
-	 
+				, ST_SetSRID(ST_MakeLine(ST_MakePoint(nou1.X,nou1.Y,nou1.Z),ST_MakePoint(nou2.X,nou2.Y,nou2.Z)),932011) AS geom
+	FROM edges AS eou
+		LEFT OUTER JOIN nodes_for_output AS nou1 ON (eou.start_node = nou1.node_id)
+		LEFT OUTER JOIN nodes_for_output AS nou2 ON (eou.end_node = nou2.node_id)
+			;
+	CREATE INDEX ON edges_for_output USING GIST(geom) ;
+	 CREATE INDEX ON edges_for_output (edge_id) ;
+	 CREATE INDEX ON edges_for_output (start_node) ;
+	  CREATE INDEX ON edges_for_output (end_node) ;
 
 
 --now we restrain ourselve to an area for test :
@@ -160,24 +176,38 @@ SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, p
 	
 */
 
-	DROP TABLE IF EXISTS nodes_for_output_in_export_area; 
-	CREATE TABLE nodes_for_output_in_export_area AS 
-		--we keep only the nodes inside the export area
-	SELECT nou.node_id
-		, nou.X AS X
-		,nou.Y AS Y 
-		,COALESCE(nou.Z,0) AS Z
-		,nou.is_in_intersection
-	FROM nodes_for_output as nou, def_zone_export as dfz
-	WHERE ST_DWITHIN(ST_SetSRID(ST_MakePoint(nou.X,nou.Y,nou.Z),932011) , ST_Transform((dfz.geom),932011),20) = TRUE;
 
 	DROP TABLE IF EXISTS edges_for_output_in_export_area; 
 	CREATE TABLE edges_for_output_in_export_area AS 
 		--we keep only the edges whose both ends are exported nodes.
-	SELECT eou.*
-	FROM edges_for_output as eou , nodes_for_output_in_export_area AS nou1, nodes_for_output_in_export_area AS nou2
-	WHERE eou.start_node = nou1.node_id AND eou.end_node = nou2.node_id  ;
+	SELECT DISTINCT edge_id
+				, start_node
+				, end_node 
+				, width 
+				,old_edge_id 
+	FROM edges_for_output as eou ,  def_zone_export as dfz
+	WHERE ST_Intersects(eou.geom, ST_Transform((dfz.geom),932011)  )  
+	CREATE INDEX ON edges_for_output_in_export_area (start_node);
+	CREATE INDEX ON edges_for_output_in_export_area (end_node);
 
+	
+	DROP TABLE IF EXISTS nodes_for_output_in_export_area; 
+	CREATE TABLE nodes_for_output_in_export_area AS 
+		--we keep only the nodes inside the export area
+	with node_id AS (SELECT start_node  AS node_id
+	FROM edges_for_output_in_export_area
+	UNION
+	SELECT end_node  AS node_id
+	FROM edges_for_output_in_export_area
+	)
+	SELECT nfo.node_id
+		, nfo.X AS X
+		,nfo.Y AS Y 
+		,COALESCE(nfo.Z,0) AS Z
+		,nfo.is_in_intersection 
+	FROM node_id
+		NATURAL JOIN nodes_for_output AS nfo
+  
 
 	--getting the observations inside the area 
 

@@ -107,10 +107,11 @@ gid ,  classification_id ,  classification ,   z_range numrange, geom ,   import
 		SELECT 
 			DISTINCT ON (oia.gid) --note : enable = object mapped to at most 1 edge
 			oia.*, eg.edge_id
+			,ST_ShortestLine(ST_Transform( oia.geom ,932011),  eg.edge_geom) as sline_to_edge
 		FROM obj_in_area  AS oia ,edge_geom AS eg
 		WHERE ST_DWithin( ST_Transform(oia.geom,932011), eg.edge_geom,4+width)=TRUE
 			--order by usefull if using distinct
-		ORDER BY oia.gid ASC, abs(ST_Distance(ST_Transform(oia.geom,932011),eg.edge_geom )-width) ASC 
+		ORDER BY oia.gid ASC, abs(ST_Distance(ST_Transform(oia.geom,932011),ST_Buffer(eg.edge_geom,width/2,'endcap=flat' ))) ASC 
 	)
 	--object_id;class_id;class_name;edge_id;geom;confidence;
 	SELECT  
@@ -120,6 +121,7 @@ gid ,  classification_id ,  classification ,   z_range numrange, geom ,   import
 		, classification AS class_name
 		,   edge_id 
 		, ST_Force2D(geom)  AS geom 
+		, ST_Force2D(sline_to_edge) AS sline_to_edge
 		,weighted_confidence AS confidence 
 	FROM map  ; 
 
