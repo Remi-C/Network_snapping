@@ -48,6 +48,8 @@ char *write_WKT(geometry, int dim);
 /** function that compute a rectangle given 2 points and a width.
     The 2 points are a segment, the rectangle is obtained by dilating segment by width
 */
+geometry axis_to_rectangle(const double* pt1,const double* pt2, double axis_width, geometry * axis_to_be_filled);
+
 void axis_to_rectangle(const double* pt1,const double* pt2, double axis_width, geometry rectangle);
 
 /** Main function to compute cost that is shared area if overlaps, area*(1+dist) if no overlaps
