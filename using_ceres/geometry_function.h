@@ -50,7 +50,8 @@ char *write_WKT(geometry, int dim);
 */
 geometry axis_to_rectangle(const double* pt1,const double* pt2, double axis_width, geometry * axis_to_be_filled);
 
-void axis_to_rectangle(const double* pt1,const double* pt2, double axis_width, geometry rectangle);
+double geometry_width_regarding_axis(const double* pt1,const double* pt2 , geometry object, geometry centroid);
+
 
 /** Main function to compute cost that is shared area if overlaps, area*(1+dist) if no overlaps
   this geometric function takes a segment (2 points), this segment width? It computes a rectangle
@@ -58,7 +59,7 @@ void axis_to_rectangle(const double* pt1,const double* pt2, double axis_width, g
     If this shared area is 0, it returns the distance between object_surface and rectangle.
     Else, it returns the shared area
   */
-double shared_area_cost( SnapEnums::road_relation_enum road_relation , const double* pt1, const double* pt2, double axis_width, geometry object_snapping_surface, double object_snapping_surface_area);
+double shared_area_cost( SnapEnums::road_relation_enum road_relation , const double* pt1, const double* pt2, double axis_width, geometry object_snapping_surface, double object_snapping_surface_area, geometry centroid);
 double signed_dist_to_border( SnapEnums::road_relation_enum road_relation , const double* pt1, const double* pt2, double axis_width, geometry object_snapping_surface, double object_snapping_surface_area);
 
 

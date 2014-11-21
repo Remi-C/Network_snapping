@@ -179,8 +179,8 @@ struct classification{
         this->class_name = class_name_;
         this->geom_type = SnapEnums::String_togt(geom_type_);
         this->road_surface_relation = SnapEnums::String_torre(road_surface_relation_);
-        this->precision = abs(precision_) ;
-        this->importance = abs(importance_) ;
+        this->precision = std::abs(precision_) ;
+        this->importance = std::abs(importance_) ;
         this->dist_to_border = std::abs(dist_to_border_);
     }
 };

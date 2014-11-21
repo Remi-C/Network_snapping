@@ -58,6 +58,47 @@ void EigenToCoordinate_Seq(Eigen::Vector3d tmp_point, GEOSCoordSequence GEOS_DLL
     //GEOSCoordSeq_setZ(coor,position, tmp_point.z() ) ;
 }
 
+/** compute the width of the geometry orthogonaly to the axis
+  */
+double geometry_width_regarding_axis(const double* pt1,const double* pt2, geometry object, geometry centroid){
+    //create proxy lines with big offset
+    //measure distance between lines offsted and object
+    //differnce of distance  is width
+    double max_width = 100;
+    ConstVectorRef Ni( pt1 ,3 );
+    ConstVectorRef Nj( pt2 ,3 );
+    Eigen::Vector3d NormalVect = ((Ni-Nj).cross(Eigen::Vector3d::UnitZ())).normalized();
+
+    Eigen::Vector3d Nil = Ni + max_width * NormalVect ;
+    Eigen::Vector3d Njl = Nj + max_width * NormalVect ;
+
+    Eigen::Vector3d Nir = Ni - max_width * NormalVect ;
+    Eigen::Vector3d Njr = Nj - max_width * NormalVect ;
+
+    GEOSCoordSequence GEOS_DLL * axis_point = GEOSCoordSeq_create(2,2);
+    EigenToCoordinate_Seq(Ni,axis_point,0);
+    EigenToCoordinate_Seq(Nj,axis_point,1);
+    geometry axis  = GEOSGeom_createLineString(axis_point);
+
+    GEOSCoordSequence GEOS_DLL * axisl_points= GEOSCoordSeq_create(2,2);
+    EigenToCoordinate_Seq(Nil,axisl_points,0);
+    EigenToCoordinate_Seq(Njl,axisl_points,1);
+
+    GEOSCoordSequence GEOS_DLL * axisr_points= GEOSCoordSeq_create(2,2);
+    EigenToCoordinate_Seq(Nir,axisr_points,0);
+    EigenToCoordinate_Seq(Njr,axisr_points,1);
+
+    geometry axisl = GEOSGeom_createLineString(axisl_points);
+    geometry axisr = GEOSGeom_createLineString(axisr_points);
+
+    double distl;double distr;double dista ;
+    GEOSDistance(object, axisl, &distl);
+    GEOSDistance(object, axisr, &distr);
+    GEOSDistance(centroid,axis, &dista);
+
+    return  std::abs( 2.0*max_width - distl-distr);
+}
+
 
 geometry axis_to_rectangle(const double * pt1, const double * pt2, double axis_width, geometry * axis_to_be_filled){
 
@@ -115,7 +156,7 @@ geometry axis_to_rectangle(const double * pt1, const double * pt2, double axis_w
 
 
 
-double shared_area_cost(SnapEnums::road_relation_enum road_relation, const double* pt1, const double* pt2, double axis_width, geometry object_snapping_surface, double object_snapping_surface_area  ){
+double shared_area_cost(SnapEnums::road_relation_enum road_relation, const double* pt1, const double* pt2, double axis_width, geometry object_snapping_surface, double object_snapping_surface_area, geometry centroid  ){
     /**
       @param road_relation : what is the behaviour of the object toward road surface
       @param pt1 : first node
@@ -138,6 +179,9 @@ double shared_area_cost(SnapEnums::road_relation_enum road_relation, const doubl
     if(road_relation==SnapEnums::OUT || road_relation==SnapEnums::BORDER_OUT ){attractive = SnapEnums::REPULSIVE;}
     if(road_relation==SnapEnums::BORDER){attractive = SnapEnums::ATTR_AND_REP;};
     //{IN=1 ,OUT=-1 ,BORDER=0, BORDER_IN = 10, BORDER_OUT= -10, UNDEF=-110 } ;
+    double object_width = 0;
+
+    object_width = geometry_width_regarding_axis(pt1,pt2,object_snapping_surface,centroid) ;
 
     //compute the rectangle from pts
     street_rectangle = axis_to_rectangle(pt1,pt2, axis_width/2.0,&axis) ;
@@ -194,11 +238,15 @@ double shared_area_cost(SnapEnums::road_relation_enum road_relation, const doubl
             }
             if(attractive==SnapEnums::ATTRACTIVE){
                 cost_surface = 0;
+                if(road_relation == SnapEnums::BORDER_IN){
+                    //adding a cost proportionnal to distance
+                    cost_distance = distance_to_shell * object_snapping_surface_area ;
+                }
                 sign = 1;//is no 0 because of BORDER_IN case
             }
             if(attractive==SnapEnums::REPULSIVE){
                 cost_surface = object_snapping_surface_area  ;//object_snapping_surface_area;
-                cost_distance = (distance_to_shell) * object_snapping_surface_area ; //object_snapping_surface_area ;
+                cost_distance = (distance_to_shell+object_width) * object_snapping_surface_area ; //object_snapping_surface_area ;
                 sign = +1 ;
             }
         }else{//the object is fully outside
@@ -208,11 +256,15 @@ double shared_area_cost(SnapEnums::road_relation_enum road_relation, const doubl
             }
             if(attractive==SnapEnums::ATTRACTIVE){
                 cost_surface = 1 * object_snapping_surface_area;
-                cost_distance = (distance_to_shell) * object_snapping_surface_area;//object_snapping_surface_area ;
+                cost_distance = (distance_to_shell+object_width) * object_snapping_surface_area;//object_snapping_surface_area ;
                 sign = -1;
             }
             if(attractive==SnapEnums::REPULSIVE){
                 cost_surface = 0;
+                if(road_relation == SnapEnums::BORDER_OUT){
+                    //adding a cost proportionnal to distance
+                    cost_distance = distance_to_shell * object_snapping_surface_area ;
+                }
                 sign = -1;//is not 0 because of border_out
             }
 
@@ -221,29 +273,29 @@ double shared_area_cost(SnapEnums::road_relation_enum road_relation, const doubl
         //we must compute the shared surface
 
         if(road_relation==SnapEnums::BORDER){//cost is 0 when object is centered on border
-            cost_surface = (object_snapping_surface_area-2*shared_area)  ;
+            cost_surface = (object_snapping_surface_area-2.0*shared_area)  ;
             sign = -1*SIGN(cost_surface);//this is the sign function
             cost_surface = std::abs(cost_surface);
         }
         if(attractive==SnapEnums::ATTRACTIVE){//Cost is high when object is outside
-            cost_surface = (object_snapping_surface_area-shared_area) ;
+            cost_surface = (object_snapping_surface_area-shared_area) * object_width ;
             sign = -1;
         }
         if(attractive==SnapEnums::REPULSIVE){//cost is high when object is inside
-            cost_surface = shared_area ;
+            cost_surface = shared_area * object_width;
             sign = +1;
         }
 
     }
 
-    if(road_relation == SnapEnums::BORDER || road_relation == SnapEnums::BORDER_IN || road_relation == SnapEnums::BORDER_OUT){
+    if(road_relation == SnapEnums::BORDER ){
         //we add a term to cost that is proprortionnal to the distance to border
 
         if(distance_to_shell==0){
             //the distance to border is null, no modification of the cost
         }else{//the object is either fully inside or fully outside
             //the cost is proportionnal to its distance to border
-            cost_distance = (distance_to_shell) * object_snapping_surface_area ;
+            cost_distance = (distance_to_shell+object_width/2.0) * object_snapping_surface_area ;
         }
     }
 
