@@ -2,69 +2,74 @@
 <qgis version="2.3.0-Master" minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" simplifyMaxScale="1" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
   <renderer-v2 attr="iteration" symbollevels="0" type="categorizedSymbol">
     <categories>
-      <category symbol="0" value="1" label="1"/>
-      <category symbol="1" value="10" label="1"/>
+      <category symbol="0" value="10" label="1"/>
     </categories>
     <symbols>
       <symbol alpha="1" type="line" name="0">
         <layer pass="0" class="SimpleLine" locked="0">
-          <prop k="capstyle" v="flat"/>
-          <prop k="color" v="225,242,69,255"/>
+          <prop k="capstyle" v="square"/>
+          <prop k="color" v="0,0,255,255"/>
           <prop k="customdash" v="5;2"/>
           <prop k="customdash_unit" v="MM"/>
           <prop k="draw_inside_polygon" v="0"/>
           <prop k="joinstyle" v="bevel"/>
           <prop k="offset" v="0"/>
-          <prop k="offset_unit" v="MapUnit"/>
+          <prop k="offset_unit" v="MM"/>
           <prop k="penstyle" v="solid"/>
           <prop k="use_custom_dash" v="0"/>
           <prop k="width" v="0.26"/>
-          <prop k="width_expression" v="width"/>
-          <prop k="width_unit" v="MapUnit"/>
+          <prop k="width_unit" v="MM"/>
         </layer>
-      </symbol>
-      <symbol alpha="1" type="line" name="1">
-        <layer pass="0" class="SimpleLine" locked="0">
-          <prop k="capstyle" v="flat"/>
-          <prop k="color" v="191,43,122,255"/>
-          <prop k="customdash" v="5;2"/>
-          <prop k="customdash_unit" v="MM"/>
-          <prop k="draw_inside_polygon" v="0"/>
-          <prop k="joinstyle" v="bevel"/>
+        <layer pass="0" class="MarkerLine" locked="0">
+          <prop k="interval" v="3"/>
+          <prop k="interval_unit" v="MM"/>
           <prop k="offset" v="0"/>
-          <prop k="offset_unit" v="MapUnit"/>
-          <prop k="penstyle" v="solid"/>
-          <prop k="use_custom_dash" v="0"/>
-          <prop k="width" v="0.26"/>
-          <prop k="width_expression" v="width"/>
-          <prop k="width_unit" v="MapUnit"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="placement" v="lastvertex"/>
+          <prop k="rotate" v="1"/>
+          <symbol alpha="1" type="marker" name="@0@1">
+            <layer pass="0" class="SimpleMarker" locked="0">
+              <prop k="angle" v="0"/>
+              <prop k="color" v="0,0,255,255"/>
+              <prop k="color_border" v="0,0,0,255"/>
+              <prop k="horizontal_anchor_point" v="1"/>
+              <prop k="name" v="filled_arrowhead"/>
+              <prop k="offset" v="0,0"/>
+              <prop k="offset_unit" v="MM"/>
+              <prop k="outline_style" v="solid"/>
+              <prop k="outline_width" v="0"/>
+              <prop k="outline_width_unit" v="MM"/>
+              <prop k="scale_method" v="area"/>
+              <prop k="size" v="4"/>
+              <prop k="size_unit" v="MM"/>
+              <prop k="vertical_anchor_point" v="1"/>
+            </layer>
+          </symbol>
         </layer>
       </symbol>
     </symbols>
     <source-symbol>
       <symbol alpha="1" type="line" name="0">
         <layer pass="0" class="SimpleLine" locked="0">
-          <prop k="capstyle" v="flat"/>
-          <prop k="color" v="31,239,111,255"/>
+          <prop k="capstyle" v="square"/>
+          <prop k="color" v="54,216,100,255"/>
           <prop k="customdash" v="5;2"/>
           <prop k="customdash_unit" v="MM"/>
           <prop k="draw_inside_polygon" v="0"/>
           <prop k="joinstyle" v="bevel"/>
           <prop k="offset" v="0"/>
-          <prop k="offset_unit" v="MapUnit"/>
+          <prop k="offset_unit" v="MM"/>
           <prop k="penstyle" v="solid"/>
           <prop k="use_custom_dash" v="0"/>
           <prop k="width" v="0.26"/>
-          <prop k="width_expression" v="width"/>
-          <prop k="width_unit" v="MapUnit"/>
+          <prop k="width_unit" v="MM"/>
         </layer>
       </symbol>
     </source-symbol>
     <colorramp type="gradient" name="[source]">
-      <prop k="color1" v="191,191,12,255"/>
-      <prop k="color2" v="255,0,4,255"/>
+      <prop k="color1" v="0,0,255,255"/>
+      <prop k="color2" v="255,0,0,255"/>
       <prop k="discrete" v="0"/>
-      <prop k="stops" v="0.8;208,146,0,255"/>
     </colorramp>
     <invertedcolorramp value="0"/>
     <rotation/>
@@ -89,10 +94,10 @@
     <property key="labeling/centroidWhole" value="false"/>
     <property key="labeling/decimals" value="3"/>
     <property key="labeling/displayAll" value="false"/>
-    <property key="labeling/dist" value="0"/>
+    <property key="labeling/dist" value="1"/>
     <property key="labeling/distInMapUnits" value="false"/>
     <property key="labeling/enabled" value="true"/>
-    <property key="labeling/fieldName" value="width"/>
+    <property key="labeling/fieldName" value="cost"/>
     <property key="labeling/fontBold" value="false"/>
     <property key="labeling/fontCapitals" value="0"/>
     <property key="labeling/fontFamily" value="MS Shell Dlg 2"/>
@@ -191,7 +196,7 @@
   <blendMode>0</blendMode>
   <featureBlendMode>0</featureBlendMode>
   <layerTransparency>0</layerTransparency>
-  <displayfield>width</displayfield>
+  <displayfield>#gid</displayfield>
   <label>0</label>
   <labelattributes>
     <label fieldname="" text="Étiquette"/>
@@ -214,11 +219,13 @@
     <selectedonly on=""/>
   </labelattributes>
   <edittypes>
+    <edittype labelontop="0" editable="1" type="0" name="#gid"/>
     <edittype labelontop="0" editable="1" type="0" name="cost"/>
+    <edittype labelontop="0" editable="1" type="0" name="edge_id"/>
     <edittype labelontop="0" editable="1" type="0" name="end_time"/>
     <edittype labelontop="0" editable="1" type="0" name="iteration"/>
     <edittype labelontop="0" editable="1" type="0" name="start_time"/>
-    <edittype labelontop="0" editable="1" type="0" name="width"/>
+    <edittype labelontop="0" editable="1" type="0" name="type"/>
   </edittypes>
   <editform>.</editform>
   <editforminit></editforminit>
