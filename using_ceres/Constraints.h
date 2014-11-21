@@ -737,7 +737,7 @@ public :
         if (jacobians != NULL && jacobians[2] != NULL) {
             //note: null jacobian means end of computation?
             jacobians[2][0] =  SIGN(cost)*  ceres::sqrt(residuals[0])/5 ;
-           // cout << "\t" << jacobians[2][0] << endl ;
+            // cout << "\t" << jacobians[2][0] << endl ;
         }
         //        cout << "end of evaluate()\n";
         return true;
@@ -814,13 +814,14 @@ public :
                                        ,obj_->geom_border_area
                                        );
 
-        //residuals[0] = pow(std::abs(cost * obj_->confidence),2);
-        residuals[0] = pow(std::abs(cost),2) ; /// @FIXME @TODO @DEBUG warning : should put the confidence here
+        //residuals[0] = cost ;
+        residuals[0] = pow(std::abs(cost/obj_->geom_border_area),2) ; /// @FIXME @TODO @DEBUG warning : should put the confidence here
 
         int sign =-1* Geometry::orientationIndex(parameters[0],parameters[1],centroid2D_);//depends on left or right !
 
         //compute Jacobian norm for Ni
         Eigen::Vector3d Ji =  sign * Vja * SIGN(cost)*  ceres::sqrt(residuals[0]) ;
+        //Eigen::Vector3d Ji =  sign * Vja * residuals[0];
         //compute Jacobian norm for Nj
         Eigen::Vector3d Jj =  Ji ;
         if (jacobians == NULL) {
@@ -848,6 +849,17 @@ public :
 
         }
 
+
+        //output :
+//        if (std::isnan(Ji(2)) == true ) {
+//            cout << "  Ni : " << Ni.transpose() <<std::endl;
+//            cout << " Nj : " << Nj.transpose() <<std::endl;
+//            cout << " Vja : " << Vja.transpose() <<std::endl;
+//            cout << "  residual : " << residuals[0] <<std::endl;
+//            cout << "  cost : " << cost <<std::endl;
+//            cout << "   Ji :" << Ji.transpose() <<endl;
+//            cout << "   Jj :" << Jj.transpose() <<endl;
+//        }
 
         //        cout << "end of evaluate()\n";
         return true;
