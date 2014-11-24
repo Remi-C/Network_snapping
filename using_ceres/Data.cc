@@ -383,7 +383,7 @@ void DataStorage::writeData(int iteration){
         node * start_node = nbn(edge_to_output->start_node) ;
         node * end_node = nbn(edge_to_output->end_node) ;
         double cost = 10.0 ;
-        fprintf(o_fptr,"LINESTRINGZ(%lG %lG %lG, %lG %lG %lG);%lG;%lG;2014-08-30 %02d:%02d:%02d;2014-08-30 %02d:%02d:%02d;%d\n"
+        fprintf(o_fptr,"LINESTRINGZ(%.4lf %.4lf %.4lf, %.4lf %.4lf %.4lf);%lG;%lG;2014-08-30 %02d:%02d:%02d;2014-08-30 %02d:%02d:%02d;%d\n"
                 , start_node->position[0]
                 , start_node->position[1]
                 , start_node->position[2]
@@ -494,7 +494,7 @@ void DataStorage::writeConstraints(int iteration){
         //we compute the H:M:S based on number of iteration.
         //Note : we rely on cast to int : int(A/B) is going to return rest of euclidian div.
 
-        fprintf(o_fptr,"%d;edge_id;%s;%lG;LINESTRINGZ(%lG %lG %lG, %lG %lG %lG);2014-08-30 %02d:%02d:%02d;2014-08-30 %02d:%02d:%02d;%d\n"
+        fprintf(o_fptr,"%d;edge_id;%s;%lG;LINESTRINGZ(%.4lf %.4lf %.4lf, %.4lf %.4lf %.4lf);2014-08-30 %02d:%02d:%02d;2014-08-30 %02d:%02d:%02d;%d\n"
                 , gid
                 , constraint_name
                 , t_c[0]

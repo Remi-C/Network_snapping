@@ -146,7 +146,7 @@ int main(int argc, char** argv) {
     options.linear_solver_type = ceres::DENSE_QR;
     options.minimizer_progress_to_stdout = true;
 
-    options.minimizer_type = ceres::LINE_SEARCH ; //can also be : TRUST_REGION or LINE_SEARCH
+    options.minimizer_type = ceres::TRUST_REGION ; //can also be : TRUST_REGION or LINE_SEARCH
 //    options.num_threads = 2; /// @todo : handy for speed, but makes it hard to understand cout
 
    // options.line_search_direction_type = ceres::BFGS ;//   BFGS and LBFGS
