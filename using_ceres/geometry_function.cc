@@ -273,7 +273,7 @@ double shared_area_cost(SnapEnums::road_relation_enum road_relation, const doubl
         //we must compute the shared surface
 
         if(road_relation==SnapEnums::BORDER){//cost is 0 when object is centered on border
-            cost_surface = (object_snapping_surface_area-2.0*shared_area)  ;
+            cost_surface = (object_snapping_surface_area-2.0*shared_area)* object_width/2.0  ;
             sign = -1*SIGN(cost_surface);//this is the sign function
             cost_surface = std::abs(cost_surface);
         }
