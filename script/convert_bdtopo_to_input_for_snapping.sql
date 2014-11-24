@@ -186,7 +186,7 @@ SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, p
 				, width 
 				,old_edge_id 
 	FROM edges_for_output as eou ,  def_zone_export as dfz
-	WHERE ST_Intersects(eou.geom, ST_Transform((dfz.geom),932011)  )  
+	WHERE ST_Intersects(eou.geom, ST_Transform((dfz.geom),932011)  )  ;
 	CREATE INDEX ON edges_for_output_in_export_area (start_node);
 	CREATE INDEX ON edges_for_output_in_export_area (end_node);
 
@@ -206,7 +206,7 @@ SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, p
 		,COALESCE(nfo.Z,0) AS Z
 		,nfo.is_in_intersection 
 	FROM node_id
-		NATURAL JOIN nodes_for_output AS nfo
+		NATURAL JOIN nodes_for_output AS nfo;
   
 
 	--getting the observations inside the area 
@@ -292,7 +292,7 @@ SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, p
 	FROM obs_for_output_in_export_area AS obf
 		,ST_SetSRID(ST_MakePoint(X::float,Y::float,Z::float),932011) AS sgeom 
 		INNER JOIN  street_amp.result_axis as ra ON ST_DWithin(ra.section2_surface, sgeom, 5)   
-	ORDER BY obs_id , ST_Distance(ra.section2_surface, sgeom) ASC
+	ORDER BY obs_id , ST_Distance(ra.section2_surface, sgeom) ASC ;
 		 
 
 ---test to export the whole file complete, no 3 separated files :
