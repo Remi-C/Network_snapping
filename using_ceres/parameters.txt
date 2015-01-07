@@ -9,12 +9,12 @@ output_file_path =  ../../data/data_in_reduced_export_area/snapping_output_full.
 class_definition_path = ../../data/data_in_reduced_export_area/class_definition.csv ;
 objects_path = ../../data/data_in_reduced_export_area/object_in_export_area.csv ;
 #realtiv weight of constraints
-K_origin = 100 ;
-K_spacing = 50 ;
-K_angle = 100 ;
+K_origin = 10 ;
+K_spacing = 10 ;
+K_angle = 0 ;
 
-K_obs = 1 ;
-K_obj =10000 ;
+K_obs = 5 ;
+K_obj = 50 ;
 
 
 #what constraints to use?
@@ -24,7 +24,7 @@ use_manual_initial_spacing_constraint = true ;
 use_manual_distance_to_original_angle = false ;
 
 #change position of axis
-use_manual_distance_to_proj_constraint = false ;
+use_manual_distance_to_proj_constraint = true ;
 use_manual_Surf_Dist_To_Objects_constraint = true ;
 
 #change width of roads?
@@ -33,7 +33,7 @@ use_manual_Surf_Dist_To_Objects_constraint_width = false ;
 
 #about loss function : how shall we remove the outliers?
 useLoss = false ;
-lossScale = 4 ;
+lossScale = 4;
 
 
 #should not be used, buggy :
