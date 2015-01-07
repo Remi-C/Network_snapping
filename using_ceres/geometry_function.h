@@ -26,7 +26,7 @@ typedef Eigen::Map<const Eigen::Vector3d> ConstVectorRef;
 #include "enum_functions.h"
 //#include "Constraints.h"
 /// type to abstract geos lib for the rest of the application
-typedef GEOSGeometry GEOS_DLL* geometry;
+typedef GEOSGeometry* GEOS_DLL geometry;
 
 
 
@@ -92,11 +92,10 @@ public:
     static const double * return_double(int dim, const double * coor){
         return coor;
     }
-
-    static int  geomPoint2Double(const geometry g, double * coordinates){
+    static int  coorPoint2Double(const GEOSCoordSequence GEOS_DLL * s, double * coordinates){
         //input must be a point
         //convert point ot coordinate sequence
-        const GEOSCoordSequence GEOS_DLL * s = GEOSGeom_getCoordSeq( g);
+
         unsigned int dims=4;
         //filling dims
         GEOSCoordSeq_getDimensions(s,&dims) ;
@@ -117,6 +116,18 @@ public:
         }
         return dims;
     }
+    static int  geomPoint2Double(const geometry g, double * coordinates){
+        const GEOSCoordSequence GEOS_DLL * s = GEOSGeom_getCoordSeq( g);
+        return coorPoint2Double(  s,  coordinates) ;
+    }
+    static geometry double2geomPoint(const double * coordinates ){
+
+        GEOSCoordSequence * s=  GEOSCoordSeq_create( 1,3);
+        GEOSCoordSeq_setX(s,0,coordinates[0]);
+        GEOSCoordSeq_setY(s,0,coordinates[1]);
+        GEOSCoordSeq_setZ(s,0,coordinates[2]);
+        return  GEOSGeom_createPoint( s);
+    }
 
     static int orientationIndex(const double * A,const  double * B,const double * P)  {
         return GEOSOrientationIndex(
@@ -124,6 +135,14 @@ public:
                     , B[0],B[1]
                     , P[0],P[1]);
     }
+
+    static int closestPoint( geometry g1,  geometry g2,double * closest_on_g1){
+        GEOSCoordSequence * s= GEOSNearestPoints( g1,  g2);
+        coorPoint2Double( s,  closest_on_g1) ;
+        return 1;
+    }
+
+
 
 };
 
