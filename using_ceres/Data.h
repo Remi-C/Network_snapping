@@ -315,13 +315,13 @@ public :
                                  &temp_residuals,
                                  temp_jacobian) ;
         *cost = temp_residuals;
-        geom[0] =  application_point_[0];
-        geom[1] =  application_point_[1];
-        geom[2] =  application_point_[2];
+        geom[0] = application_point_[0]+temp_jacobian[0][0];
+        geom[1] = application_point_[1]+temp_jacobian[0][1];
+        geom[2] = application_point_[2]+temp_jacobian[0][2];
 
-        geom[3] =  application_point_[0]+temp_jacobian[0][0];
-        geom[4] =  application_point_[1]+temp_jacobian[0][1];
-        geom[5] =  application_point_[2]+temp_jacobian[0][2];
+        geom[3] =  application_point_[0] ;
+        geom[4] =  application_point_[1] ;
+        geom[5] =  application_point_[2] ;
 
         delete[] temp_jacobian[0];delete[] temp_jacobian[1];delete[] temp_jacobian[2];
         delete[] temp_jacobian;
