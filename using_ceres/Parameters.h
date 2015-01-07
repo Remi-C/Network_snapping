@@ -30,16 +30,16 @@ struct Parameter{
         K_obs= 0; //1 ;
         K_spacing= 0 ;// 1 ;
         K_angle= 0 ;// 1 ;
-        K_obj = 1;
-        use_initial_position_constraint =true; // false;
-        use_initial_spacing_constraint = true; //false;
-        use_distance_to_proj_constraint = true; //false;
-        use_manual_distance_to_original_angle = true ;
-        use_manual_initial_spacing_constraint = true ;
-        use_manual_distance_to_proj_constraint = true;// false;
-        use_manual_Surf_Dist_To_Objects_constraint = true ;
-        use_manual_distance_to_proj_constraint_width = true;// false;
-        use_manual_Surf_Dist_To_Objects_constraint_width = true ;
+        K_obj = 0;
+        use_initial_position_constraint =false; // false;
+        use_initial_spacing_constraint = false; //false;
+        use_distance_to_proj_constraint = false; //false;
+        use_manual_distance_to_original_angle = false ;
+        use_manual_initial_spacing_constraint = false ;
+        use_manual_distance_to_proj_constraint = false;// false;
+        use_manual_Surf_Dist_To_Objects_constraint = false ;
+        use_manual_distance_to_proj_constraint_width = false;// false;
+        use_manual_Surf_Dist_To_Objects_constraint_width = false ;
          useLoss = false;//true;
          lossScale = 0;//3.0;
     }
