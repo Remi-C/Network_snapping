@@ -348,21 +348,42 @@ public :
         double* * temp_parameters= new double*[3] ;
         temp_jacobian[0]=new double[3];temp_jacobian[1]=new double[3];temp_jacobian[2]=new double[3];
        // temp_parameters[0] = new double[3];temp_parameters[1] = new double[3];temp_parameters[2] = new double[3];
-        temp_parameters[0] =node_1_ ;
-        temp_parameters[1] =node_2_  ;
-        temp_parameters[2]=width_ ;
+        temp_parameters[0] = node_1_ ;
+        temp_parameters[1] = node_2_  ;
+        temp_parameters[2] = width_ ;
 
         cost_function_->Evaluate(temp_parameters,
                                  &temp_residuals,
                                  temp_jacobian) ;
-        *cost = temp_residuals;
-        geom[0] =  application_point_[0];
-        geom[1] =  application_point_[1];
-        geom[2] =  application_point_[2];
 
-        geom[3] =  application_point_[0]-temp_jacobian[0][0];
-        geom[4] =  application_point_[1]-temp_jacobian[0][1];
-        geom[5] =  application_point_[2]-temp_jacobian[0][2];
+        //projecting the centroid on axis :
+        //creating a geom for axis
+        geometry axis ;
+        axis_to_rectangle(temp_parameters[0], temp_parameters[1], 1, &axis ) ;
+        //projecting the centroid on axis
+        double* closest_on_axis = new double[3] ;
+        for(int i = 0; i<3;++i){closest_on_axis[i]=0;}
+        Geometry::closestPoint(axis, Geometry::double2geomPoint(application_point_),closest_on_axis);
+        closest_on_axis[2]=0;
+        //translating the closest point on axis by width/ 2 toward object
+        //rceating a normalized eigen vector out of centroid and closest point
+        VectorRef caxis( closest_on_axis ,3 ) ;
+        VectorRef centroid( application_point_ ,3 ) ;
+        Eigen::Vector3d n_axis =  centroid-caxis   ;
+        n_axis = n_axis.normalized() ;
+        //translate by
+        double w = *width_ ;
+        caxis = caxis + n_axis * w / 2.0 ;
+
+
+        *cost = temp_residuals;
+        geom[0] =  closest_on_axis[0];
+        geom[1] =  closest_on_axis[1];
+        geom[2] =  closest_on_axis[2];
+
+        geom[3] =  closest_on_axis[0]-temp_jacobian[0][0];
+        geom[4] =  closest_on_axis[1]-temp_jacobian[0][1];
+        geom[5] =  closest_on_axis[2]-temp_jacobian[0][2];
 
         delete[] temp_jacobian[0];delete[] temp_jacobian[1];delete[] temp_jacobian[2];
         delete[] temp_jacobian;

@@ -99,7 +99,6 @@ double geometry_width_regarding_axis(const double* pt1,const double* pt2, geomet
     return  std::abs( 2.0*max_width - distl-distr);
 }
 
-
 geometry axis_to_rectangle(const double * pt1, const double * pt2, double axis_width, geometry * axis_to_be_filled){
 
     //cout << "computing the rectangle" << endl;
