@@ -15,8 +15,12 @@ extern Parameter* g_param;
 //creating all constraints
 int addAllConstraints(DataStorage * data, ceres::Problem * problem, Parameter* param){
     //setting constraint on initial position for each node.
+    //    if (param->use_initial_position_constraint == true) {
+    //        addConstraintsOnInitialPosition( data, problem) ;
+    //    }
+
     if (param->use_initial_position_constraint == true) {
-        addConstraintsOnInitialPosition( data, problem) ;
+        addManualConstraintsOnInitialPosition(  data, problem) ;
     }
 
     //setting constraint on initial spacing between nodes for each pair of node.
@@ -91,6 +95,40 @@ int addConstraintsOnInitialPosition(DataStorage * data, Problem * problem){
     }
 }
 
+
+//setting constraint on initial position for each node.
+int addManualConstraintsOnInitialPosition(DataStorage * data, Problem * problem){
+    double* neg = new double(-1);
+    double* pos = new double(+1);
+    for(const auto& element : data->nodes_by_node_id()){
+        //std::cout << element.second->end_node << std::endl;
+        node * n = element.second;
+        VectorRef sNode(n->position,3);
+        sNode += Eigen::Vector3d::Constant(TOLERANCE);
+
+        CostFunction* origin_distance_functor = new ManualDistanceToInitialPosition( sNode) ;
+
+        LossFunction* loss = NULL;
+        loss = new ceres::ScaledLoss( g_param->useLoss?(new ceres::SoftLOneLoss(g_param->lossScale)):NULL
+                                                       ,g_param->K_origin,ceres::DO_NOT_TAKE_OWNERSHIP) ;
+
+        problem->AddResidualBlock(
+                    origin_distance_functor
+                    ,loss
+                    ,n->position
+                    );
+
+        Constraint * n_constraint = new Constraint_origin(
+                    n->position
+                    ,n->position//useless
+                    ,n->position//useless
+                    ,neg
+                    ,origin_distance_functor
+                    ,n->position
+                    ) ;
+        data->constraints()->push_back(n_constraint);
+    }
+}
 
 
 //setting constraint on initial spacing between nodes for each pair of node.

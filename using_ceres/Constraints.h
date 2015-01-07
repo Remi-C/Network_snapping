@@ -40,7 +40,7 @@ using ceres::LossFunction;
 
 
 int addAllConstraints(DataStorage * data, ceres::Problem * problem, Parameter* param);
-
+int addManualConstraintsOnInitialPosition(DataStorage *, ceres::Problem * );
 int addConstraintsOnInitialPosition(DataStorage *, ceres::Problem * );
 int addConstraintsOnInitialspacing( DataStorage *, ceres::Problem * );
 int addConstraintsOnOrthDistToObservation(DataStorage * , ceres::Problem * ) ;
@@ -79,6 +79,57 @@ struct DistanceToInitialPosition {
     }
 private:
     const double* initial_position_;
+};
+
+class ManualDistanceToInitialPosition  : public ceres::SizedCostFunction<1,3> {
+public :
+    //! this is the constructor, it expects an array of at least 3 doubles.
+    ManualDistanceToInitialPosition(Eigen::Vector3d input_vect)
+        :initial_position_(input_vect) {}
+
+    //! this is the operator computing the cost
+    virtual bool Evaluate(double const* const* parameters,
+                          double* residuals,
+                          double** jacobians) const {
+        //the parameters are as follow : parameter[0-2] = n_i = first node
+
+        //map the input array into 2 eigen vectors into Eigen
+        ConstVectorRef Ni( parameters[0],3 ); //the node position
+        Eigen::Vector3d Is = initial_position_;
+
+        //compute the cost, that is the eucl dist to original position
+        double cost =  (Ni - Is).norm()  ;
+
+        //compute director vector of cost : Ni-Is. If null, can't normalize!
+        Eigen::Vector3d U ;
+        if(std::abs(cost)<TOLERANCE ){
+            U = Eigen::Vector3d::Constant(1) ;
+        }else{
+            U = (Ni - Is).normalized();
+        }
+        //write residual
+        residuals[0] = cost ;
+
+        //compute Jacobian
+        Eigen::Vector3d Ji = - U * cost ;
+
+
+        if (jacobians == NULL) {
+            //cout << "JACOBIAN NULL" <<endl;
+            return 1;
+        }
+
+        if (jacobians != NULL && jacobians[0] != NULL) {
+            jacobians[0][0] =  Ji(0);
+            jacobians[0][1] =  Ji(1);
+            jacobians[0][2]=   0 ;//Ji(2);
+
+        }
+        //            cout<<"end of evaluate()\n";
+        return true;
+    }
+private:
+    Eigen::Vector3d initial_position_; /**< store the original 3D position of the node*/
 };
 
 
