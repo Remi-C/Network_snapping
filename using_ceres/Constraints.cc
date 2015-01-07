@@ -155,7 +155,7 @@ int addConstraintsOnInitialspacing(DataStorage * data, Problem * problem){
         //untill 2.0 meters of distance, normal behavior. after that outliers behavior (not square)
         LossFunction* loss = NULL;
         loss = new ceres::ScaledLoss( g_param->useLoss?(new ceres::SoftLOneLoss(g_param->lossScale)):NULL
-                                        ,g_param->K_spacing,ceres::DO_NOT_TAKE_OWNERSHIP) ;
+                                                       ,g_param->K_spacing,ceres::DO_NOT_TAKE_OWNERSHIP) ;
 
 
         problem->AddResidualBlock(
@@ -189,10 +189,10 @@ int addManualConstraintsOnInitialspacing(DataStorage * data, Problem * problem){
 
         LossFunction* loss = NULL;
         loss = new ceres::ScaledLoss( g_param->useLoss?(new ceres::SoftLOneLoss(g_param->lossScale)):NULL
-                                        ,g_param->K_spacing,ceres::DO_NOT_TAKE_OWNERSHIP) ;
+                                                       ,g_param->K_spacing,ceres::DO_NOT_TAKE_OWNERSHIP) ;
 
         problem->AddResidualBlock(
-                     original_spacing_distance_functor
+                    original_spacing_distance_functor
                     ,loss
                     ,start_node->position
                     ,end_node->position
@@ -241,7 +241,7 @@ int addConstraintsOnOrthDistToObservation(DataStorage * data, Problem * problem)
         //untill 2.0 meters of distance, normal behavior. after that outliers behavior (not square)
         LossFunction* loss = NULL;
         loss = new ceres::ScaledLoss( g_param->useLoss?(new ceres::SoftLOneLoss(g_param->lossScale)):NULL
-                                        ,g_param->K_obs,ceres::DO_NOT_TAKE_OWNERSHIP) ;
+                                                       ,g_param->K_obs,ceres::DO_NOT_TAKE_OWNERSHIP) ;
 
         problem->AddResidualBlock(
                     distance_cost_function
@@ -289,8 +289,8 @@ int addManualConstraintsOnDistanceToOriginalAngle(DataStorage * data, Problem * 
                     double scalar_a = (Nc-Ni+pe).dot(Nc-Nj+pe)/((Nc-Ni+pe).norm() * (Nc-Nj+pe).norm());
                     double cross_a = ((Nc-Ni+pe).cross(Nc-Nj+pe)/((Nc-Ni+pe).norm() * (Nc-Nj+pe).norm())).norm();
 
-//                    std::cout << "input for block : "<< scalar_a << "," << cross_a << std::endl;
-//                    std::cout << "nodes : " << current_node_id <<","<<first_node->node_id <<"," << sec_node->node_id << std::endl;
+                    //                    std::cout << "input for block : "<< scalar_a << "," << cross_a << std::endl;
+                    //                    std::cout << "nodes : " << current_node_id <<","<<first_node->node_id <<"," << sec_node->node_id << std::endl;
                     CostFunction* distance_cost_function=
                             new  ManualDistanceToOriginalAngle(scalar_a,cross_a ) ;
                     //untill 2.0 meters of distance, normal behavior. after that outliers behavior (not square)
@@ -340,12 +340,12 @@ int addManualConstraintsOnOrthDistToObservation(DataStorage * data, Problem * pr
         node * end_node = data->nbn(relativ_edge->end_node)  ;
 
         CostFunction* distance_cost_function=
-            new  ManualOrthDistanceToObservation( data->observations(i)->position, &relativ_edge->width, data->observations(i)  ) ;
+                new  ManualOrthDistanceToObservation( data->observations(i)->position, &relativ_edge->width, data->observations(i)  ) ;
         //untill 2.0 meters of distance, normal behavior. after that outliers behavior (not square)
         LossFunction* loss = NULL;
         loss = new ceres::ScaledLoss( g_param->useLoss?(new ceres::SoftLOneLoss(g_param->lossScale)):NULL
-                                        ,g_param->K_obs
-                                       *data->observations(i)->confidence * data->observations(i)->weight /// @FIXEME @TEMP @TODO :
+                                                       ,g_param->K_obs
+                                      *data->observations(i)->confidence * data->observations(i)->weight /// @FIXEME @TEMP @TODO :
                                       ,ceres::DO_NOT_TAKE_OWNERSHIP) ;
 
         problem->AddResidualBlock(
@@ -386,11 +386,11 @@ int addManualConstraintsOnSurfDistToObjects(DataStorage * data, Problem * proble
         node * end_node = data->nbn(relativ_edge->end_node)  ;
 
         CostFunction* distance_cost_function=
-            new  ManualAttr_Rep_Object(i, data ) ;
+                new  ManualAttr_Rep_Object(i, data ) ;
         //untill 2.0 meters of distance, normal behavior. after that outliers behavior (not square)
         LossFunction* loss = NULL;
         loss = new ceres::ScaledLoss( g_param->useLoss?(new ceres::SoftLOneLoss(g_param->lossScale)):NULL
-                                        ,g_param->K_obj,ceres::DO_NOT_TAKE_OWNERSHIP) ;
+                                                       ,g_param->K_obj,ceres::DO_NOT_TAKE_OWNERSHIP) ;
 
         problem->AddResidualBlock(
                     distance_cost_function
@@ -403,7 +403,7 @@ int addManualConstraintsOnSurfDistToObjects(DataStorage * data, Problem * proble
         //saving the constraint for reuse to output at each step
         double* obj_centroid_double = new double[3] ;
         obj_centroid_double[0]=0; obj_centroid_double[1]=0; obj_centroid_double[2]=0;
-         Geometry::geomPoint2Double(obj->geom_centroid,obj_centroid_double) ;
+        Geometry::geomPoint2Double(obj->geom_centroid,obj_centroid_double) ;
         //creating the constraint
         Constraint * n_constraint = new Constraint_objects(
                     start_node->position
@@ -434,11 +434,11 @@ int addManualConstraintsOnOrthDistToObservation_width(DataStorage * data, Proble
         node * end_node = data->nbn(relativ_edge->end_node)  ;
 
         CostFunction* distance_cost_function=
-            new  ManualOrthDistanceToObservation_width( data->observations(i)->position, &relativ_edge->width, data->observations(i)  ) ;
+                new  ManualOrthDistanceToObservation_width( data->observations(i)->position, &relativ_edge->width, data->observations(i)  ) ;
         //untill 2.0 meters of distance, normal behavior. after that outliers behavior (not square)
         LossFunction* loss = NULL;
         loss = new ceres::ScaledLoss( g_param->useLoss?(new ceres::SoftLOneLoss(g_param->lossScale)):NULL
-                                        ,g_param->K_obs ,ceres::DO_NOT_TAKE_OWNERSHIP) ;
+                                                       ,g_param->K_obs ,ceres::DO_NOT_TAKE_OWNERSHIP) ;
 
         problem->AddResidualBlock(
                     distance_cost_function
@@ -466,11 +466,11 @@ int addManualConstraintsOnSurfDistToObjects_width(DataStorage * data, Problem * 
         node * end_node = data->nbn(relativ_edge->end_node)  ;
 
         CostFunction* distance_cost_function=
-            new  ManualAttr_Rep_Object_width(i, data ) ;
+                new  ManualAttr_Rep_Object_width(i, data ) ;
         //untill 2.0 meters of distance, normal behavior. after that outliers behavior (not square)
         LossFunction* loss = NULL;
         loss = new ceres::ScaledLoss( g_param->useLoss?(new ceres::SoftLOneLoss(g_param->lossScale/5)):NULL
-                                        ,g_param->K_obj,ceres::DO_NOT_TAKE_OWNERSHIP) ;
+                                                       ,g_param->K_obj,ceres::DO_NOT_TAKE_OWNERSHIP) ;
 
         problem->AddResidualBlock(
                     distance_cost_function
