@@ -263,8 +263,8 @@ public :
 
 
         //compute residuals (= cost)
-        residuals[0] = pow(scalar_angle-scalar_a,2) ;
-        residuals[1] = pow(cross_angle-cross_a,2) ;
+        residuals[0] = scalar_angle-scalar_a  ;
+        residuals[1] =  cross_angle-cross_a  ;
 
         //compute jacobian :
         //only the center node (Nc) should be moved
@@ -289,8 +289,8 @@ public :
         //            }
         //        }
 
-        Eigen::Vector3d Vj1 = Vjc * d;
-        Eigen::Vector3d Vj2 = Vjc * d ;
+        Eigen::Vector3d Vj1 = Vjc * (residuals[0]+residuals[1])*10;
+        Eigen::Vector3d Vj2 =  Vjc *(residuals[0]+residuals[1])*10 ;
 
         if (jacobians == NULL) {
             //    cout << "JACOBIAN NULL" <<endl;
@@ -302,10 +302,10 @@ public :
             //note: null jacobian means end of computation?
             jacobians[0][0] = Vj1(0) ;
             jacobians[0][1] = Vj1(1) ;
-            jacobians[0][2] = Vj1(2) ;
+            jacobians[0][2] = 0 ; //Vj1(2) ;
             jacobians[0][3] = Vj2(0) ;
             jacobians[0][4] = Vj2(1) ;
-            jacobians[0][5] = Vj2(2) ;
+            jacobians[0][5] = 0 ; //Vj2(2) ;
 
         }
         if (jacobians != NULL && jacobians[1] != NULL) {
@@ -384,14 +384,14 @@ public :
         if (jacobians != NULL && jacobians[0] != NULL) {
             jacobians[0][0] =  Ji(0);
             jacobians[0][1] =  Ji(1);
-            jacobians[0][2]=   Ji(2);
+            jacobians[0][2]=   0 ;// Ji(2);
 
         }
         if (jacobians != NULL && jacobians[1] != NULL) {
             //note: null jacobian means end of computation?
             jacobians[1][0] =  Jj(0);
             jacobians[1][1] =  Jj(1);
-            jacobians[1][2]=   Jj(2);
+            jacobians[1][2]= 0 ;//   Jj(2);
 
         }
 
@@ -463,12 +463,12 @@ public :
         if (jacobians != NULL && jacobians[0] != NULL) {
             jacobians[0][0] =  Ji(0);
             jacobians[0][1] =  Ji(1);
-            jacobians[0][2]=   Ji(2);
+            jacobians[0][2]= 0 ;//  Ji(2);
         }
         if (jacobians != NULL && jacobians[1] != NULL) {
             jacobians[1][0] =  Jj(0);
             jacobians[1][1] =  Jj(1);
-            jacobians[1][2]=   Jj(2);
+            jacobians[1][2]= 0 ;//  Jj(2);
         }
         if (jacobians != NULL && jacobians[2] != NULL) {
             //note: null jacobian means end of computation?
@@ -884,14 +884,14 @@ public :
             //note: null jacobian means end of computation?
             jacobians[0][0] =  Ji(0);
             jacobians[0][1] =  Ji(1);
-            jacobians[0][2]=   Ji(2);
+            jacobians[0][2]=  0 ;// Ji(2);
 
         }
         if (jacobians != NULL && jacobians[1] != NULL) {
             //note: null jacobian means end of computation?
             jacobians[1][0] =  Jj(0);
             jacobians[1][1] =  Jj(1);
-            jacobians[1][2]=   Jj(2);
+            jacobians[1][2]=  0 ;// Jj(2);
 
         }
         if (jacobians != NULL && jacobians[2] != NULL) {
@@ -902,15 +902,15 @@ public :
 
 
         //output :
-//        if (std::isnan(Ji(2)) == true ) {
-//            cout << "  Ni : " << Ni.transpose() <<std::endl;
-//            cout << " Nj : " << Nj.transpose() <<std::endl;
-//            cout << " Vja : " << Vja.transpose() <<std::endl;
-//            cout << "  residual : " << residuals[0] <<std::endl;
-//            cout << "  cost : " << cost <<std::endl;
-//            cout << "   Ji :" << Ji.transpose() <<endl;
-//            cout << "   Jj :" << Jj.transpose() <<endl;
-//        }
+        //        if (std::isnan(Ji(2)) == true ) {
+        //            cout << "  Ni : " << Ni.transpose() <<std::endl;
+        //            cout << " Nj : " << Nj.transpose() <<std::endl;
+        //            cout << " Vja : " << Vja.transpose() <<std::endl;
+        //            cout << "  residual : " << residuals[0] <<std::endl;
+        //            cout << "  cost : " << cost <<std::endl;
+        //            cout << "   Ji :" << Ji.transpose() <<endl;
+        //            cout << "   Jj :" << Jj.transpose() <<endl;
+        //        }
 
         //        cout << "end of evaluate()\n";
         return true;
@@ -919,7 +919,7 @@ public :
 private:
     const int object_index_ ; // store the index of this object into the object array
     const street_object * obj_;//link to the observation, for easy use of confidence and weight.
-    const classification * classification_; // link to the class of the object
+    const classification * classification_; // li-2.0034nk to the class of the object
     double centroid2D_[2]; // X and Y of the centroid of the geom.
     const double* axis_width_; // points to the edge-> width memory
     ///  @TODO : should be const
