@@ -494,6 +494,24 @@ int addManualConstraintsOnSurfDistToObjects_width(DataStorage * data, Problem * 
                     ,end_node->position
                     ,&relativ_edge->width
                     ); //note : obj is referring to these nodes.
+
+        //saving the constraint for reuse to output at each step
+        double* obj_centroid_double = new double[3] ;
+        obj_centroid_double[0]=0; obj_centroid_double[1]=0; obj_centroid_double[2]=0;
+        Geometry::geomPoint2Double(obj->geom_centroid,obj_centroid_double) ;
+
+
+
+        //creating the constraint
+        Constraint * n_constraint = new Constraint_objects_width(
+                    start_node->position
+                    ,end_node->position
+                    ,start_node->position//useless
+                    ,&relativ_edge->width
+                    ,distance_cost_function
+                    ,obj_centroid_double) ;
+        //adding it to list of constraints
+        data->constraints()->push_back(n_constraint);
     }
 }
 

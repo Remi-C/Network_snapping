@@ -571,6 +571,67 @@ public :
 };
 
 
+/// heriting from constraints to be adapted to sidewlak distance cost function
+class Constraint_objects_width : public Constraint{
+public :
+    Constraint_objects_width(double node_1[3],double node_2[3],double node_3[3], double * width, ceres::CostFunction * cost_function , double application_point[3] )
+        :
+    Constraint( node_1 ,node_2, node_3,  width,  cost_function ,application_point )
+    {
+    }
+
+    int get_graphical_constraint(double * cost, double * geom ){
+
+        double temp_residuals ;
+        double* * temp_jacobian = new double*[3]  ;
+        double* * temp_parameters= new double*[3] ;
+        temp_jacobian[0]=new double[3];temp_jacobian[1]=new double[3];temp_jacobian[2]=new double[3];
+       // temp_parameters[0] = new double[3];temp_parameters[1] = new double[3];temp_parameters[2] = new double[3];
+        temp_parameters[0] = node_1_ ;
+        temp_parameters[1] = node_2_  ;
+        temp_parameters[2] = width_ ;
+
+        cost_function_->Evaluate(temp_parameters,
+                                 &temp_residuals,
+                                 temp_jacobian) ;
+
+        //projecting the centroid on axis :
+        //creating a geom for axis
+        geometry axis ;
+        axis_to_rectangle(temp_parameters[0], temp_parameters[1], 1, &axis ) ;
+        //projecting the centroid on axis
+        double* closest_on_axis = new double[3] ;
+        for(int i = 0; i<3;++i){closest_on_axis[i]=0;}
+        Geometry::closestPoint(axis, Geometry::double2geomPoint(application_point_),closest_on_axis);
+        closest_on_axis[2]=0;
+        //translating the closest point on axis by width/ 2 toward object
+        //rceating a normalized eigen vector out of centroid and closest point
+        VectorRef caxis( closest_on_axis ,3 ) ;
+        VectorRef centroid( application_point_ ,3 ) ;
+        Eigen::Vector3d n_axis =  centroid-caxis   ;
+        n_axis = n_axis.normalized() ;
+        //translate by
+        double w = *width_ ;
+        caxis = caxis + n_axis * w / 2.0 ;
+
+
+        *cost = temp_residuals;
+        geom[0] =  centroid[0];
+        geom[1] =  centroid[1];
+        geom[2] =  centroid[2];
+
+        geom[3] =  centroid[0];
+        geom[4] =  centroid[1];
+        geom[5] =  centroid[2];
+
+        delete[] temp_jacobian[0];delete[] temp_jacobian[1];delete[] temp_jacobian[2];
+        delete[] temp_jacobian;
+        //delete[] temp_parameters[0];delete[] temp_parameters[1];delete[] temp_parameters[2];
+        delete[] temp_parameters;
+        return -1;
+    };
+};
+
 typedef std::unordered_multimap <int /*node_id*/, edge *> ummap_e;
 
 class DataStorage {
