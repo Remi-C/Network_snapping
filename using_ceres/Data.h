@@ -519,6 +519,58 @@ public :
 };
 
 
+/// heriting from constraints to be adapted to sidewalk distance cost function
+class Constraint_sidewalk_width : public Constraint{
+public :
+    Constraint_sidewalk_width(double node_1[3],double node_2[3],double node_3[3], double * width, ceres::CostFunction * cost_function , double application_point[3] )
+        :
+    Constraint( node_1 ,node_2, node_3,  width,  cost_function ,application_point )
+    {
+    }
+
+    int get_graphical_constraint(double * cost, double * geom ){
+
+        double temp_residuals ;
+        double* * temp_jacobian = new double*[3]  ;
+        double* * temp_parameters= new double*[3] ;
+        temp_jacobian[0]=new double[3];temp_jacobian[1]=new double[3];temp_jacobian[2]=new double[3];
+       // temp_parameters[0] = new double[3];temp_parameters[1] = new double[3];temp_parameters[2] = new double[3];
+        temp_parameters[0] =node_1_ ;
+        temp_parameters[1] =node_2_  ;
+        temp_parameters[2]=width_ ;
+
+        cost_function_->Evaluate(temp_parameters,
+                                 &temp_residuals,
+                                 temp_jacobian) ;
+
+        //this force starts from observation position and goes in the normal direction
+        //compute  normal for NiNj
+        ConstVectorRef Ni( temp_parameters[0],3 );
+        ConstVectorRef Nj( temp_parameters[1],3 );
+        Eigen::Vector3d Np = Eigen::Vector3d::UnitZ() ;
+        //compute director vector of (NiNj) ie : NiNj/norm(NiNj) = u
+        Eigen::Vector3d U = (Nj-Ni)/(Nj-Ni).norm();
+        //the direction of change should be :
+        Eigen::Vector3d Vja = (U.cross(Np)).normalized();
+        double sign = Geometry::orientationIndex(node_1_,node_2_,application_point_) ;
+        *cost = temp_residuals;
+        geom[0] = application_point_[0];
+        geom[1] = application_point_[1];
+        geom[2] = application_point_[2];
+
+        geom[3] = application_point_[0] - sign * Vja[0] * temp_residuals ;
+        geom[4] = application_point_[1] - sign * Vja[1] * temp_residuals ;
+        geom[5] = application_point_[2] - sign * Vja[2] * temp_residuals ;
+
+        delete[] temp_jacobian[0];delete[] temp_jacobian[1];delete[] temp_jacobian[2];
+        delete[] temp_jacobian;
+        //delete[] temp_parameters[0];delete[] temp_parameters[1];delete[] temp_parameters[2];
+        delete[] temp_parameters;
+        return -1;
+    };
+};
+
+
 typedef std::unordered_multimap <int /*node_id*/, edge *> ummap_e;
 
 class DataStorage {
