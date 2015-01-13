@@ -258,8 +258,8 @@ public :
         ConstVectorRef Ni( parameters[1],3 );
         ConstVectorRef Nj( parameters[2],3 );
 
-        double scalar_a = (Nc-Ni).dot(Nc-Nj)/((Nc-Ni).norm() * (Nc-Nj).norm());
-        double cross_a = ((Nc-Ni).cross(Nc-Nj)/((Nc-Ni).norm() * (Nc-Nj).norm())).norm();
+        double scalar_2a = (Nc-Ni).dot(Nc-Nj)/((Nc-Ni).norm() * (Nc-Nj).norm());
+        double cross_2a = ((Nc-Ni).cross(Nc-Nj)/((Nc-Ni).norm() * (Nc-Nj).norm())).norm();
 
 
         //compute residuals (= cost)
@@ -268,8 +268,20 @@ public :
 
         //compute jacobian :
         //only the center node (Nc) should be moved
-        //the direction is along the bissect of angle (Ni,Nc,Nj)
-        Eigen::Vector3d Vjc = ((Nc-Ni).normalized() + (Nc-Nj).normalized() ).normalized();
+        //the direction is along the bissect of angle (Ni,Nc,Nj).
+        //in the case where NcNi and NcNj are colinear, we need an alternate method
+        Eigen::Vector3d Vjc;
+        if(std::abs(scalar_2a)>0.5){//regular case
+            Vjc = ((Nc-Ni).normalized() + (Nc-Nj).normalized() ).normalized();
+        }else{//computing the bisect of NcNi, NjNc , then 90° rotation regarding Z axis
+            Vjc = ((Nc-Ni).normalized() + (Nj-Nc).normalized() ).normalized();
+            Vjc = Vjc.cross(Eigen::Vector3d::UnitZ());
+        }
+        for (int i =0; i<3;++i){
+            if(std::isnan(Vjc[i])==true){
+                Vjc << 0,0,0 ;
+            }
+        }
 
         /** value of displacement :
                   lets consider a triangle formed on angle alpha (Ni,Nc,Nj) (upper summit is Nc)
