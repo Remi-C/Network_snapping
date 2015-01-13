@@ -455,18 +455,32 @@ public :
         //compute director vector of (NiNj) ie : NiNj/norm(NiNj) = u
         Eigen::Vector3d U = (Nj-Ni)/(Nj-Ni).norm();
         //compute residual = distance from O to NiNj : norm(vect(NiO,NiNj))/norm(NiNj)
-        double d = Np.norm()/(Nj-Ni).norm()-  parameters[2][0]/2.0;
-        residuals[0]=  ceres::pow(d ,2)  ;
+        double d = (Np.norm()/(Nj-Ni).norm()-  parameters[2][0]/2.0) ;
+        residuals[0]=  ceres::pow(d ,2)* obs_->confidence * obs_->weight;
         //compute Jacobian director vector : vect(u,n)
         Eigen::Vector3d Vja = U.cross(Np/Np.norm());
         //if(obs_->obs_id ==1 ) {Vja << -0.7,-0.7,0;}
         //else{Vja << +0.7,+0.7,0;}
 
+        double t = std::sqrt( std::pow((Ob-Ni).norm(),2) - std::pow(Np.norm()/(Nj-Ni).norm(),2) )/(Nj-Ni).norm() ;
+        t  = (10+t)/11.0 ;
+        double coeff_i = 1 ;
+        double coeff_j = 1 ;
+//        if(t > 0.5 ){
+//            //obs is closer to Nj
+//            coeff_i = 0.5+t ;
+//            coeff_j = 1-t ;
+//        } else{
+//            //obs is closer to Ni
+//            coeff_i = 1-t ;
+//            coeff_j = 0.5 + t ;
+//        }
         //compute the direction of movement : - = toward the obs, + = away from point
         //compute Jacobian norm for Ni : for test simply take d
-        Eigen::Vector3d Ji = -1 *  Vja *  ceres::sqrt(residuals[0])*SIGN(d);
+        Eigen::Vector3d Ji = - 1 *  Vja *  d * (coeff_i);
         //compute Jacobian norm for Nj : for test simply take d
-        Eigen::Vector3d Jj = Ji ;
+        Eigen::Vector3d Jj = - 1 *  Vja *  d *(coeff_j);
+
 
         //        cout << "  Observation_id : " <<  obs_->obs_id <<std::endl;
         //         cout << "  Ni : " << Ni.transpose() <<std::endl;
@@ -484,16 +498,16 @@ public :
         if (jacobians != NULL && jacobians[0] != NULL) {
             jacobians[0][0] =  Ji(0);
             jacobians[0][1] =  Ji(1);
-            jacobians[0][2]= 0 ;//  Ji(2);
+            jacobians[0][2]= 0 ;
         }
         if (jacobians != NULL && jacobians[1] != NULL) {
-            jacobians[1][0] =  Jj(0);
-            jacobians[1][1] =  Jj(1);
-            jacobians[1][2]= 0 ;//  Jj(2);
+            jacobians[1][0] = Jj(0);
+            jacobians[1][1] = Jj(1);
+            jacobians[1][2]= 0 ;
         }
         if (jacobians != NULL && jacobians[2] != NULL) {
             //note: null jacobian means end of computation?
-            jacobians[2][0] =   0; //-1 *  residuals[0]/2  ;
+            jacobians[2][0] = 0 ;// -1 * SIGN(d) * std::abs(d) / 10.0 ;
         }
 
         //  cout<<"end of evaluate()\n";
