@@ -770,13 +770,19 @@ public :
 
         //map the input array into 2 eigen vectors, plus map observation position into Eigen
         //        cout << "\nbeginning of evaluate" << endl;
+
+
+
+
         ConstVectorRef Ni( parameters[0],3 );
         ConstVectorRef Nj( parameters[1],3 );
 
         //cout << centroid2D_[0] << " " << centroid2D_[1] << endl;
         //center of object : ConstVectorRef Ob(position_,3);
         Eigen::Vector3d Obj_center;
-        Obj_center[0] = centroid2D_[0] ; Obj_center[1] = centroid2D_[1] ; Obj_center[2] = 0 ;
+        Obj_center[0] = centroid2D_[0] ;
+        Obj_center[1] = centroid2D_[1] ;
+        Obj_center[2] = 0 ;
 
 
         //the jacobian should be in the plan normal to Z vector
@@ -798,14 +804,16 @@ public :
                                        ,obj_->geom_border_area
                                        ,obj_->geom_centroid);
 
-        //residuals[0] = pow(std::abs(cost * obj_->confidence),2);
-        residuals[0] = pow(std::abs(cost),2)/25; /// @FIXME @TODO @DEBUG warning : should put the confidence here
+        residuals[0] =pow(std::abs( 1.0 * cost /obj_->geom_border_area ),2)  ;
+        //residuals[0] = pow(std::abs(cost/obj_->geom_border_area),2) ; /// @FIXME @TODO @DEBUG warning : should put the confidence here
 
         int sign =-1* Geometry::orientationIndex(parameters[0],parameters[1],centroid2D_);//depends on left or right !
+
         //compute Jacobian norm for Ni
-        Eigen::Vector3d Ji =  sign * Vja * SIGN(cost)*  ceres::sqrt(residuals[0]);
+        Eigen::Vector3d Ji =  sign * Vja * SIGN(cost)*  ceres::sqrt(residuals[0]) ;
+        //Eigen::Vector3d Ji =  sign * Vja * cost / obj_->geom_border_area;
         //compute Jacobian norm for Nj
-        Eigen::Vector3d Jj =  sign * Vja * SIGN(cost) * ceres::sqrt(residuals[0]);
+        Eigen::Vector3d Jj =  Ji ;
         if (jacobians == NULL) {
             //cout << "JACOBIAN NULL" <<endl;
             return 1;
@@ -813,22 +821,22 @@ public :
 
         if (jacobians != NULL && jacobians[0] != NULL) {
             //note: null jacobian means end of computation?
-            jacobians[0][0] = 0;// -Ji(0)/10;
-            jacobians[0][1] = 0;// -Ji(1)/10;
-            jacobians[0][2] = 0;// -Ji(2)/10;
+            jacobians[0][0] = 0 ;// Ji(0);
+            jacobians[0][1] = 0 ; //Ji(1);
+            jacobians[0][2]=  0 ;// Ji(2);
 
         }
         if (jacobians != NULL && jacobians[1] != NULL) {
             //note: null jacobian means end of computation?
-            jacobians[1][0] = 0;// -Jj(0);
-            jacobians[1][1] = 0;// -Jj(1);
-            jacobians[1][2]=  0;// -Jj(2);
+            jacobians[1][0] = 0 ;//Jj(0);
+            jacobians[1][1] = 0 ; // Jj(1);
+            jacobians[1][2]=  0 ;// Jj(2);
 
         }
         if (jacobians != NULL && jacobians[2] != NULL) {
             //note: null jacobian means end of computation?
-            jacobians[2][0] =  SIGN(cost)*  ceres::sqrt(residuals[0])/5 ;
-            // cout << "\t" << jacobians[2][0] << endl ;
+            jacobians[2][0] =sign * SIGN(cost)*  ceres::sqrt(residuals[0])  ; //-1 * SIGN(cost)*  ceres::sqrt(residuals[0])/10 ;
+
         }
         //        cout << "end of evaluate()\n";
         return true;
