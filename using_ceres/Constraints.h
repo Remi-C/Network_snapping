@@ -261,10 +261,13 @@ public :
         double scalar_2a = (Nc-Ni).dot(Nc-Nj)/((Nc-Ni).norm() * (Nc-Nj).norm());
         double cross_2a = ((Nc-Ni).cross(Nc-Nj)/((Nc-Ni).norm() * (Nc-Nj).norm())).norm();
 
+        double tan_a = cross_2a / ( 1 + scalar_2a) ;
+        double tan_o = cross_angle / ( 1 + scalar_angle) ;
 
-        //compute residuals (= cost)
-        residuals[0] = scalar_angle-scalar_a  ;
-        residuals[1] =  cross_angle-cross_a  ;
+        double cos_a = ( 1-pow(tan_a,2) ) / ( 1 + pow(tan_a,2) ) ;
+        double cos_o = ( 1-pow(tan_o,2) ) / ( 1 + pow(tan_o,2) ) ;
+
+        double sin_a = 2 * tan_a / ( 1 + pow(tan_a,2) ) ;
 
         //compute jacobian :
         //only the center node (Nc) should be moved
@@ -292,17 +295,23 @@ public :
                   Note that sign determin which direction it goes
                   Note : in theory every angle shoud be divided by 2,thus we may have ot use sin2x=f(sinx^2, sinx) to have correct result
                   */
-        double d = cross_a * cross_angle/scalar_angle  -scalar_a ;
+        //double d = cross_a * cross_angle/scalar_angle  -scalar_a ;
+        //double d = cos_a - cos_o / sin_a ;
+        //double d = SIGN(scalar_angle-scalar_2a + cross_angle -cross_2a ) *( std::abs(scalar_angle-scalar_2a) + std::abs(cross_angle -cross_2a) ) / 2.0 * std::max((Nc-Ni).norm()/(Nc-Nj).norm(),(Nc-Nj).norm()/(Nc-Ni).norm()) ;
+        //compute residuals (= cost)
+        //std::cout << "scalar_2a:  " << scalar_2a << " scalar_angle : " << scalar_angle
+        //             << "cross_2a:  " << cross_2a << " cross_angle : " << cross_angle << std::endl;
+        residuals[0] = scalar_2a - scalar_angle  ;// scalar_angle-scalar_a  ;
+        residuals[1] = cross_2a - cross_angle ;// cross_angle-cross_a  ;
 
-        //        for(int i=0; i<3;++i){
-        //            for(int j=0; j<6 ; ++j){
-        //                jacobians[i][j] =0 ;
-        //                //                cout << i<<"," << j << endl;
-        //            }
-        //        }
+        double d  = std::abs(residuals[0]) + std::abs(residuals[1]) ;
 
-        Eigen::Vector3d Vj1 = Vjc * (residuals[0]+residuals[1])*10;
-        Eigen::Vector3d Vj2 =  Vjc *(residuals[0]+residuals[1])*10 ;
+        Eigen::Vector3d Vj1 = - Vjc * d *10;
+        Eigen::Vector3d Vj2 = - Vjc * d *10 ;
+
+
+        //Eigen::Vector3d Vj1 = Vjc * (residuals[0]+residuals[1])*10;
+        //Eigen::Vector3d Vj2 =  Vjc *(residuals[0]+residuals[1])*10 ;
 
         if (jacobians == NULL) {
             //    cout << "JACOBIAN NULL" <<endl;
