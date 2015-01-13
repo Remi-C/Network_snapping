@@ -448,8 +448,20 @@ int addManualConstraintsOnOrthDistToObservation_width(DataStorage * data, Proble
                     ,loss
                     ,start_node->position
                     ,end_node->position
-                    ,&relativ_edge->width
+                    ,&(relativ_edge->width)
                     ); //note : both observations are referring to these nodes.
+
+        //saving the constraint for reuse to output at each step
+        //creating the constraint
+        Constraint * n_constraint = new Constraint_sidewalk_width(
+                    start_node->position
+                    ,end_node->position
+                    ,start_node->position //useless
+                    ,&relativ_edge->width
+                    ,distance_cost_function
+                    ,data->observations(i)->position) ;
+        //adding it to list of constraints
+        data->constraints()->push_back(n_constraint);
     }
 }
 
