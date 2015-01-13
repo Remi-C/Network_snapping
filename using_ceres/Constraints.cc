@@ -285,7 +285,7 @@ int addManualConstraintsOnDistanceToOriginalAngle(DataStorage * data, Problem * 
                     ConstVectorRef Ni( first_node->position ,3 );
                     ConstVectorRef Nj( sec_node->position ,3 );
                     Eigen::Vector3d pe;//initial perturbation
-                    pe << 0.001,0.001,0.001 ;
+                    pe << 0,0,0 ; //0.001,0.001,0.001 ;
                     double scalar_a = (Nc-Ni+pe).dot(Nc-Nj+pe)/((Nc-Ni+pe).norm() * (Nc-Nj+pe).norm());
                     double cross_a = ((Nc-Ni+pe).cross(Nc-Nj+pe)/((Nc-Ni+pe).norm() * (Nc-Nj+pe).norm())).norm();
 
