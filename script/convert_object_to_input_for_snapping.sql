@@ -52,9 +52,9 @@ gid ,  classification_id ,  classification ,   z_range numrange, geom ,   import
  
 	--mapping the object to the network 
 	
-*/
-	REFRESH MATERIALIZED VIEW ashaped_objects ;
 
+	REFRESH MATERIALIZED VIEW ashaped_objects ;
+*/
 	
 	DROP TABLE IF EXISTS obj_for_output_in_export_area; 
 	CREATE TABLE obj_for_output_in_export_area AS 
