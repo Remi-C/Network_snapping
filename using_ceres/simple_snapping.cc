@@ -127,7 +127,7 @@ int main(int argc, char** argv) {
     std::cout << "  \E[34;1m \t Reading Objects\E[m \n" ;
     data->readObjects();
 
-    //reading the objects for snapping
+    //constructing problem
     std::cout << "  \E[34;1m \tConstructing Problem\E[m \n" ;
     /// clean version to not allow ceres to destroyTRUST_REGION the memory itself
     Problem::Options pb_options;
@@ -146,7 +146,7 @@ int main(int argc, char** argv) {
     options.linear_solver_type = ceres::DENSE_QR;
     options.minimizer_progress_to_stdout = true;
 
-    options.minimizer_type = ceres::TRUST_REGION ; //can also be : TRUST_REGION or LINE_SEARCH
+    options.minimizer_type = ceres::LINE_SEARCH ; //can also be : TRUST_REGION or LINE_SEARCH
     options.num_threads = 2; /// @todo : handy for speed, but makes it hard to understand cout
 
 //  options.line_search_direction_type = ceres::BFGS ;//   BFGS and LBFGS
@@ -168,15 +168,15 @@ int main(int argc, char** argv) {
     WritingTempResultCallback callback(data->output_file_path(),0);
     options.callbacks.push_back(&callback);
 
-
-    //reading the objects for snapping
+    //solving
     std::cout << "  \E[34;1m \tSolving Problem\E[m \n" ;
     Solve(options, &problem, &summary);
 
 
     // std::cout << summary.BriefReport() << "\n";
     std::cout << summary.FullReport() << "\n";
-    std::cout << summary.IsSolutionUsable() << "\n";
+
+    std::cout << summary.iterations.size()-1 << std::endl ;
 
     finish_geom_computation();
     return 0;
