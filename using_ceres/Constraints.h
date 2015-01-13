@@ -689,17 +689,22 @@ public :
         //compute director vector of (NiNj) ie : NiNj/norm(NiNj) = u
         Eigen::Vector3d U = (Nj-Ni)/(Nj-Ni).norm();
         //compute residual = distance from O to NiNj : norm(vect(NiO,NiNj))/norm(NiNj)
-        double d = Np.norm()/(Nj-Ni).norm()-  parameters[2][0]/2.0;
-        residuals[0]=  ceres::pow(d,2) * obs_->confidence * obs_->weight    ;
+
+        double d = (Np.norm()/(Nj-Ni).norm()-  parameters[2][0]/2.0) * obs_->confidence * obs_->weight;
+        residuals[0]= std::pow(d,2) ;
+
         //compute Jacobian director vector : vect(u,n)
         Eigen::Vector3d Vja = U.cross(Np/Np.norm());
         //if(obs_->obs_id ==1 ) {Vja << -0.7,-0.7,0;}
         //else{Vja << +0.7,+0.7,0;}
 
         //compute Jacobian norm for Ni : for test simply take d
-        Eigen::Vector3d Ji = -1 * Vja * ceres::pow(d,2) *SIGN(d) ;
+        Eigen::Vector3d Ji = -1 * Vja * ceres::sqrt(residuals[0])*SIGN(d); ;
         //compute Jacobian norm for Nj : for test simply take d
         Eigen::Vector3d Jj = Ji ;
+
+        double t = std::sqrt( std::pow((Ob-Ni).norm(),2) - std::pow(Np.norm()/(Nj-Ni).norm(),2) )/(Nj-Ni).norm() ;
+
 
         if (jacobians == NULL) {
             //cout << "JACOBIAN NULL" <<endl;
@@ -708,19 +713,19 @@ public :
 
         if (jacobians != NULL && jacobians[0] != NULL) {
             //note: null jacobian means end of computation?
-            jacobians[0][0] = 0;// -Ji(0);
-            jacobians[0][1] = 0;// -Ji(1);
+            jacobians[0][0] = Ji(0)/2 * t * 0;
+            jacobians[0][1] = -Ji(1)/2 * t * 0 ;
             jacobians[0][2] = 0;// -Ji(2);
         }
         if (jacobians != NULL && jacobians[1] != NULL) {
             //note: null jacobian means end of computation?
-            jacobians[1][0] = 0;// -Jj(0);
-            jacobians[1][1] = 0;// -Jj(1);
+            jacobians[1][0] =  Jj(0)/2 * (1-t) * 0 ;
+            jacobians[1][1] =  Jj(1)/2 * (1-t) * 0;
             jacobians[1][2] = 0;// -Jj(2);
         }
         if (jacobians != NULL && jacobians[2] != NULL) {
             //note: null jacobian means end of computation?
-            jacobians[2][0] =  -1 *  d  ;
+            jacobians[2][0] = -1 * SIGN(d) * std::abs(d) ;//0; //-1 *  residuals[0]/2  ;
 
         }
 
