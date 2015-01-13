@@ -835,7 +835,7 @@ public :
         }
         if (jacobians != NULL && jacobians[2] != NULL) {
             //note: null jacobian means end of computation?
-            jacobians[2][0] =sign * SIGN(cost)*  ceres::sqrt(residuals[0])  ; //-1 * SIGN(cost)*  ceres::sqrt(residuals[0])/10 ;
+            jacobians[2][0] =  SIGN(cost)*  ceres::sqrt(residuals[0])  ; //-1 * SIGN(cost)*  ceres::sqrt(residuals[0])/10 ;
 
         }
         //        cout << "end of evaluate()\n";
