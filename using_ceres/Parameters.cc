@@ -63,6 +63,9 @@ void Parameter::setParameters(std::string key, std::string value){
     key.compare("K_obs")==0?K_obs=atof(value.c_str()):0;
     key.compare("K_angle")==0?K_angle=atof(value.c_str()):0;
     key.compare("K_obj")==0?K_obj=atof(value.c_str()):0;
+    key.compare("K_obs_width")==0?K_obs_width=atof(value.c_str()):0;
+    key.compare("K_obj_width")==0?K_obj_width=atof(value.c_str()):0;
+
     key.compare("use_initial_position_constraint")==0?use_initial_position_constraint=bool(value.compare("false")):false;
     key.compare("use_initial_spacing_constraint")==0?use_initial_spacing_constraint=bool(value.compare("false")):false;
     key.compare("use_distance_to_proj_constraint")==0?use_distance_to_proj_constraint=bool(value.compare("false")):false;
@@ -96,6 +99,8 @@ std::string Parameter::printParameters(){
             << " K_spacing : " << K_spacing  << std::endl
             << " K_angle : " << K_angle  << std::endl
             << " K_obj : " << K_obj  << std::endl
+            << " K_obs_width : " << K_obs_width  << std::endl
+            << " K_obj_width : " << K_obj_width  << std::endl
             << " use_initial_position_constraint : " << use_initial_position_constraint  << std::endl
             << " use_initial_spacing_constraint : " << use_initial_spacing_constraint  << std::endl
             << " use_distance_to_proj_constraint : " << use_distance_to_proj_constraint  << std::endl

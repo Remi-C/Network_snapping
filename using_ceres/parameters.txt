@@ -16,6 +16,8 @@ K_angle = 0 ;
 K_obs = 5 ;
 K_obj = 50 ;
 
+K_obs_width = 5 ;
+K_obj_width = 1 ;
 
 #what constraints to use?
 #regularisation

@@ -31,6 +31,8 @@ struct Parameter{
         K_spacing= 0 ;// 1 ;
         K_angle= 0 ;// 1 ;
         K_obj = 0;
+        K_obs_width= 0; //1 ;
+        K_obj_width= 0; //1 ;
         use_initial_position_constraint =false; // false;
         use_initial_spacing_constraint = false; //false;
         use_distance_to_proj_constraint = false; //false;
@@ -60,6 +62,8 @@ struct Parameter{
     double K_spacing ; //! this parameter scale the measure of similarity between [n_i,n_j] original and current
     double K_angle ; //! this parameter scale the measure of distance between angle at node and original angle
     double K_obj ; /// this param'eter scale the cost of surfacique distance between an object and the edge
+    double K_obs_width ; //! this parameter scale the chzange of road width based on sidewalk observation
+    double K_obj_width ; /// this param'eter scale the cost of surfacique distance between an object and the edge to change width
 
     bool use_initial_position_constraint;
     bool use_initial_spacing_constraint;

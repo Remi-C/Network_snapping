@@ -441,7 +441,7 @@ int addManualConstraintsOnOrthDistToObservation_width(DataStorage * data, Proble
         //untill 2.0 meters of distance, normal behavior. after that outliers behavior (not square)
         LossFunction* loss = NULL;
         loss = new ceres::ScaledLoss( g_param->useLoss?(new ceres::SoftLOneLoss(g_param->lossScale)):NULL
-                                                       ,g_param->K_obs ,ceres::DO_NOT_TAKE_OWNERSHIP) ;
+                                                       ,g_param->K_obs_width ,ceres::DO_NOT_TAKE_OWNERSHIP) ;
 
         problem->AddResidualBlock(
                     distance_cost_function
@@ -485,7 +485,7 @@ int addManualConstraintsOnSurfDistToObjects_width(DataStorage * data, Problem * 
         //untill 2.0 meters of distance, normal behavior. after that outliers behavior (not square)
         LossFunction* loss = NULL;
         loss = new ceres::ScaledLoss( g_param->useLoss?(new ceres::SoftLOneLoss(g_param->lossScale/5)):NULL
-                                                       ,g_param->K_obj,ceres::DO_NOT_TAKE_OWNERSHIP) ;
+                                                       ,g_param->K_obj_width,ceres::DO_NOT_TAKE_OWNERSHIP) ;
 
         problem->AddResidualBlock(
                     distance_cost_function
