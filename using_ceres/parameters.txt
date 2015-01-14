@@ -11,13 +11,13 @@ objects_path = ../../data/data_in_reduced_export_area/object_in_export_area.csv 
 #realtiv weight of constraints
 K_origin = 10 ;
 K_spacing = 20 ;
-K_angle = 200 ;
+K_angle = 500 ;
 
 K_obs = 1 ;
-K_obj = 100 ;
+K_obj = 1 ;
 
-K_obs_width = 5 ;
-K_obj_width = 1 ;
+K_obs_width = 1 ;
+K_obj_width = 10 ;
 
 #what constraints to use?
 #regularisation
