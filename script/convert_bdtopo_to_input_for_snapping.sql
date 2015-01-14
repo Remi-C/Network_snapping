@@ -133,22 +133,19 @@ SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, p
 --now we restrain ourselve to an area for test :
 	--this is delimitated by the table def_zone_export
 
-	DROP TABLE IF EXISTS def_zone_export; 
-	CREATE TABLE def_zone_export 
-	( 	gid SERIAL PRIMARY KEY
-		,id bigint
-		,geom geometry(POLYGON,931008)
-		, center_in_RGF93 geometry(POINT,932011)
-	);   
-	INSERT INTO def_zone_export (id, geom) 
-		VALUES( 1 , ST_GeomFromText('POLYGON((650907.6  6860870.6 ,650956.9  6860895.8 ,651036.0  6860757.1 ,650983.7  6860736.6 ,650907.6  6860870.6 ))',931008) );
-
- 	INSERT INTO def_zone_export (id, geom)  --all_of_acquisition
- 		VALUES( 1 , ST_GeomFromText('POLYGON((650637.4 6861097.2,650909.8 6861534.1,651068.6 6861638.3,651365.1 6861697.3,651410.3 6861270.3,651544.3 6861218.2,651498.6 6861178.5,651288.1 6861198.7,650863.3 6861051.6,651004.5 6860830.8,651063.1 6860739.1,651421.5 6860706.1,651347.3 6860611.3,651030.6 6860666.2,650657 6861002.8,650637.4 6861097.2))',931008) );
-
-	
-
-	UPDATE def_zone_export SET center_in_RGF93 = ST_Centroid(ST_Transform(geom,932011)) ;
+	-- DROP TABLE IF EXISTS def_zone_export; 
+-- 	CREATE TABLE def_zone_export 
+-- 	( 	gid SERIAL PRIMARY KEY
+-- 		,id bigint
+-- 		,geom geometry(POLYGON,931008)
+-- 		, center_in_RGF93 geometry(POINT,932011)
+-- 	);   
+-- 	INSERT INTO def_zone_export (id, geom) 
+-- 		VALUES( 1 , ST_GeomFromText('POLYGON((650907.6  6860870.6 ,650956.9  6860895.8 ,651036.0  6860757.1 ,650983.7  6860736.6 ,650907.6  6860870.6 ))',931008) );
+-- 
+--  	INSERT INTO def_zone_export (id, geom)  --all_of_acquisition
+--  		VALUES( 1 , ST_GeomFromText('POLYGON((650637.4 6861097.2,650909.8 6861534.1,651068.6 6861638.3,651365.1 6861697.3,651410.3 6861270.3,651544.3 6861218.2,651498.6 6861178.5,651288.1 6861198.7,650863.3 6861051.6,651004.5 6860830.8,651063.1 6860739.1,651421.5 6860706.1,651347.3 6860611.3,651030.6 6860666.2,650657 6861002.8,650637.4 6861097.2))',931008) );
+-- 	UPDATE def_zone_export SET center_in_RGF93 = ST_Centroid(ST_Transform(geom,932011)) ;
 
 -- 	SELECT ST_AsText(ST_SnapToGrid(geom,0.1))
 -- 	FROM def_zone_export
@@ -189,6 +186,7 @@ SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, p
 				,old_edge_id 
 	FROM edges_for_output as eou ,  def_zone_export as dfz
 	WHERE ST_Intersects(eou.geom, ST_Transform((dfz.geom),932011)  )  ;
+	CREATE INDEX ON edges_for_output_in_export_area (edge_id);
 	CREATE INDEX ON edges_for_output_in_export_area (start_node);
 	CREATE INDEX ON edges_for_output_in_export_area (end_node);
 
