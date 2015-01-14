@@ -102,7 +102,7 @@ int main(int argc, char** argv) {
 
     //creating the set of parameters (could be read from file)
     std::cout << "  \E[34;1mReading parameters\E[m \n" ;
-    g_param = new Parameter();
+    g_param =Parameter::instance() ;
     g_param->readParameters();
     //std::cout << g_param->printParameters();
 

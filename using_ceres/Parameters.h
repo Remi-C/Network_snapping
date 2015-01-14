@@ -18,7 +18,11 @@
 
 #include "Data.h"
 
+
 struct Parameter{
+
+   private :
+        static Parameter *s_instance;
    public :
     Parameter(){
         input_file_path ="";// "../data/data_in_reduced_export_area/reduced_area.csv";
@@ -45,6 +49,13 @@ struct Parameter{
          useLoss = false;//true;
          lossScale = 0;//3.0;
     }
+
+    static Parameter *instance()
+        {
+            if (!s_instance)
+              s_instance = new Parameter;
+            return s_instance;
+        }
 
     void readParameters();
     void setParameters(std::string , std::string );

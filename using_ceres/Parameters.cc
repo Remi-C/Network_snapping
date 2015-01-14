@@ -9,6 +9,7 @@
 //! reading the parameters in the parameter file
 #include "Parameters.h"
 
+Parameter *Parameter::s_instance = 0;
 
 void Parameter::readParameters(){
     //open the parameter file
