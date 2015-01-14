@@ -172,6 +172,11 @@ int main(int argc, char** argv) {
     std::cout << "  \E[34;1m \tSolving Problem\E[m \n" ;
     Solve(options, &problem, &summary);
 
+    //depending on optimizing on width or position, it will be efficient to "freeze" the parameters that are not used (position, or width)
+    //void Problem::SetParameterBlockConstant(double* values)
+    //void Problem::SetParameterBlockVariable(double* values)
+
+
 
     // std::cout << summary.BriefReport() << "\n";
     std::cout << summary.FullReport() << "\n";
