@@ -10,18 +10,18 @@ class_definition_path = ../../data/data_in_reduced_export_area/class_definition.
 objects_path = ../../data/data_in_reduced_export_area/object_in_export_area.csv ;
 
 #What kind of optimisation do we want? possible : POSITION , WIDTH , MIXED
-optimisation_type = WIDTH ;
+optimisation_type = POSITION ;
 
 #realtiv weight of constraints
 K_origin = 10 ;
 K_spacing = 20 ;
-K_angle = 500 ;
+K_angle = 100 ;
 
 K_obs = 1 ;
-K_obj = 1 ;
+K_obj = 10 ;
 
 K_obs_width = 1 ;
-K_obj_width = 10 ;
+K_obj_width = 50 ;
 
 #what constraints to use?
 #regularisation
@@ -39,7 +39,7 @@ use_manual_Surf_Dist_To_Objects_constraint_width = false ;
 
 #about loss function : how shall we remove the outliers?
 useLoss = true ;
-lossScale = 4;
+lossScale = 4 ;
 
 
 
