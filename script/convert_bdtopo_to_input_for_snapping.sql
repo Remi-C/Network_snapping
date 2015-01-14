@@ -27,7 +27,9 @@ SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, p
 	DROP TABLE IF EXISTS new_successive_points; 
 	CREATE TABLE new_successive_points AS 
 	WITH  segmentize AS (
-		SELECT  edge_id,  geom  AS geom, start_node, end_node, ST_NumPoints(geom)  AS num_points
+		SELECT  edge_id
+			, geom --  ST_Segmentize(geom ,5) AS geom
+			, start_node, end_node, ST_NumPoints(geom)  AS num_points
 		 FROM edge_data 
 	)
 	,input_data AS ( --getting all the edges we are going to break into segments .
@@ -77,7 +79,7 @@ SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, p
 			--60 k lines
 
 	CREATE INDEX ON  nodes_for_output USING GIST(ST_SetSRID(ST_MakePoint(X,Y,Z),932011));
-	CREATE INDEX ON nodes_for_output (node_id) 
+	CREATE INDEX ON nodes_for_output (node_id) ;
 
 	DROP TABLE IF EXISTS edges_for_output ; 
 	CREATE TABLE edges_for_output AS  
@@ -227,7 +229,7 @@ SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, p
 			AND NOT EXISTS (
 				SELECT 1
 				FROM street_amp.result_intersection as ri
-				WHERE ST_DWithin(ri.intersection_surface,ST_Transform(oia.geom,932011),5)=TRUE
+				WHERE ST_DWithin(ri.intersection_surface,ST_Transform(oia.geom,932011),10)=TRUE
 			)
 		ORDER BY oia.qgis_id ASC, ST_Distance(ST_Transform(oia.geom,932011),eg.edge_geom ) ASC
 			
@@ -322,3 +324,6 @@ COPY (
 	FROM obs_for_output_in_export_area
 )
 TO '/media/sf_E_RemiCura/PROJETS/snapping/data/data_in_reduced_export_area/full_area.csv' ;
+
+ 
+ 
