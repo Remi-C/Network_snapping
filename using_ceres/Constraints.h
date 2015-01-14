@@ -61,7 +61,7 @@ public :
                           double** jacobians) const {
         //the parameters are as follow : parameter[0-2] = n_i = first node
         //we also get the global parameter of this programm
-
+        int is_width = 0;
         Parameter * param = Parameter::instance() ;
         if(param->optimisation_type==SnapEnums::WIDTH){
             residuals[0] = 0 ;
@@ -71,6 +71,7 @@ public :
                 jacobians[0][2]=   0 ;
 
             }
+            is_width = 1;
             return 1;
         }
 
@@ -90,10 +91,10 @@ public :
             U = (Ni - Is).normalized();
         }
         //write residual
-        residuals[0] = cost  ;
+        residuals[0] = cost;
 
         //compute Jacobian
-        Eigen::Vector3d Ji = - U * cost ;
+        Eigen::Vector3d Ji = - U * cost * (1-is_width);
 
 
         if (jacobians == NULL) {
@@ -138,7 +139,7 @@ public :
         //! @param parameters[0] : node on which to compute the constraint (center node)
         //! @param parameters[1] : one of the node forming the angle
         //! @param parameters[2] : other node forming the angle
-
+        int is_width = 0;
         Parameter * param = Parameter::instance() ;
         if(param->optimisation_type==SnapEnums::WIDTH){
             residuals[0] = 0 ;
@@ -152,9 +153,9 @@ public :
                     }
                 }
             }
+            is_width = 1 ;
             return 1;
         }
-
 
         //cout << "begining of evaluate" <<endl ;
         //map the input array into 3 eigen vectors
@@ -200,7 +201,7 @@ public :
         residuals[0] = scalar_2a - scalar_angle  ;// scalar_angle-scalar_a  ;
         residuals[1] = cross_2a - cross_angle ;// cross_angle-cross_a  ;
 
-        double d  = std::abs(residuals[0]) + std::abs(residuals[1]) ;
+        double d  = std::abs(residuals[0]) + std::abs(residuals[1]) *(1-is_width);
 
         Eigen::Vector3d Vj1 = - Vjc * d *10;
         Eigen::Vector3d Vj2 = - Vjc * d *10 ;
@@ -269,7 +270,8 @@ public :
                           double* residuals,
                           double** jacobians) const {
         //the parameters are as follow : parameter[0-2] = n_i = first node;parameter[3-5] = n_j = second node;
-
+        //this is a way to bypass all computation in the case where we don't optimise on position
+        int is_width = 0;
         Parameter * param = Parameter::instance() ;
         if(param->optimisation_type==SnapEnums::WIDTH){
             residuals[0] = 0 ;
@@ -282,6 +284,7 @@ public :
                     }
                 }
             }
+            is_width = 1 ;
             return 1;
         }
 
@@ -304,8 +307,8 @@ public :
         residuals[0] = pow(cost,2);
 
         //compute Jacobian
-        Eigen::Vector3d Ji = -1 * sign* U * cost /2.0  ;// /2
-        Eigen::Vector3d Jj = +1 * sign* U * cost /2.0 ;// /2
+        Eigen::Vector3d Ji = -1 * sign* U * cost /2.0 *(1-is_width);// /2
+        Eigen::Vector3d Jj = +1 * sign* U * cost /2.0 *(1-is_width);// /2
 
 
         if (jacobians == NULL) {
@@ -372,6 +375,8 @@ public :
         Eigen::Vector3d U = (Nj-Ni)/(Nj-Ni).norm();
         //compute residual = distance from O to NiNj : norm(vect(NiO,NiNj))/norm(NiNj)
         double d = (Np.norm()/(Nj-Ni).norm()-  parameters[2][0]/2.0) ;
+
+
         residuals[0]=  ceres::pow(d ,2)* obs_->confidence * obs_->weight;
         //compute Jacobian director vector : vect(u,n)
         Eigen::Vector3d Vja = U.cross(Np/Np.norm());
