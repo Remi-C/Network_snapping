@@ -69,6 +69,7 @@
 #include "glog/logging.h"
 #include "Eigen/Core"
 
+#include <ctime>
 #include <string>
 #include "Parameters.h"
 #include "Data.h"                       //for data input/storage
@@ -98,7 +99,7 @@ Parameter * g_param;
 
 int main(int argc, char** argv) {
     initialize_geom_computation();
-
+     std::time_t time_begining = std::time(nullptr);
 
     //creating the set of parameters (could be read from file)
     std::cout << "  \E[34;1mReading parameters\E[m \n" ;
@@ -169,21 +170,35 @@ int main(int argc, char** argv) {
     options.callbacks.push_back(&callback);
 
     //solving
+    int n_iter = 0 ;
     std::cout << "  \E[34;1m \tSolving Problem\E[m \n" ;
-    Solve(options, &problem, &summary);
-
+    //Solve(options, &problem, &summary);
+    //n_iter +=summary.iterations.size()-1 ;
     //depending on optimizing on width or position, it will be efficient to "freeze" the parameters that are not used (position, or width)
     //void Problem::SetParameterBlockConstant(double* values)
     //void Problem::SetParameterBlockVariable(double* values)
+    g_data_pointer->writeData(1);
+    g_data_pointer->writeConstraints(1);
 
-
-
+    do{
+        Solve(options, &problem, &summary);
+        g_param->optimisation_type = g_param->optimisation_type==SnapEnums::WIDTH?SnapEnums::POSITION:SnapEnums::WIDTH ;
+        n_iter +=summary.iterations.size()-1 ;
+    }while((summary.iterations.size()-1)>=2);
     // std::cout << summary.BriefReport() << "\n";
     std::cout << summary.FullReport() << "\n";
 
-    std::cout << summary.iterations.size()-1 << std::endl ;
+    std::cout <<n_iter<< std::endl ;
+
+    g_data_pointer->writeData(2);
+    g_data_pointer->writeConstraints(2);
+
+
 
     finish_geom_computation();
+    std::time_t time_end  = std::time(nullptr);
+    const std::time_t time_duration = time_end-time_begining ;
+    printf("elapsed time : %ld hour %ld minutes %ld seconds \n ",time_duration/3600%24,time_duration/60%60,time_duration%60);
     return 0;
 }
 

@@ -46,11 +46,11 @@ public:
             ) {
         //writing edge with updated node position in the file :
         ++i;
-        g_data_pointer->writeData(i);
-        //std::cout << "  \E[34;1mWriting data for loop \E[m"<< i << endl ;
-        //file << " i : " << i << "some values : "<<"\n" ;
+        //g_data_pointer->writeData(i);
+        //g_data_pointer->writeConstraints(i);
 
-        g_data_pointer->writeConstraints(i);
+        //Parameter* param = Parameter::instance() ;
+        //param->optimisation_type = param->optimisation_type==SnapEnums::WIDTH?SnapEnums::POSITION:SnapEnums::WIDTH ;
         return ceres::SOLVER_CONTINUE;
     }
 
