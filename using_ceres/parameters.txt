@@ -25,7 +25,7 @@ K_obj_width = 10 ;
 
 #what constraints to use?
 #regularisation
-use_initial_position_constraint = true ;
+use_manual_initial_position_constraint = true ;
 use_manual_initial_spacing_constraint = true ;
 use_manual_distance_to_original_angle = true ;
 

@@ -19,18 +19,8 @@ int addAllConstraints(DataStorage * data, ceres::Problem * problem, Parameter* p
     //        addConstraintsOnInitialPosition( data, problem) ;
     //    }
 
-    if (param->use_initial_position_constraint == true) {
+    if (param->use_manual_initial_position_constraint == true) {
         addManualConstraintsOnInitialPosition(  data, problem) ;
-    }
-
-    //setting constraint on initial spacing between nodes for each pair of node.
-    if(param->use_initial_spacing_constraint==true){
-        addConstraintsOnInitialspacing( data, problem) ;
-    }
-
-    // constraints based on observation : oth distance from observation to segment
-    if(param->use_distance_to_proj_constraint == true){
-        addConstraintsOnOrthDistToObservation(data , problem) ;
     }
 
     if(param->use_manual_initial_spacing_constraint == true){
@@ -78,38 +68,6 @@ int boundConstraints(DataStorage * data, ceres::Problem * problem, Parameter* pa
     return 0;
 }
 
-//setting constraint on initial position for each node.
-int addConstraintsOnInitialPosition(DataStorage * data, Problem * problem){
-    for(const auto& element : data->nodes_by_node_id()){
-        //std::cout << element.second->end_node << std::endl;
-        node * n = element.second;
-        double n_p[3] = { //! @todo : use eighen to hide this ugliness!
-                          //! @note : we slighty pertubate the original position to try to improve initial solution
-                          n->position[0] +0.001
-                          ,n->position[1]+0.001
-                          ,n->position[2]+0.001};
-        DistanceToInitialPosition* self_distance_functor =
-                new DistanceToInitialPosition( n->position) ;
-        CostFunction* distance_cost_function
-                = new AutoDiffCostFunction<DistanceToInitialPosition, 1,3>(
-                    self_distance_functor);
-
-        //untill 2.0 meters of distance, normal behavior. after that outliers behavior (not square)
-        LossFunction* loss = NULL;
-        loss = new ceres::ScaledLoss(
-                    //g_param->useLoss?(new ceres::SoftLOneLoss(g_param->lossScale)):NULL
-                    /// @DEBUG : temporary
-                    NULL
-                    ,g_param->K_origin,ceres::DO_NOT_TAKE_OWNERSHIP) ;
-
-        problem->AddResidualBlock(
-                    distance_cost_function
-                    ,loss
-                    ,n->position
-                    );
-    }
-}
-
 
 //setting constraint on initial position for each node.
 int addManualConstraintsOnInitialPosition(DataStorage * data, Problem * problem){
@@ -146,41 +104,6 @@ int addManualConstraintsOnInitialPosition(DataStorage * data, Problem * problem)
 }
 
 
-//setting constraint on initial spacing between nodes for each pair of node.
-int addConstraintsOnInitialspacing(DataStorage * data, Problem * problem){
-    for(const auto& element : data->edges_by_edge_id()){
-        //std::cout << element.second->end_node << std::endl;
-
-        edge * edge_to_output = element.second;
-        node * start_node = data->nbn(edge_to_output->start_node) ;
-        node * end_node = data->nbn(edge_to_output->end_node) ;
-
-
-        double o_s[3] = { //! @todo : use eighen to hide this ugliness!
-                          //! @note : we slighty pertubate the original position to try to improve initial solution
-                          start_node->position[0]   - end_node->position[0] +0.001
-                          ,start_node->position[1]  - end_node->position[1]+0.001
-                          ,start_node->position[2]  - end_node->position[2]+0.001};
-        DistanceToInitialSpacing* original_spacing_distance_functor = new DistanceToInitialSpacing( o_s) ;
-
-        CostFunction* original_spacing_distance_cost_function
-                = new AutoDiffCostFunction<DistanceToInitialSpacing, 1,3,3>(
-                    original_spacing_distance_functor);
-
-        //untill 2.0 meters of distance, normal behavior. after that outliers behavior (not square)
-        LossFunction* loss = NULL;
-        loss = new ceres::ScaledLoss( g_param->useLoss?(new ceres::SoftLOneLoss(g_param->lossScale)):NULL
-                                                       ,g_param->K_spacing,ceres::DO_NOT_TAKE_OWNERSHIP) ;
-
-
-        problem->AddResidualBlock(
-                    original_spacing_distance_cost_function
-                    ,loss
-                    , start_node->position
-                    , end_node->position
-                    );
-    }
-}
 
 //! manual constraint based on regularisation of distance between nodes
 int addManualConstraintsOnInitialspacing(DataStorage * data, Problem * problem){
@@ -237,37 +160,6 @@ int addManualConstraintsOnInitialspacing(DataStorage * data, Problem * problem){
         data->constraints()->push_back(n_constraint2);
     }
 }
-
-//! constraint based on observation
-int addConstraintsOnOrthDistToObservation(DataStorage * data, Problem * problem){
-    for (int i = 0; i < data->num_observations(); ++i) {
-
-        //finding the 2 nodes concerned by this observations
-        edge * relativ_edge = data->ebe(data->observations(i)->edge_id) ;
-        node * start_node = data->nbn(relativ_edge->start_node)  ;
-        node * end_node = data->nbn(relativ_edge->end_node)  ;
-
-        DistanceToProjectionResidual* distance_functor =
-                new DistanceToProjectionResidual( data->observations(i)->position, &relativ_edge->width, data->observations(i)  ) ;
-        CostFunction* distance_cost_function
-                = new AutoDiffCostFunction<DistanceToProjectionResidual, 1, 3, 3>(
-                    distance_functor);
-
-        //untill 2.0 meters of distance, normal behavior. after that outliers behavior (not square)
-        LossFunction* loss = NULL;
-        loss = new ceres::ScaledLoss( g_param->useLoss?(new ceres::SoftLOneLoss(g_param->lossScale)):NULL
-                                                       ,g_param->K_obs,ceres::DO_NOT_TAKE_OWNERSHIP) ;
-
-        problem->AddResidualBlock(
-                    distance_cost_function
-                    ,loss
-                    ,start_node->position
-                    ,end_node->position
-                    ); //note : both observations are referring to these nodes.
-    }
-}
-
-
 
 //! manual constraint based original angles in network
 int addManualConstraintsOnDistanceToOriginalAngle(DataStorage * data, Problem * problem){
