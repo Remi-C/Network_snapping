@@ -81,6 +81,9 @@ void Parameter::setParameters(std::string key, std::string value){
 
     key.compare("useLoss")==0?useLoss=bool(value.compare("false")):false;
     key.compare("lossScale")==0?lossScale=atof(value.c_str()):0;
+
+    key.compare("optimisation_type")==0?optimisation_type=SnapEnums::String_toot(value):0;
+
     return;
 
 }
@@ -121,7 +124,10 @@ std::string Parameter::printParameters(){
             << " use_manual_Surf_Dist_To_Objects_constraint_width : "
                 << use_manual_Surf_Dist_To_Objects_constraint_width << std::endl
             << " useLoss : " << useLoss  << std::endl
-            << " lossScale : " << lossScale  << std::endl  ;
+            << " lossScale : " << lossScale  << std::endl
+            << " optimisation_type : " << SnapEnums::ot_toString(optimisation_type)  << std::endl  ;
+
+
     return nstring.str() ;
 
 

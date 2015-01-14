@@ -17,13 +17,14 @@
 #include "ceres/ceres.h"
 
 #include "Data.h"
+#include "enum_functions.h"
 
 
 struct Parameter{
 
-   private :
-        static Parameter *s_instance;
-   public :
+private :
+    static Parameter *s_instance;
+public :
     Parameter(){
         input_file_path ="";// "../data/data_in_reduced_export_area/reduced_area.csv";
         output_file_path ="";// "../data/data_in_reduced_export_area/snapping_output.csv" ;
@@ -46,16 +47,17 @@ struct Parameter{
         use_manual_Surf_Dist_To_Objects_constraint = false ;
         use_manual_distance_to_proj_constraint_width = false;// false;
         use_manual_Surf_Dist_To_Objects_constraint_width = false ;
-         useLoss = false;//true;
-         lossScale = 0;//3.0;
+        useLoss = false;//true;
+        lossScale = 0;//3.0;
+        optimisation_type = SnapEnums::POSITION ;
     }
 
     static Parameter *instance()
-        {
-            if (!s_instance)
-              s_instance = new Parameter;
-            return s_instance;
-        }
+    {
+        if (!s_instance)
+            s_instance = new Parameter;
+        return s_instance;
+    }
 
     void readParameters();
     void setParameters(std::string , std::string );
@@ -88,6 +90,8 @@ struct Parameter{
 
     bool useLoss  ;//! shall we use a loss function to reduce outliers weight
     double lossScale ; //! what shall be the loss function scale (after this scale, outliers mode)
+
+    SnapEnums::optimisation_target optimisation_type;
 };
 
 

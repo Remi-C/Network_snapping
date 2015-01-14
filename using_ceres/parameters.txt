@@ -8,6 +8,10 @@ input_file_path = ../../data/data_in_reduced_export_area/full_area.csv ;
 output_file_path =  ../../data/data_in_reduced_export_area/snapping_output_full.csv ;
 class_definition_path = ../../data/data_in_reduced_export_area/class_definition.csv ;
 objects_path = ../../data/data_in_reduced_export_area/object_in_export_area.csv ;
+
+#What kind of optimisation do we want?
+optimisation_type = WIDTH ;
+
 #realtiv weight of constraints
 K_origin = 10 ;
 K_spacing = 20 ;
@@ -21,21 +25,22 @@ K_obj_width = 10 ;
 
 #what constraints to use?
 #regularisation
-use_initial_position_constraint = false ;
-use_manual_initial_spacing_constraint = false ;
-use_manual_distance_to_original_angle = false ;
+use_initial_position_constraint = true ;
+use_manual_initial_spacing_constraint = true ;
+use_manual_distance_to_original_angle = true ;
 
 #change position of axis
-use_manual_distance_to_proj_constraint = false ;
+use_manual_distance_to_proj_constraint = true ;
 use_manual_Surf_Dist_To_Objects_constraint = false ;
 
 #change width of roads?
-use_manual_distance_to_proj_constraint_width = true ;
-use_manual_Surf_Dist_To_Objects_constraint_width = true ;
+use_manual_distance_to_proj_constraint_width = false ;
+use_manual_Surf_Dist_To_Objects_constraint_width = false ;
 
 #about loss function : how shall we remove the outliers?
 useLoss = true ;
 lossScale = 4;
+
 
 
 #should not be used, buggy :
