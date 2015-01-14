@@ -191,6 +191,7 @@ int main(int argc, char** argv) {
     std::cout <<n_iter<< std::endl ;
 
     g_data_pointer->writeData(2);
+    g_param->optimisation_type = SnapEnums::POSITION ; //putting the position, so as to have vector in visu
     g_data_pointer->writeConstraints(2);
 
 
