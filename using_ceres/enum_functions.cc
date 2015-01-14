@@ -35,6 +35,16 @@ EnumString<SnapEnums::attractive_repulsive>   SnapEnums::attractive_repulsive_st
     make_enum_string(NEUTRAL, "NEUTRAL"),
     make_enum_string(NEUTRAL, "") //the last string must be empty to stop the search
 };
+
+EnumString<SnapEnums::optimisation_target>   SnapEnums::optimisation_target_string[]  =
+{
+    //ATTRACTIVE=1 ,REPULSIVE=-1,ATTR_AND_REP =-11,  NEUTRAL=0
+    make_enum_string(POSITION, "POSITION"),
+    make_enum_string(WIDTH, "WIDTH"),
+    make_enum_string(MIXED, "MIXED"),
+    make_enum_string(OTHER, "") //the last string must be empty to stop the search
+};
+
 //SnapEnums::road_relation_enum SnapEnums::string_to_road_relation_enum(string s){
 //    if(s.compare("IN")==0)
 //        return IN;
@@ -99,6 +109,9 @@ std::string SnapEnums::gt_toString(SnapEnums::geom_type_enum e){
 std::string SnapEnums::ar_toString(SnapEnums::attractive_repulsive e){
     return ToString(SnapEnums::attractive_repulsive_string , e);
 }
+std::string SnapEnums::ot_toString(SnapEnums::optimisation_target e){
+    return ToString(SnapEnums::optimisation_target_string , e);
+}
 
 SnapEnums::road_relation_enum SnapEnums::String_torre(std::string s){
     return ToEnum(SnapEnums::road_relation_string , s);
@@ -108,6 +121,9 @@ SnapEnums::geom_type_enum SnapEnums::String_togt(std::string s){
 }
 SnapEnums::attractive_repulsive SnapEnums::String_toar(std::string s){
     return ToEnum(SnapEnums::attractive_repulsive_string , s);
+}
+SnapEnums::optimisation_target SnapEnums::String_toot(std::string s){
+    return ToEnum(SnapEnums::optimisation_target_string , s);
 }
 
 
@@ -127,10 +143,12 @@ void SnapEnums::test_enum(){
     cout << SnapEnums::rre_toString(SnapEnums::BORDER_OUT)<<endl ;
     cout << SnapEnums::gt_toString(SnapEnums::POINT)<<endl ;
     cout << SnapEnums::ar_toString(SnapEnums::ATTRACTIVE)<<endl ;
+    cout << SnapEnums::ot_toString(SnapEnums::POSITION)<<endl  ;
 
     cout << SnapEnums::rre_toString(SnapEnums::String_torre("BORDER_IN")) << endl;
     cout << SnapEnums::gt_toString(SnapEnums::String_togt("LINESTRING")) << endl;
     cout << SnapEnums::ar_toString(SnapEnums::String_toar("REPULSIVE")) << endl;
+    cout << SnapEnums::ot_toString(SnapEnums::String_toot("POSITION")) << endl;
 }
 
 

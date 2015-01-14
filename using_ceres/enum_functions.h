@@ -66,11 +66,13 @@ public:
     enum road_relation_enum{IN=1 ,OUT=-1 ,BORDER=0, BORDER_IN = 10, BORDER_OUT= -10, UNDEF=-110 } ;
     enum geom_type_enum{POINT=1,LINESTRING=2,POLYGON=3,COLLECTION=4} ;
     enum attractive_repulsive{ATTRACTIVE=1 ,REPULSIVE=-1,ATTR_AND_REP =-11,  NEUTRAL=0 } ;
+    enum optimisation_target{POSITION=0 ,WIDTH=1 ,MIXED =2, OTHER=-1 } ;
+
 
     static EnumString<road_relation_enum> road_relation_string[];
     static EnumString<geom_type_enum> geom_type_string[];
     static EnumString<attractive_repulsive> attractive_repulsive_string[];
-
+    static EnumString<optimisation_target> optimisation_target_string[];
 
 
 //    static road_relation_enum  string_to_road_relation_enum(std::string s);
@@ -83,10 +85,12 @@ public:
     static std::string rre_toString(road_relation_enum);
     static std::string gt_toString(geom_type_enum);
     static std::string ar_toString(attractive_repulsive);
+    static std::string ot_toString(optimisation_target);
 
     static road_relation_enum String_torre(std::string s);
     static geom_type_enum String_togt(std::string s);
     static attractive_repulsive String_toar(std::string s);
+    static optimisation_target String_toot(std::string s);
 };
 
 
