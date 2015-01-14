@@ -15,11 +15,6 @@
 #include "Parameters.h"
 #include "utils_function.h"
 
-//extern const double K_origin;
-//extern const double K_obs;
-//extern const double K_spacing;
-
-
 #include "ceres/ceres.h"
 #include "ceres/rotation.h"
 
