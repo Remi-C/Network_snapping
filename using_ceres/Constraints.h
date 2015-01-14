@@ -87,6 +87,20 @@ public :
                           double* residuals,
                           double** jacobians) const {
         //the parameters are as follow : parameter[0-2] = n_i = first node
+        //we also get the global parameter of this programm
+
+        Parameter * param = Parameter::instance() ;
+        if(param->optimisation_type==SnapEnums::WIDTH){
+            residuals[0] = 0 ;
+            if ((jacobians != NULL) && (jacobians[0]!=NULL)){
+                jacobians[0][0] =  0 ;
+                jacobians[0][1] =  0 ;
+                jacobians[0][2]=   0 ;
+
+            }
+            return 1;
+        }
+
 
         //map the input array into 2 eigen vectors into Eigen
         ConstVectorRef Ni( parameters[0],3 ); //the node position
@@ -103,7 +117,7 @@ public :
             U = (Ni - Is).normalized();
         }
         //write residual
-        residuals[0] = cost ;
+        residuals[0] = cost  ;
 
         //compute Jacobian
         Eigen::Vector3d Ji = - U * cost ;
@@ -246,6 +260,22 @@ public :
         //! @param parameters[1] : one of the node forming the angle
         //! @param parameters[2] : other node forming the angle
 
+        Parameter * param = Parameter::instance() ;
+        if(param->optimisation_type==SnapEnums::WIDTH){
+            residuals[0] = 0 ;
+            residuals[1] = 0 ;
+            if(jacobians != NULL){
+                for(int i = 0; i<3; ++i){
+                    if(jacobians[i] != NULL) {
+                        for(int j=0;j<6;++j){
+                            jacobians[i][j] = 0 ;
+                        }
+                    }
+                }
+            }
+            return 1;
+        }
+
 
         //cout << "begining of evaluate" <<endl ;
         //map the input array into 3 eigen vectors
@@ -255,14 +285,6 @@ public :
 
         double scalar_2a = (Nc-Ni).dot(Nc-Nj)/((Nc-Ni).norm() * (Nc-Nj).norm());
         double cross_2a = ((Nc-Ni).cross(Nc-Nj)/((Nc-Ni).norm() * (Nc-Nj).norm())).norm();
-
-        double tan_a = cross_2a / ( 1 + scalar_2a) ;
-        double tan_o = cross_angle / ( 1 + scalar_angle) ;
-
-        double cos_a = ( 1-pow(tan_a,2) ) / ( 1 + pow(tan_a,2) ) ;
-        double cos_o = ( 1-pow(tan_o,2) ) / ( 1 + pow(tan_o,2) ) ;
-
-        double sin_a = 2 * tan_a / ( 1 + pow(tan_a,2) ) ;
 
         //compute jacobian :
         //only the center node (Nc) should be moved
@@ -369,6 +391,21 @@ public :
                           double** jacobians) const {
         //the parameters are as follow : parameter[0-2] = n_i = first node;parameter[3-5] = n_j = second node;
 
+        Parameter * param = Parameter::instance() ;
+        if(param->optimisation_type==SnapEnums::WIDTH){
+            residuals[0] = 0 ;
+            if(jacobians != NULL){
+                for(int i = 0; i<2; ++i){
+                    if(jacobians[i] != NULL) {
+                        for(int j=0;j<3;++j){
+                            jacobians[i][j] = 0 ;
+                        }
+                    }
+                }
+            }
+            return 1;
+        }
+
         //map the input array into 2 eigen vectors into Eigen
         //cout << "\nbeginning of evaluate" << endl;
         ConstVectorRef Ni( parameters[0],3 );
@@ -461,15 +498,15 @@ public :
         t  = (10+t)/11.0 ;
         double coeff_i = 1 ;
         double coeff_j = 1 ;
-//        if(t > 0.5 ){
-//            //obs is closer to Nj
-//            coeff_i = 0.5+t ;
-//            coeff_j = 1-t ;
-//        } else{
-//            //obs is closer to Ni
-//            coeff_i = 1-t ;
-//            coeff_j = 0.5 + t ;
-//        }
+        //        if(t > 0.5 ){
+        //            //obs is closer to Nj
+        //            coeff_i = 0.5+t ;
+        //            coeff_j = 1-t ;
+        //        } else{
+        //            //obs is closer to Ni
+        //            coeff_i = 1-t ;
+        //            coeff_j = 0.5 + t ;
+        //        }
         //compute the direction of movement : - = toward the obs, + = away from point
         //compute Jacobian norm for Ni : for test simply take d
         Eigen::Vector3d Ji = - 1 *  Vja *  d * (coeff_i);
