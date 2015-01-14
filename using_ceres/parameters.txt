@@ -9,7 +9,7 @@ output_file_path =  ../../data/data_in_reduced_export_area/snapping_output_full.
 class_definition_path = ../../data/data_in_reduced_export_area/class_definition.csv ;
 objects_path = ../../data/data_in_reduced_export_area/object_in_export_area.csv ;
 
-#What kind of optimisation do we want?
+#What kind of optimisation do we want? possible : POSITION , WIDTH , MIXED
 optimisation_type = WIDTH ;
 
 #realtiv weight of constraints
@@ -31,7 +31,7 @@ use_manual_distance_to_original_angle = true ;
 
 #change position of axis
 use_manual_distance_to_proj_constraint = true ;
-use_manual_Surf_Dist_To_Objects_constraint = false ;
+use_manual_Surf_Dist_To_Objects_constraint = true ;
 
 #change width of roads?
 use_manual_distance_to_proj_constraint_width = false ;

@@ -481,6 +481,11 @@ public :
         ConstVectorRef Nj( parameters[1],3 );
         ConstVectorRef Ob(position_,3);
 
+        int is_width = 0;
+        Parameter * param = Parameter::instance() ;
+        if(param->optimisation_type==SnapEnums::WIDTH){
+            is_width = 1;
+        }
         //compute the normal of the plan defined by vect(NiO, NiNj)/norm(...) = n
         Eigen::Vector3d Np = (Ob-Ni).cross(Nj-Ni) ;
         //Np = Np.norm();
@@ -509,9 +514,9 @@ public :
         //        }
         //compute the direction of movement : - = toward the obs, + = away from point
         //compute Jacobian norm for Ni : for test simply take d
-        Eigen::Vector3d Ji = - 1 *  Vja *  d * (coeff_i);
+        Eigen::Vector3d Ji = - 1 *  Vja *  d * (coeff_i) * (1-is_width);
         //compute Jacobian norm for Nj : for test simply take d
-        Eigen::Vector3d Jj = - 1 *  Vja *  d *(coeff_j);
+        Eigen::Vector3d Jj = - 1 *  Vja *  d *(coeff_j) * (1-is_width);
 
 
         //        cout << "  Observation_id : " <<  obs_->obs_id <<std::endl;
@@ -538,10 +543,8 @@ public :
             jacobians[1][2]= 0 ;
         }
         if (jacobians != NULL && jacobians[2] != NULL) {
-            //note: null jacobian means end of computation?
-            jacobians[2][0] = 0 ;// -1 * SIGN(d) * std::abs(d) / 10.0 ;
+            jacobians[2][0] = -1 * SIGN(d) * std::abs(d) * is_width;
         }
-
         //  cout<<"end of evaluate()\n";
         return true;
     }
@@ -722,8 +725,9 @@ public :
         Eigen::Vector3d U = (Nj-Ni)/(Nj-Ni).norm();
         //compute residual = distance from O to NiNj : norm(vect(NiO,NiNj))/norm(NiNj)
 
-        double d = (Np.norm()/(Nj-Ni).norm()-  parameters[2][0]/2.0) * obs_->confidence * obs_->weight;
-        residuals[0]= std::pow(d,2) ;
+        double d = (Np.norm()/(Nj-Ni).norm()-  parameters[2][0]/2.0) ;
+        residuals[0]= std::pow(d,2)* obs_->confidence * obs_->weight ;
+
 
         //compute Jacobian director vector : vect(u,n)
         Eigen::Vector3d Vja = U.cross(Np/Np.norm());
@@ -835,8 +839,8 @@ public :
                                        ,obj_->geom_border_surface
                                        ,obj_->geom_border_area
                                        ,obj_->geom_centroid);
-
-        residuals[0] =pow(std::abs( 1.0 * cost /obj_->geom_border_area ),2)  ;
+        double d =   1.0 * cost /obj_->geom_border_area ;
+        residuals[0] =pow(d,2)  ;
         //residuals[0] = pow(std::abs(cost/obj_->geom_border_area),2) ; /// @FIXME @TODO @DEBUG warning : should put the confidence here
 
         int sign =-1* Geometry::orientationIndex(parameters[0],parameters[1],centroid2D_);//depends on left or right !
@@ -867,7 +871,7 @@ public :
         }
         if (jacobians != NULL && jacobians[2] != NULL) {
             //note: null jacobian means end of computation?
-            jacobians[2][0] =  SIGN(cost)*  ceres::sqrt(residuals[0])  ; //-1 * SIGN(cost)*  ceres::sqrt(residuals[0])/10 ;
+            jacobians[2][0] = d ; //-1 * SIGN(cost)*  ceres::sqrt(residuals[0])/10 ;
 
         }
         //        cout << "end of evaluate()\n";
@@ -912,7 +916,11 @@ public :
                           double* residuals,
                           double** jacobians) const {
         //the parameters is as follow : parameter[0-2] = n_i = first node;parameter[3-5] = n_j = second node;
-
+        int is_width = 0;
+        Parameter * param = Parameter::instance() ;
+        if(param->optimisation_type==SnapEnums::WIDTH){
+            is_width = 1;
+        }
         //map the input array into 2 eigen vectors, plus map observation position into Eigen
         //        cout << "\nbeginning of evaluate" << endl;
         ConstVectorRef Ni( parameters[0],3 );
@@ -944,14 +952,12 @@ public :
                                        ,obj_->geom_border_surface
                                        ,obj_->geom_border_area
                                        ,obj_->geom_centroid);
-
-        residuals[0] =pow(std::abs( 1.0 * cost /obj_->geom_border_area ),2)  ;
-        //residuals[0] = pow(std::abs(cost/obj_->geom_border_area),2) ; /// @FIXME @TODO @DEBUG warning : should put the confidence here
+        double d =   1.0 * cost /obj_->geom_border_area ;
+        residuals[0] =pow(d,2)  ; /// @FIXME @TODO @DEBUG warning : should put the confidence here
 
         int sign =-1* Geometry::orientationIndex(parameters[0],parameters[1],centroid2D_);//depends on left or right !
-
         //compute Jacobian norm for Ni
-        Eigen::Vector3d Ji =  sign * Vja * SIGN(cost)*  ceres::sqrt(residuals[0]) ;
+        Eigen::Vector3d Ji =  sign * Vja * d * (1-is_width);
         //Eigen::Vector3d Ji =  sign * Vja * cost / obj_->geom_border_area;
         //compute Jacobian norm for Nj
         Eigen::Vector3d Jj =  Ji ;
@@ -976,7 +982,7 @@ public :
         }
         if (jacobians != NULL && jacobians[2] != NULL) {
             //note: null jacobian means end of computation?
-            jacobians[2][0] = 0; //-1 * SIGN(cost)*  ceres::sqrt(residuals[0])/10 ;
+            jacobians[2][0] = d * is_width; //-1 * SIGN(cost)*  ceres::sqrt(residuals[0])/10 ;
 
         }
 
