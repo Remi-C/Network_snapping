@@ -384,18 +384,17 @@ public :
         //else{Vja << +0.7,+0.7,0;}
 
         double t = std::sqrt( std::pow((Ob-Ni).norm(),2) - std::pow(Np.norm()/(Nj-Ni).norm(),2) )/(Nj-Ni).norm() ;
-        t  = (10+t)/11.0 ;
         double coeff_i = 1 ;
         double coeff_j = 1 ;
-        //        if(t > 0.5 ){
-        //            //obs is closer to Nj
-        //            coeff_i = 0.5+t ;
-        //            coeff_j = 1-t ;
-        //        } else{
-        //            //obs is closer to Ni
-        //            coeff_i = 1-t ;
-        //            coeff_j = 0.5 + t ;
-        //        }
+//        if(t > 0.5 ){
+//            //obs is closer to Nj
+//            coeff_i =  t ;
+//            coeff_j = 1-t ;
+//        } else{
+//            //obs is closer to Ni
+//            coeff_i =  1-t ;
+//            coeff_j = t ;
+//        }
         //compute the direction of movement : - = toward the obs, + = away from point
         //compute Jacobian norm for Ni : for test simply take d
         Eigen::Vector3d Ji = - 1 *  Vja *  d * (coeff_i) * (1-is_width);
