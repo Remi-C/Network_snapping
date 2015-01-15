@@ -82,6 +82,11 @@ void Parameter::setParameters(std::string key, std::string value){
 
     key.compare("optimisation_type")==0?optimisation_type=SnapEnums::String_toot(value):0;
 
+    key.compare("geom_bound")==0?geom_bound=atof(value.c_str()):0;
+    key.compare("width_bound_minimal")==0?width_bound_minimal=atof(value.c_str()):0;
+    key.compare("width_bound_maximal")==0?width_bound_maximal=atof(value.c_str()):0;
+    key.compare("width_bound_range")==0?width_bound_range=atof(value.c_str()):0;
+
     return;
 
 }
@@ -121,8 +126,12 @@ std::string Parameter::printParameters(){
                 << use_manual_Surf_Dist_To_Objects_constraint_width << std::endl
             << " useLoss : " << useLoss  << std::endl
             << " lossScale : " << lossScale  << std::endl
-            << " optimisation_type : " << SnapEnums::ot_toString(optimisation_type)  << std::endl  ;
+            << " optimisation_type : " << SnapEnums::ot_toString(optimisation_type)  << std::endl
 
+            << " geom_bound : " << geom_bound  << std::endl
+            << " width_bound_minimal : " << width_bound_minimal  << std::endl
+            << " width_bound_maximal : " << width_bound_maximal  << std::endl
+            << " width_bound_range : " << width_bound_range  << std::endl  ;
 
     return nstring.str() ;
 
