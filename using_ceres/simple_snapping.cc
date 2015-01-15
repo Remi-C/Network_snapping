@@ -147,16 +147,14 @@ int main(int argc, char** argv) {
     options.linear_solver_type = ceres::DENSE_QR;
     options.minimizer_progress_to_stdout = true;
 
-    options.minimizer_type = ceres::LINE_SEARCH ; //can also be : TRUST_REGION or LINE_SEARCH
+    options.minimizer_type = ceres::TRUST_REGION ; //can also be : TRUST_REGION or LINE_SEARCH
     options.num_threads = 2; /// @todo : handy for speed, but makes it hard to understand cout
 
-//  options.line_search_direction_type = ceres::BFGS ;//   BFGS and LBFGS
-
-
-//    options.trust_region_strategy_type = ceres::DOGLEG ;
-//    options.dogleg_type = ceres::SUBSPACE_DOGLEG ;
-//    options.use_inner_iterations =true ;
-//    options.use_approximate_eigenvalue_bfgs_scaling = true;
+    options.line_search_direction_type = ceres::BFGS ;//   BFGS and LBFGS
+    options.trust_region_strategy_type = ceres::DOGLEG ;
+    options.dogleg_type = ceres::SUBSPACE_DOGLEG ;
+    options.use_inner_iterations =true ;
+    options.use_approximate_eigenvalue_bfgs_scaling = true;
 
     //when stop the solver :
 
@@ -184,7 +182,7 @@ int main(int argc, char** argv) {
         Solve(options, &problem, &summary);
         g_param->optimisation_type = g_param->optimisation_type==SnapEnums::WIDTH?SnapEnums::POSITION:SnapEnums::WIDTH ;
         n_iter +=summary.iterations.size()-1 ;
-    }while((summary.iterations.size()-1)>=2);
+    }while((summary.iterations.size()-1)>=2 && n_iter < 100);
     // std::cout << summary.BriefReport() << "\n";
     std::cout << summary.FullReport() << "\n";
 
