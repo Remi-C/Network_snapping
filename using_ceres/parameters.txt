@@ -16,6 +16,7 @@ optimisation_type = POSITION ;
 K_origin = 5 ;
 K_spacing = 10;
 K_angle = 50 ;
+K_original_width = 0.1 ;
 
 K_obs = 1 ;
 K_obj = 10 ;
@@ -28,6 +29,7 @@ K_obj_width = 50 ;
 use_manual_initial_position_constraint = true ;
 use_manual_initial_spacing_constraint = true ;
 use_manual_distance_to_original_angle = true ;
+use_manual_initial_width_constraint = false ;
 
 #change position of axis
 use_manual_distance_to_proj_constraint = true ;
