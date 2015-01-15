@@ -15,6 +15,9 @@ gid serial primary key
 , weight float DEFAULT 500
 , geom geometry(Multipoint, 932011) 
 );
+CREATE INDEX ON user_defined_sidewalk_border USING GISt(geom) ; 
+CREATE INDEX ON user_defined_sidewalk_border  (weight); 
+
 
 */
 DROP TABLE IF EXISTS trottoir_cut_into_pieces ;  
@@ -47,7 +50,7 @@ DROP TABLE IF EXISTS obs_for_output_in_export_area;
 			LEFT JOIN nodes_for_output_in_export_area AS nfo2 ON (efo.end_node = nfo2.node_id)
 	)
 	,map AS (--for each edge, we get observation closer than 5 meters
-		SELECT DISTINCT ON (oia.qgis_id) oia.*, eg.edge_id
+		SELECT DISTINCT ON (oia.qgis_id) ST_Transform(oia.geom,932011) as geom, oia.weight, eg.edge_id
 		FROM trottoir_cut_into_pieces   AS oia  ,  edge_geom AS eg
 		WHERE ST_DWithin( ST_Transform(oia.geom,932011), eg.edge_geom,4+width)=TRUE 
 			AND NOT EXISTS (
@@ -58,10 +61,21 @@ DROP TABLE IF EXISTS obs_for_output_in_export_area;
 		ORDER BY oia.qgis_id ASC, ST_Distance(ST_Transform(oia.geom,932011),eg.edge_geom ) ASC
 			
 	)
+	,map2 AS (
+		SELECT DISTINCT ON (oia.gid) dmp.geom, oia.weight, eg.edge_id
+		FROM user_defined_sidewalk_border   AS oia  ,  edge_geom AS eg, ST_DumpPoints(geom) AS dmp
+		WHERE ST_DWithin(  oia.geom , eg.edge_geom,4+width)=TRUE 
+			AND NOT EXISTS (
+				SELECT 1
+				FROM street_amp.result_intersection as ri
+				WHERE ST_DWithin(ri.intersection_surface, oia.geom ,10)=TRUE
+			)
+		ORDER BY oia.gid ASC, ST_Distance( oia.geom ,eg.edge_geom ) ASC
+	)
 	SELECT row_number() over() AS obs_id , edge_id
-		, ST_X(tgeom) AS X
-		, ST_Y(tgeom) AS Y
-		, COALESCE(ST_Z(tgeom),0) AS Z 
+		, ST_X(geom) AS X
+		, ST_Y(geom) AS Y
+		, COALESCE(ST_Z(geom),0) AS Z 
 		, 1::float AS confidence, COALESCE(weight,0) AS weight
-	FROM map,(SELECT * FROM def_zone_export LIMIT 1 ) AS dfz, ST_Transform( map.geom,932011) As tgeom ; 
+	FROM (SELECT * FROM map UNION ALL SELECT * FROM map2) as umap  ; 
 
