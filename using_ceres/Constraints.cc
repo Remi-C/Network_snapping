@@ -67,7 +67,6 @@ int addAllConstraints(DataStorage * data, ceres::Problem * problem, Parameter* p
   */
 int boundConstraints(DataStorage * data, ceres::Problem * problem, Parameter* param ){
 
-    /// @TODO : the parameter should be in the parameter file !
     //loop on all nodes and all dimensions
     for(int i=0;i<data->num_nodes();++i){
         for(int j=0;j<3;++j){
@@ -80,15 +79,13 @@ int boundConstraints(DataStorage * data, ceres::Problem * problem, Parameter* pa
         }
     }
 
-    /// TODO : a bound on a parameter that is unused in any constraint make it crashes.
-    /// Uncomment this when there is a regularisation constraint on all edge width toward the initial width
-    for(int i=0;i<data->num_edges()-1;++i){
+    for(int i=0;i<data->num_edges();++i){
         double t_lb = std::min(std::max(data->edges(i)->width[0]-param->width_bound_range,param->width_bound_minimal),param->width_bound_maximal );
         double t_ub = std::max(std::min(data->edges(i)->width[0]+param->width_bound_range,param->width_bound_maximal),param->width_bound_minimal);
-//        printf(" edge_id : %d , width : %f , lower bound : %f, upper bound : %f \n"
-//               ,data->edges(i)->edge_id,data->edges(i)->width[0]
-//               ,t_lb
-//               ,t_ub) ;
+        //        printf(" edge_id : %d , width : %f , lower bound : %f, upper bound : %f \n"
+        //               ,data->edges(i)->edge_id,data->edges(i)->width[0]
+        //               ,t_lb
+        //               ,t_ub) ;
         problem->SetParameterLowerBound( data->edges(i)->width , 0
                                          , t_lb
                                          ) ;
@@ -100,20 +97,17 @@ int boundConstraints(DataStorage * data, ceres::Problem * problem, Parameter* pa
 }
 
 
-/** create bounds for optimisation parameter
-  the coordinates cannot vary more than +- specified bound (geom_bound)
-  the width cannot vary more than the +6 specified bound (width_bound)
+/** create all the variable for the optimisation. It ensure that variable exists even when not used in any constraints
   */
 int addAllParameterBlocks(DataStorage * data, ceres::Problem * problem, Parameter* param ){
 
-    /// @TODO : the parameter should be in the parameter file !
     //loop on all nodes and all dimensions
     for(int i=0;i<data->num_nodes();++i){
         problem->AddParameterBlock(data->nodes(i)->position,3);
     }
 
-    for(int i=0;i<data->num_edges()-1;++i){
-       problem->AddParameterBlock(data->edges(i)->width,1);
+    for(int i=0;i<data->num_edges();++i){
+        problem->AddParameterBlock(data->edges(i)->width,1);
     }
     return 0;
 }
