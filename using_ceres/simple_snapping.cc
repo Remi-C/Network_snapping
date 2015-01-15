@@ -139,7 +139,7 @@ int main(int argc, char** argv) {
 
     addAllConstraints(data,&problem,g_param);
 
-    boundConstraints(data,&problem,g_param,5,2,20,4) ;
+    boundConstraints(data,&problem,g_param) ;
 
     Solver::Options options;
     Solver::Summary summary;

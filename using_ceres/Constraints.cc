@@ -57,17 +57,17 @@ int addAllConstraints(DataStorage * data, ceres::Problem * problem, Parameter* p
   the coordinates cannot vary more than +- specified bound (geom_bound)
   the width cannot vary more than the +6 specified bound (width_bound)
   */
-int boundConstraints(DataStorage * data, ceres::Problem * problem, Parameter* param, double geom_bound, double width_bound_minimal, double width_bound_maximal, double width_bound_range){
+int boundConstraints(DataStorage * data, ceres::Problem * problem, Parameter* param ){
 
     /// @TODO : the parameter should be in the parameter file !
     //loop on all nodes and all dimensions
     for(int i=0;i<data->num_nodes();++i){
         for(int j=0;j<3;++j){
             problem->SetParameterLowerBound(data->nodes(i)->position, j
-                                            , data->nodes(i)->position[j]-geom_bound
+                                            , data->nodes(i)->position[j]-param->geom_bound
                                             ) ;
             problem->SetParameterUpperBound(data->nodes(i)->position, j
-                                            , data->nodes(i)->position[j]+geom_bound
+                                            , data->nodes(i)->position[j]+param->geom_bound
                                             ) ;
         }
     }
@@ -75,8 +75,8 @@ int boundConstraints(DataStorage * data, ceres::Problem * problem, Parameter* pa
     /// TODO : a bound on a parameter that is unused in any constraint make it crashes.
     /// Uncomment this when there is a regularisation constraint on all edge width toward the initial width
 //    for(int i=0;i<data->num_edges()-1;++i){
-//        double t_lb = std::min(std::max(data->edges(i)->width[0]-width_bound_range,width_bound_minimal),width_bound_maximal );
-//        double t_ub = std::max(std::min(data->edges(i)->width[0]+width_bound_range,width_bound_maximal),width_bound_minimal);
+//        double t_lb = std::min(std::max(data->edges(i)->width[0]-param->width_bound_range,param->width_bound_minimal),param->width_bound_maximal );
+//        double t_ub = std::max(std::min(data->edges(i)->width[0]+param->width_bound_range,param->width_bound_maximal),param->width_bound_minimal);
 //        printf(" edge_id : %d , width : %f , lower bound : %f, upper bound : %f \n"
 //               ,data->edges(i)->edge_id,data->edges(i)->width[0]
 //               ,t_lb
