@@ -59,7 +59,7 @@ int addAllConstraints(DataStorage * data, ceres::Problem * problem, Parameter* p
   */
 int boundConstraints(DataStorage * data, ceres::Problem * problem, Parameter* param, double geom_bound, double width_bound_minimal, double width_bound_maximal, double width_bound_range){
 
-    /// @TODO
+    /// @TODO : the parameter should be in the parameter file !
     //loop on all nodes and all dimensions
     for(int i=0;i<data->num_nodes();++i){
         for(int j=0;j<3;++j){
