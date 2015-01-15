@@ -29,7 +29,7 @@ K_obj_width = 50 ;
 use_manual_initial_position_constraint = true ;
 use_manual_initial_spacing_constraint = true ;
 use_manual_distance_to_original_angle = true ;
-use_manual_initial_width_constraint = false ;
+use_manual_initial_width_constraint = true ;
 
 #change position of axis
 use_manual_distance_to_proj_constraint = true ;
