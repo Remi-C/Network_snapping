@@ -38,9 +38,10 @@ int addAllParameterBlocks(DataStorage * data, ceres::Problem * problem, Paramete
 
 int addAllConstraints(DataStorage * data, ceres::Problem * problem, Parameter* param);
 int addManualConstraintsOnInitialPosition(DataStorage *, ceres::Problem * );
-
 int addManualConstraintsOnDistanceToOriginalAngle(DataStorage * , Problem * ) ;
 int addManualConstraintsOnInitialspacing(DataStorage * , Problem * ) ;
+
+int addManualConstraintsOnInitialWidth(DataStorage *, ceres::Problem * );
 
 int addManualConstraintsOnOrthDistToObservation(DataStorage * , Problem * ) ;
 int addManualConstraintsOnSurfDistToObjects(DataStorage * , Problem * ) ;
@@ -340,6 +341,49 @@ private:
 };
 
 
+
+
+
+/** functor to compute cost between one node position and this node original position
+  */
+class ManualDistanceToInitialWidth  : public ceres::SizedCostFunction<1,1> {
+public :
+    //! this is the constructor, it expects an array of 1 double.
+    ManualDistanceToInitialWidth(double input_width)
+        :initial_width_( input_width) {}
+
+    //! this is the operator computing the cost
+    virtual bool Evaluate(double const* const* parameters,
+                          double* residuals,
+                          double** jacobians) const {
+        //the parameters are as follow : parameter[0] = width
+        //we also get the global parameter of this programm to swithc on/off this cost function
+        int is_width = 1;
+        Parameter * param = Parameter::instance() ;
+        if(param->optimisation_type!=SnapEnums::WIDTH){
+            residuals[0] = 0 ;
+            if ((jacobians != NULL) && (jacobians[0]!=NULL)){
+                jacobians[0][0] =  0 ;
+            }
+            is_width = 0;
+            return 1;
+        }
+        //compute the cost, that is the eucl dist to original width
+        double cost =  (initial_width_ - parameters[0][0] )  ;
+        residuals[0] = cost;
+
+        if (jacobians == NULL) {
+            //cout << "JACOBIAN NULL" <<endl;
+            return 1;
+        }
+        if (jacobians != NULL && jacobians[0] != NULL) {
+            jacobians[0][0] =  cost;
+        }
+        return true;
+    }
+private:
+    double initial_width_; /**< store the original width of the edge*/
+};
 
 
 

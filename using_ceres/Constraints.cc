@@ -32,6 +32,14 @@ int addAllConstraints(DataStorage * data, ceres::Problem * problem, Parameter* p
         addManualConstraintsOnDistanceToOriginalAngle(data, problem);
     }
 
+
+    if (param->use_manual_initial_width_constraint == true) {
+        addManualConstraintsOnInitialWidth(data, problem) ;
+    }
+
+
+
+
     // constraints based on observation : oth distance from observation to segment
     if(param->use_manual_distance_to_proj_constraint == true){
         addManualConstraintsOnOrthDistToObservation(data, problem);
@@ -74,20 +82,20 @@ int boundConstraints(DataStorage * data, ceres::Problem * problem, Parameter* pa
 
     /// TODO : a bound on a parameter that is unused in any constraint make it crashes.
     /// Uncomment this when there is a regularisation constraint on all edge width toward the initial width
-//    for(int i=0;i<data->num_edges()-1;++i){
-//        double t_lb = std::min(std::max(data->edges(i)->width[0]-param->width_bound_range,param->width_bound_minimal),param->width_bound_maximal );
-//        double t_ub = std::max(std::min(data->edges(i)->width[0]+param->width_bound_range,param->width_bound_maximal),param->width_bound_minimal);
+    for(int i=0;i<data->num_edges()-1;++i){
+        double t_lb = std::min(std::max(data->edges(i)->width[0]-param->width_bound_range,param->width_bound_minimal),param->width_bound_maximal );
+        double t_ub = std::max(std::min(data->edges(i)->width[0]+param->width_bound_range,param->width_bound_maximal),param->width_bound_minimal);
 //        printf(" edge_id : %d , width : %f , lower bound : %f, upper bound : %f \n"
 //               ,data->edges(i)->edge_id,data->edges(i)->width[0]
 //               ,t_lb
 //               ,t_ub) ;
-//        problem->SetParameterLowerBound( data->edges(i)->width , 0
-//                                         , t_lb
-//                                         ) ;
-//        problem->SetParameterUpperBound(  data->edges(i)->width, 0
-//                                          , t_ub
-//                                          ) ;
-//    }
+        problem->SetParameterLowerBound( data->edges(i)->width , 0
+                                         , t_lb
+                                         ) ;
+        problem->SetParameterUpperBound(  data->edges(i)->width, 0
+                                          , t_ub
+                                          ) ;
+    }
     return 0;
 }
 
@@ -276,6 +284,47 @@ int addManualConstraintsOnDistanceToOriginalAngle(DataStorage * data, Problem * 
 
 
 
+int addManualConstraintsOnInitialWidth(DataStorage *, ceres::Problem * );
+
+//setting constraint on initial position for each node.
+int addManualConstraintsOnInitialWidth(DataStorage * data, Problem * problem){
+    double* neg = new double(-1);
+    double* pos = new double(+1);
+    for(const auto& element : data->edges_by_edge_id()){
+        //std::cout << element.second->end_node << std::endl;
+        edge * e = element.second;
+
+        CostFunction* origin_distance_functor = new ManualDistanceToInitialWidth(*e->width) ;
+
+        LossFunction* loss = NULL;
+        loss = new ceres::ScaledLoss( g_param->useLoss?(new ceres::SoftLOneLoss(g_param->lossScale)):NULL
+                                                       ,g_param->K_original_width,ceres::DO_NOT_TAKE_OWNERSHIP) ;
+
+        problem->AddResidualBlock(
+                    origin_distance_functor
+                    ,loss
+                    ,e->width
+                    );
+
+        //computing the middle of the edge as the application point
+        ConstVectorRef Ni( data->nbn(e->start_node)->position ,3 );
+        ConstVectorRef Nj( data->nbn(e->end_node)->position ,3 );
+        Eigen::Vector3d center =(Ni+Nj)/2.0 ;
+        double* edge_center = new double[3] ;
+        edge_center[0]=center[0]; edge_center[1]=center[1]; edge_center[2]=center[2];
+
+
+        Constraint * n_constraint = new Constraint_original_width(
+                    data->nbn(e->start_node)->position//useless
+                    ,data->nbn(e->start_node)->position//useless
+                    ,data->nbn(e->start_node)->position//useless
+                    ,neg
+                    ,origin_distance_functor
+                    ,edge_center
+                    ) ;
+        data->constraints()->push_back(n_constraint);
+    }
+}
 
 
 //! manual constraint based on distance between observation and edges
