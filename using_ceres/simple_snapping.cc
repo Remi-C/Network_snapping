@@ -181,6 +181,7 @@ int main(int argc, char** argv) {
     g_data_pointer->writeConstraints(1);
 
     do{
+        activate_desactivate_ParameterBlocks( data,&problem,g_param);
         Solve(options, &problem, &summary);
         g_param->optimisation_type = g_param->optimisation_type==SnapEnums::WIDTH?SnapEnums::POSITION:SnapEnums::WIDTH ;
         n_iter +=summary.iterations.size()-1 ;

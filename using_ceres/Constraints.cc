@@ -112,6 +112,29 @@ int addAllParameterBlocks(DataStorage * data, ceres::Problem * problem, Paramete
     return 0;
 }
 
+/** create all the variable for the optimisation. It ensure that variable exists even when not used in any constraints
+  */
+int activate_desactivate_ParameterBlocks(DataStorage * data, ceres::Problem * problem, Parameter* param ){
+
+    //loop on all nodes and all dimensions
+    for(int i=0;i<data->num_nodes();++i){
+        //for(int j=0;j<3;++j){
+//            param->optimisation_type==SnapEnums::POSITION?
+//                        problem->SetParameterBlockVariable(&data->nodes(i)->position[j])
+//                      :problem->SetParameterBlockConstant(&data->nodes(i)->position[j]) ;
+        //}
+        param->optimisation_type==SnapEnums::POSITION?
+                    problem->SetParameterBlockVariable(data->nodes(i)->position )
+                  :problem->SetParameterBlockConstant(data->nodes(i)->position ) ;
+    }
+    for(int i=0;i<data->num_edges();++i){
+        param->optimisation_type==SnapEnums::WIDTH?
+                    problem->SetParameterBlockVariable(data->edges(i)->width)
+                  :problem->SetParameterBlockConstant(data->edges(i)->width) ;
+    }
+    return 0;
+}
+
 //setting constraint on initial position for each node.
 int addManualConstraintsOnInitialPosition(DataStorage * data, Problem * problem){
     double* neg = new double(-1);
