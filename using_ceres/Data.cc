@@ -55,7 +55,7 @@ bool TEST_edgeToString() {
     n->edge_id  =1;
     n->start_node = 1 ;
     n->end_node = 2;
-    n->width = 4.0  ;
+    n->width[0] = 4.0  ;
     std::cout << n->edgeToString().c_str() ;
     return true;
 }
@@ -304,7 +304,7 @@ void DataStorage::readData(){
     //#edge_id::int;start_node::int;end_node::int;width::double
     for (int i = 0; i < num_edges_; ++i) {
         fgets(line, sizeof line, i_fptr);
-        if (sscanf(line, "%d;%d;%d;%lG",&edges_[i].edge_id,&edges_[i].start_node,&edges_[i].end_node ,&edges_[i].width) != 4) {
+        if (sscanf(line, "%d;%d;%d;%lG",&edges_[i].edge_id,&edges_[i].start_node,&edges_[i].end_node ,edges_[i].width) != 4) {
             std::cerr<< "error when trying ot read the edges, wrong format\n" ;
         } else {
             //std::cout << "edge readed : " << edges_[i].edgeToString().c_str() << " \n" ;
@@ -390,7 +390,7 @@ void DataStorage::writeData(int iteration){
                 , end_node->position[0]
                 , end_node->position[1]
                 , end_node->position[2]
-                , edge_to_output->width
+                , edge_to_output->width[0]
                 , cost
                 , hours_c
                 , minutes_c

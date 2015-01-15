@@ -529,7 +529,7 @@ public :
         , obj_(data->street_objects(index))
         ,classification_(data->cbn(obj_->class_name))
         ,centroid2D_{0,0}
-    ,axis_width_(&data->ebe(obj_->edge_id)->width)
+    ,axis_width_(data->ebe(obj_->edge_id)->width)
     {
         Geometry::geomPoint2Double( obj_->geom_centroid
                                     , this->centroid2D_  );
@@ -643,7 +643,7 @@ public :
         , obj_(data->street_objects(index))
         ,classification_(data->cbn(obj_->class_name))
         ,centroid2D_{0,0}
-    ,axis_width_(&data->ebe(obj_->edge_id)->width)
+    ,axis_width_(data->ebe(obj_->edge_id)->width)
     {
         Geometry::geomPoint2Double( obj_->geom_centroid
                                     , this->centroid2D_  );

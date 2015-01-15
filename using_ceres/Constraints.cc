@@ -247,7 +247,7 @@ int addManualConstraintsOnOrthDistToObservation(DataStorage * data, Problem * pr
         node * end_node = data->nbn(relativ_edge->end_node)  ;
 
         CostFunction* distance_cost_function=
-                new  ManualOrthDistanceToObservation( data->observations(i)->position, &relativ_edge->width, data->observations(i)  ) ;
+                new  ManualOrthDistanceToObservation( data->observations(i)->position, relativ_edge->width, data->observations(i)  ) ;
         //untill 2.0 meters of distance, normal behavior. after that outliers behavior (not square)
         LossFunction* loss = NULL;
         loss = new ceres::ScaledLoss( g_param->useLoss?(new ceres::CauchyLoss(g_param->lossScale)):NULL
@@ -260,7 +260,7 @@ int addManualConstraintsOnOrthDistToObservation(DataStorage * data, Problem * pr
                     ,loss
                     ,start_node->position
                     ,end_node->position
-                    ,&relativ_edge->width
+                    ,relativ_edge->width
                     ); //note : both observations are referring to these nodes.
 
         //saving the constraint for reuse to output at each step
@@ -269,7 +269,7 @@ int addManualConstraintsOnOrthDistToObservation(DataStorage * data, Problem * pr
                     start_node->position
                     ,end_node->position
                     ,start_node->position
-                    ,&relativ_edge->width
+                    ,relativ_edge->width
                     ,distance_cost_function
                     ,data->observations(i)->position) ;
         //adding it to list of constraints
@@ -304,7 +304,7 @@ int addManualConstraintsOnSurfDistToObjects(DataStorage * data, Problem * proble
                     ,loss
                     ,start_node->position
                     ,end_node->position
-                    ,&relativ_edge->width
+                    ,relativ_edge->width
                     ); //note : obj is referring to these nodes.
 
         //saving the constraint for reuse to output at each step
@@ -319,7 +319,7 @@ int addManualConstraintsOnSurfDistToObjects(DataStorage * data, Problem * proble
                     start_node->position
                     ,end_node->position
                     ,start_node->position//useless
-                    ,&relativ_edge->width
+                    ,relativ_edge->width
                     ,distance_cost_function
                     ,obj_centroid_double) ;
         //adding it to list of constraints
@@ -344,7 +344,7 @@ int addManualConstraintsOnOrthDistToObservation_width(DataStorage * data, Proble
         node * end_node = data->nbn(relativ_edge->end_node)  ;
 
         CostFunction* distance_cost_function=
-                new  ManualOrthDistanceToObservation_width( data->observations(i)->position, &relativ_edge->width, data->observations(i)  ) ;
+                new  ManualOrthDistanceToObservation_width( data->observations(i)->position, relativ_edge->width, data->observations(i)  ) ;
         //untill 2.0 meters of distance, normal behavior. after that outliers behavior (not square)
         LossFunction* loss = NULL;
         loss = new ceres::ScaledLoss( g_param->useLoss?(new ceres::SoftLOneLoss(g_param->lossScale)):NULL
@@ -355,7 +355,7 @@ int addManualConstraintsOnOrthDistToObservation_width(DataStorage * data, Proble
                     ,loss
                     ,start_node->position
                     ,end_node->position
-                    ,&(relativ_edge->width)
+                    ,relativ_edge->width
                     ); //note : both observations are referring to these nodes.
 
         //saving the constraint for reuse to output at each step
@@ -364,7 +364,7 @@ int addManualConstraintsOnOrthDistToObservation_width(DataStorage * data, Proble
                     start_node->position
                     ,end_node->position
                     ,start_node->position //useless
-                    ,&relativ_edge->width
+                    ,relativ_edge->width
                     ,distance_cost_function
                     ,data->observations(i)->position) ;
         //adding it to list of constraints
@@ -399,7 +399,7 @@ int addManualConstraintsOnSurfDistToObjects_width(DataStorage * data, Problem * 
                     ,loss
                     ,start_node->position
                     ,end_node->position
-                    ,&relativ_edge->width
+                    ,relativ_edge->width
                     ); //note : obj is referring to these nodes.
 
         //saving the constraint for reuse to output at each step
@@ -414,7 +414,7 @@ int addManualConstraintsOnSurfDistToObjects_width(DataStorage * data, Problem * 
                     start_node->position
                     ,end_node->position
                     ,start_node->position//useless
-                    ,&relativ_edge->width
+                    ,relativ_edge->width
                     ,distance_cost_function
                     ,obj_centroid_double) ;
         //adding it to list of constraints

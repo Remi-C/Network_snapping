@@ -96,7 +96,7 @@ struct edge{
     int edge_id;      //! unique id per edge
     int start_node;   //! link to the id of the node that starts this edge
     int end_node;     //! link to the id of the node that ends this edge
-    double width;     //! width of the edge, in meters.
+    double width[1];     //! width of the edge, in meters.
 
     //! function to get an idea of what is in the edge
     string edgeToString(){
@@ -104,7 +104,7 @@ struct edge{
 
         std::ostringstream nstring;
         nstring << "(edge_id : " << edge_id
-                << " , start_node : " << start_node << ", end_node : " << end_node <<", width : " << width <<")";
+                << " , start_node : " << start_node << ", end_node : " << end_node <<", width : " << width[0] <<")";
         return nstring.str() ;
     }
 
