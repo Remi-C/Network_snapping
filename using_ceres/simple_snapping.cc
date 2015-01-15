@@ -136,7 +136,7 @@ int main(int argc, char** argv) {
     //creating the problem to be solved
     Problem problem(pb_options);
 
-
+    addAllParameterBlocks(data,&problem,g_param) ;
     addAllConstraints(data,&problem,g_param);
 
     boundConstraints(data,&problem,g_param) ;

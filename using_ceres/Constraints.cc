@@ -92,6 +92,24 @@ int boundConstraints(DataStorage * data, ceres::Problem * problem, Parameter* pa
 }
 
 
+/** create bounds for optimisation parameter
+  the coordinates cannot vary more than +- specified bound (geom_bound)
+  the width cannot vary more than the +6 specified bound (width_bound)
+  */
+int addAllParameterBlocks(DataStorage * data, ceres::Problem * problem, Parameter* param ){
+
+    /// @TODO : the parameter should be in the parameter file !
+    //loop on all nodes and all dimensions
+    for(int i=0;i<data->num_nodes();++i){
+        problem->AddParameterBlock(data->nodes(i)->position,3);
+    }
+
+    for(int i=0;i<data->num_edges()-1;++i){
+       problem->AddParameterBlock(data->edges(i)->width,1);
+    }
+    return 0;
+}
+
 //setting constraint on initial position for each node.
 int addManualConstraintsOnInitialPosition(DataStorage * data, Problem * problem){
     double* neg = new double(-1);

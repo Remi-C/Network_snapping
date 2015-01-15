@@ -34,6 +34,7 @@ using ceres::Problem;
 using ceres::LossFunction;
 
 int boundConstraints(DataStorage * data, ceres::Problem * problem, Parameter* param) ;
+int addAllParameterBlocks(DataStorage * data, ceres::Problem * problem, Parameter* param ) ;
 
 int addAllConstraints(DataStorage * data, ceres::Problem * problem, Parameter* param);
 int addManualConstraintsOnInitialPosition(DataStorage *, ceres::Problem * );
