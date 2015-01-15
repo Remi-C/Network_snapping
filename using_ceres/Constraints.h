@@ -369,7 +369,7 @@ public :
             return 1;
         }
         //compute the cost, that is the eucl dist to original width
-        double cost =  (initial_width_ - parameters[0][0] )  ;
+        double cost =  initial_width_ - parameters[0][0];
         residuals[0] = cost;
 
         if (jacobians == NULL) {

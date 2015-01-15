@@ -449,19 +449,24 @@ public :
         double* * temp_parameters= new double*[3] ;
         temp_jacobian[0]=new double[3];temp_jacobian[1]=new double[3];temp_jacobian[2]=new double[3];
        // temp_parameters[0] = new double[3];temp_parameters[1] = new double[3];temp_parameters[2] = new double[3];
-        temp_parameters[0] =node_1_ ;
+        temp_parameters[0] =width_ ;
 
         cost_function_->Evaluate(temp_parameters,
                                  &temp_residuals,
                                  temp_jacobian) ;
         *cost = temp_residuals;
-        geom[0] = application_point_[0] ;
-        geom[1] = application_point_[1] ;
-        geom[2] = application_point_[2] ;
 
-        geom[3] =  application_point_[0] +0.01  ;
-        geom[4] =  application_point_[1] +0.01   ;
-        geom[5] =  application_point_[2] +0.01 ;
+        ConstVectorRef Ni( node_1_ ,3 );
+        ConstVectorRef Nj( node_2_ ,3 );
+        Eigen::Vector3d center =(Ni+Nj)/2.0 ;
+
+        geom[0] = center[0] ;
+        geom[1] = center[1] ;
+        geom[2] = center[2] ;
+
+        geom[3] =  center[0] +0.01  ;
+        geom[4] =  center[1] +0.01   ;
+        geom[5] =  center[2] +0.01 ;
 
         delete[] temp_jacobian[0];delete[] temp_jacobian[1];delete[] temp_jacobian[2];
         delete[] temp_jacobian;

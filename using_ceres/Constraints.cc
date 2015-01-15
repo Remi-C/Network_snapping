@@ -282,10 +282,6 @@ int addManualConstraintsOnDistanceToOriginalAngle(DataStorage * data, Problem * 
     }
 }
 
-
-
-int addManualConstraintsOnInitialWidth(DataStorage *, ceres::Problem * );
-
 //setting constraint on initial position for each node.
 int addManualConstraintsOnInitialWidth(DataStorage * data, Problem * problem){
     double* neg = new double(-1);
@@ -307,20 +303,13 @@ int addManualConstraintsOnInitialWidth(DataStorage * data, Problem * problem){
                     );
 
         //computing the middle of the edge as the application point
-        ConstVectorRef Ni( data->nbn(e->start_node)->position ,3 );
-        ConstVectorRef Nj( data->nbn(e->end_node)->position ,3 );
-        Eigen::Vector3d center =(Ni+Nj)/2.0 ;
-        double* edge_center = new double[3] ;
-        edge_center[0]=center[0]; edge_center[1]=center[1]; edge_center[2]=center[2];
-
-
         Constraint * n_constraint = new Constraint_original_width(
-                    data->nbn(e->start_node)->position//useless
+                    data->nbn(e->start_node)->position//used
+                    ,data->nbn(e->end_node)->position//used
                     ,data->nbn(e->start_node)->position//useless
-                    ,data->nbn(e->start_node)->position//useless
-                    ,neg
+                    ,e->width
                     ,origin_distance_functor
-                    ,edge_center
+                    ,data->nbn(e->start_node)->position
                     ) ;
         data->constraints()->push_back(n_constraint);
     }
