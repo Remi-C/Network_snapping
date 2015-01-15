@@ -33,6 +33,7 @@ using ceres::CostFunction;
 using ceres::Problem;
 using ceres::LossFunction;
 
+int boundConstraints(DataStorage * data, ceres::Problem * problem, Parameter* param, double geom_bound, double width_bound_minimal, double width_bound_maximal, double width_bound_range) ;
 
 int addAllConstraints(DataStorage * data, ceres::Problem * problem, Parameter* param);
 int addManualConstraintsOnInitialPosition(DataStorage *, ceres::Problem * );
