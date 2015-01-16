@@ -210,7 +210,7 @@ SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, p
   
 
 	--getting the observations inside the area 
-/*
+ 
 	DROP TABLE IF EXISTS obs_for_output_in_export_area; 
 	CREATE TABLE obs_for_output_in_export_area AS  
 	WITH edge_geom AS ( -- we reconstruct the edge geom to be able to assign observation to edges
@@ -238,7 +238,7 @@ SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, p
 		, COALESCE(ST_Z(tgeom),0) AS Z 
 		, 1::float AS confidence, COALESCE(weight,0) AS weight
 	FROM map,(SELECT * FROM def_zone_export LIMIT 1 ) AS dfz, ST_Transform( map.geom,932011) As tgeom ; 
-*/
+ 
 
 
 
