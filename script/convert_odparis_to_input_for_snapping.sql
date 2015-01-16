@@ -13,7 +13,7 @@ SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, o
 CREATE TABLE user_defined_sidewalk_border ( 
 gid serial primary key
 , weight float DEFAULT 500
-, geom geometry(Multipoint, 932011) 
+, geom geometry(geometry, 932011) 
 );
 CREATE INDEX ON user_defined_sidewalk_border USING GISt(geom) ; 
 CREATE INDEX ON user_defined_sidewalk_border  (weight); 
@@ -62,15 +62,15 @@ DROP TABLE IF EXISTS obs_for_output_in_export_area;
 			
 	)
 	,map2 AS (
-		SELECT DISTINCT ON (oia.gid) dmp.geom, oia.weight, eg.edge_id
-		FROM user_defined_sidewalk_border   AS oia  ,  edge_geom AS eg, ST_DumpPoints(geom) AS dmp
+		SELECT DISTINCT ON (oia.gid, COALESCE(dmp.path[1],0)) dmp.geom, oia.weight, eg.edge_id
+		FROM user_defined_sidewalk_border   AS oia  ,  edge_geom AS eg, ST_DumpPoints(ST_Segmentize(geom,1.0)) AS dmp
 		WHERE ST_DWithin(  oia.geom , eg.edge_geom,4+width)=TRUE 
 			AND NOT EXISTS (
 				SELECT 1
 				FROM street_amp.result_intersection as ri
-				WHERE ST_DWithin(ri.intersection_surface, oia.geom ,10)=TRUE
+				WHERE ST_DWithin(ri.intersection_surface, dmp.geom ,10)=TRUE
 			)
-		ORDER BY oia.gid ASC, ST_Distance( oia.geom ,eg.edge_geom ) ASC
+		ORDER BY oia.gid ASC, COALESCE(dmp.path[1],0),ST_Distance( oia.geom ,eg.edge_geom ) ASC
 	)
 	SELECT row_number() over() AS obs_id , edge_id
 		, ST_X(geom) AS X
@@ -79,3 +79,5 @@ DROP TABLE IF EXISTS obs_for_output_in_export_area;
 		, 1::float AS confidence, COALESCE(weight,0) AS weight
 	FROM (SELECT * FROM map UNION ALL SELECT * FROM map2) as umap  ; 
 
+
+ 
