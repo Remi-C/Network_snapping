@@ -11,15 +11,17 @@ objects_path = ../../data/data_in_reduced_export_area/object_in_export_area.csv 
 
 #What kind of optimisation do we want? possible : POSITION , WIDTH , MIXED
 optimisation_type = POSITION ;
+#what method of solvoing : LINE_SEARCH or TRUST_REGION
+optimisation_method = TRUST_REGION ;
 
 #realtiv weight of constraints
-K_origin = 5 ;
-K_spacing = 10;
+K_origin = 10 ;
+K_spacing = 20;
 K_angle = 50 ;
-K_original_width = 0.1 ;
+K_original_width = 0.2 ;
 
 K_obs = 1 ;
-K_obj = 10 ;
+K_obj = 5 ;
 
 K_obs_width = 1 ;
 K_obj_width = 50 ;
@@ -33,7 +35,7 @@ use_manual_initial_width_constraint = true ;
 
 #change position of axis
 use_manual_distance_to_proj_constraint = true ;
-use_manual_Surf_Dist_To_Objects_constraint = false ;
+use_manual_Surf_Dist_To_Objects_constraint = true ;
 
 #change width of roads?
 use_manual_distance_to_proj_constraint_width = false ;

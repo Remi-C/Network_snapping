@@ -87,7 +87,13 @@ void Parameter::setParameters(std::string key, std::string value){
     key.compare("lossScale")==0?lossScale=atof(value.c_str()):0;
 
     key.compare("optimisation_type")==0?optimisation_type=SnapEnums::String_toot(value):0;
-
+    if(key.compare("optimisation_method")==0){
+        if(value.compare("LINE_SEARCH")==0){
+            optimisation_method = ceres::LINE_SEARCH;
+        }else{
+            optimisation_method = ceres::TRUST_REGION;
+        }
+    }
     key.compare("geom_bound")==0?geom_bound=atof(value.c_str()):0;
     key.compare("width_bound_minimal")==0?width_bound_minimal=atof(value.c_str()):0;
     key.compare("width_bound_maximal")==0?width_bound_maximal=atof(value.c_str()):0;
@@ -119,23 +125,25 @@ std::string Parameter::printParameters(){
 
             << " use_manual_initial_position_constraint : " << use_manual_initial_position_constraint  << std::endl
             << " use_manual_distance_to_original_angle : "
-                << use_manual_distance_to_original_angle  << std::endl
+            << use_manual_distance_to_original_angle  << std::endl
             << " use_manual_initial_spacing_constraint : "
-                << use_manual_initial_spacing_constraint << std::endl
+            << use_manual_initial_spacing_constraint << std::endl
             << " use_manual_initial_width_constraint : "
-                << use_manual_initial_width_constraint << std::endl
+            << use_manual_initial_width_constraint << std::endl
 
             << " use_manual_distance_to_proj_constraint : "
-                << use_manual_distance_to_proj_constraint  << std::endl
+            << use_manual_distance_to_proj_constraint  << std::endl
             << " use_manual_Surf_Dist_To_Objects_constraint : "
-                << use_manual_Surf_Dist_To_Objects_constraint_width << std::endl
+            << use_manual_Surf_Dist_To_Objects_constraint_width << std::endl
             << " use_manual_distance_to_proj_constraint_width : "
-                << use_manual_distance_to_proj_constraint_width << std::endl
+            << use_manual_distance_to_proj_constraint_width << std::endl
             << " use_manual_Surf_Dist_To_Objects_constraint_width : "
-                << use_manual_Surf_Dist_To_Objects_constraint_width << std::endl
+            << use_manual_Surf_Dist_To_Objects_constraint_width << std::endl
             << " useLoss : " << useLoss  << std::endl
             << " lossScale : " << lossScale  << std::endl
             << " optimisation_type : " << SnapEnums::ot_toString(optimisation_type)  << std::endl
+            << " optimisation_method : " << optimisation_type  << std::endl
+
 
             << " geom_bound : " << geom_bound  << std::endl
             << " width_bound_minimal : " << width_bound_minimal  << std::endl

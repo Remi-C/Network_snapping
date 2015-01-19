@@ -130,7 +130,7 @@ int main(int argc, char** argv) {
 
     //constructing problem
     std::cout << "  \E[34;1m \tConstructing Problem\E[m \n" ;
-    /// clean version to not allow ceres to destroyTRUST_REGION the memory itself
+    /// clean version to not allow ceres to destroy the memory itself
     Problem::Options pb_options;
     pb_options.local_parameterization_ownership = ceres::DO_NOT_TAKE_OWNERSHIP;
     //creating the problem to be solved
@@ -139,7 +139,9 @@ int main(int argc, char** argv) {
     addAllParameterBlocks(data,&problem,g_param) ;
     addAllConstraints(data,&problem,g_param);
 
-    boundConstraints(data,&problem,g_param) ;
+    if(g_param->optimisation_method==ceres::TRUST_REGION){ // only possible to bound with trust_region
+        boundConstraints(data,&problem,g_param) ;
+    }
 
     Solver::Options options;
     Solver::Summary summary;
@@ -149,7 +151,7 @@ int main(int argc, char** argv) {
     options.linear_solver_type = ceres::DENSE_QR;
     options.minimizer_progress_to_stdout = true;
 
-    options.minimizer_type = ceres::TRUST_REGION ; //can also be : TRUST_REGION or LINE_SEARCH
+    options.minimizer_type = g_param->optimisation_method ; //can also be : TRUST_REGION or LINE_SEARCH
     options.num_threads = 2; /// @todo : handy for speed, but makes it hard to understand cout
 
     options.line_search_direction_type = ceres::BFGS ;//   BFGS and LBFGS
@@ -185,7 +187,7 @@ int main(int argc, char** argv) {
         Solve(options, &problem, &summary);
         g_param->optimisation_type = g_param->optimisation_type==SnapEnums::WIDTH?SnapEnums::POSITION:SnapEnums::WIDTH ;
         n_iter +=summary.iterations.size()-1 ;
-    }while((summary.iterations.size()-1)>=2 && n_iter < 100);
+    }while((summary.iterations.size()-1)>=2 && n_iter < 250);
     // std::cout << summary.BriefReport() << "\n";
     std::cout << summary.FullReport() << "\n";
 

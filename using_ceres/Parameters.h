@@ -54,6 +54,7 @@ public :
         useLoss = false;//true;
         lossScale = 0;//3.0;
         optimisation_type = SnapEnums::POSITION ;
+        optimisation_method = ceres::LINE_SEARCH;
 
         geom_bound = 5;
         width_bound_minimal = 2 ;
@@ -105,6 +106,7 @@ public :
     double lossScale ; //! what shall be the loss function scale (after this scale, outliers mode)
 
     SnapEnums::optimisation_target optimisation_type;
+    ceres::MinimizerType optimisation_method;
 
     double geom_bound ;
     double width_bound_minimal ;

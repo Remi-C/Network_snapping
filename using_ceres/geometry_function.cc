@@ -118,11 +118,15 @@ geometry axis_to_rectangle(const double * pt1, const double * pt2, double axis_w
 
     EigenToCoordinate_Seq(Ni,axis_points,0);
     EigenToCoordinate_Seq(Nj,axis_points,1);
-
     * axis_to_be_filled = GEOSGeom_createLineString(axis_points);
 
     Eigen::Vector3d u = (Ni-Nj).normalized(); //director vector of segment, normalized
     Eigen::Vector3d normal = u.cross(Eigen::Vector3d::UnitZ()); //normal of segment
+//    std::cout << "normal :" << normal.transpose() << std::endl ;
+//    if(std::isnan(normal[0]) == true  || std::isnan(normal[1]) == true ||std::isnan(normal[2]) == true){
+//        std::cout << "Ni :" << Ni.transpose() << std::endl ;
+//        std::cout << "Nj :" << Nj.transpose() << std::endl ;
+//    }
 
     //cout << "u : " << u.transpose() << " normal : " << normal.transpose()  << endl;
     //computing the 4 points of the rectangle :

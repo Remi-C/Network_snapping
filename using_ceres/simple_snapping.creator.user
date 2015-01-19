@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by Qt Creator 2.4.1, 2015-01-16T19:01:30. -->
+<!-- Written by Qt Creator 2.4.1, 2015-01-19T13:17:45. -->
 <qtcreator>
  <data>
   <variable>GenericProjectManager.GenericProject.Toolchain</variable>
@@ -76,7 +76,7 @@
       <valuelist type="QVariantList" key="GenericProjectManager.GenericMakeStep.BuildTargets">
        <value type="QString">all</value>
       </valuelist>
-      <value type="QString" key="GenericProjectManager.GenericMakeStep.MakeArguments"> -j2</value>
+      <value type="QString" key="GenericProjectManager.GenericMakeStep.MakeArguments"> -j2 -d</value>
       <value type="QString" key="GenericProjectManager.GenericMakeStep.MakeCommand"></value>
       <value type="QString" key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName">Make</value>
       <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName"></value>

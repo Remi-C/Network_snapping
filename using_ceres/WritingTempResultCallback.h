@@ -40,10 +40,8 @@ public:
     }
 
     virtual ceres::CallbackReturnType operator(
-    )(
-            const ceres::IterationSummary& summary
-            //arg for the functor. needed because it is the prototype of this functor
-            ) {
+    )(    const ceres::IterationSummary& summary //arg for the functor. needed because it is the prototype of this functor
+          ) {
         //writing edge with updated node position in the file :
         ++i;
         //g_data_pointer->writeData(i);
@@ -51,6 +49,9 @@ public:
 
         //Parameter* param = Parameter::instance() ;
         //param->optimisation_type = param->optimisation_type==SnapEnums::WIDTH?SnapEnums::POSITION:SnapEnums::WIDTH ;
+//        if((summary.iteration-1)>1){
+//            return ceres::SOLVER_TERMINATE_SUCCESSFULLY;
+//        }
         return ceres::SOLVER_CONTINUE;
     }
 
