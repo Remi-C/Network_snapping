@@ -26,6 +26,7 @@ DataStorage::DataStorage(const string i_filename, const string o_filename )
     observations_ = 0x0;
     classifications_ = 0x0;
 	street_objects_ = 0x0;
+	slopes_ = 0x0 ; 
 
     numConstraintsWritten_ = 0;
 
@@ -36,6 +37,7 @@ DataStorage::~DataStorage(){
     delete[] observations_;
     delete[] classifications_;
     delete[] street_objects_;
+	delete[] slopes_;
     /// @TODO loop on constraint vector, for surface_objects, free applciation point
 }
 
@@ -267,8 +269,8 @@ void DataStorage::readData(){
     //std::cout << "header1 : "<< line ;
     //reading data parameter : how much we have to read after this.
     fgets(line, sizeof line, i_fptr);
-    if (	sscanf(line, "%d;%d;%d",&num_nodes_,&num_edges_,&num_observations_) != 3) {
-        std::cerr<< "error when trying to read the numbero of nodes, number of edges, number of observations, wrong format" ;
+    if (	sscanf(line, "%d;%d;%d",&num_nodes_,&num_edges_,&num_observations_, &num_slopes_) != 4) {
+        std::cerr<< "error when trying to read the numbero of nodes, number of edges, number of observations, number of target_slopes wrong format" ;
     }
 
     //some debug output
@@ -336,8 +338,29 @@ void DataStorage::readData(){
 
         }
     }
+	
+	slopes_ = new slope[num_slopes()];//! @TOOO
+	//#edge_id::int;slope::double;confidence::double;weight::double
+    for (int i = 0; i < num_slopes_ ; ++i) {
+        fgets(line, sizeof line, i_fptr);
+        //std::cout << line  << "\n";
+        if (sscanf(line, "%d;%lG;%lG;%lG"
+                   ,&slopes_[i].edge_id
+                   ,&slopes_[i].slope[0]
+                   ,&slopes_[i].confidence, &slopes_[i].weight) != 4) {
+            std::cerr<< "error when trying to read the target slopes, wrong format\n" ;
+            std::cerr<< "was expecting : edge_id::int;slope::double;confidence::double;weight::double \n recevied : " << line ;
+        } else {
+            //std::copy(t_observation->position, t_observation->position + 3, coor);
+            //std::cout << "observation readed : " << observations_[i].observationToString().c_str() << " \n"  ;
 
-    std::cout << num_nodes() <<" nodes, " << num_edges() << " edges, " << num_observations() << " observations readed from file " << input_file_path_ << " \n" ;
+        }
+    }
+	
+	
+
+    std::cout << num_nodes() <<" nodes, " << num_edges() << " edges, " << num_observations() << " observations readed from file " << input_file_path_ << " \n" 
+	<< " target slopes read: " << num_slopes() ;
     fclose(i_fptr);
     return;
 }

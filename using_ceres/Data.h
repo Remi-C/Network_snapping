@@ -127,9 +127,26 @@ struct observation{
                 << " , position : (" << position[0] << "," << position[1] <<"," << position[2]
                 << "), confidence : " << confidence << ", weight : " << weight <<")";
         return nstring.str() ;
-    }
+    } 
+};
 
 
+struct slope{ 
+    int edge_id;          //! id of the edge that should have this slope
+    double slope[1];    //! slope, a double
+    double confidence;    //! confidence between 0 and 1. 0-> very unlikely ; 1-> certain
+    double weight;        //! statistical weight of this observation (observation are points extracted from lines, weight = length of the 2 lines/2)
+    //! function to get an idea of what is in the observation
+    
+	string slopeToString(){
+        //#edge_id::int;slope::double;confidence::double;weight::double
+        std::ostringstream nstring;
+        //nstring.precision(10);
+        nstring << "(edge_id : " << edge_id  << "  
+                << " , slope : (" << slope[0] << 
+                << "), confidence : " << confidence << ", weight : " << weight <<")";
+        return nstring.str() ;
+    } 
 };
 
 
@@ -693,6 +710,7 @@ public:
     int num_observations()       { return num_observations_;  }
     int num_classifications()   {return num_classifications_; }
     int num_street_objects() {return num_street_objects_;}
+	int num_slopes()			{return num_slopes_;}
 
     const std::string output_file_path()     { return output_file_path_;  }
     node* nodes()                { return nodes_;}
@@ -705,6 +723,9 @@ public:
     classification* classifications(int i)  { return &classifications_[i];}
     street_object* street_objects()  { return street_objects_;}
     street_object* street_objects(int i)  { return &street_objects_[i];}
+	slope* slopes(){ return slopes_;}
+	slope* slopes(int i){return &slopes_[i]; }
+	
     std::vector<Constraint*>*  constraints() {return &constraints_;} ;
     int numConstraintsWritten(){return numConstraintsWritten_ ; };
     node* nbn(int i ) { return nodes_by_node_id_.at(i); }
@@ -719,13 +740,11 @@ public:
     {return &classification_by_id_;}
     classification *  cbi(int i){
         return classification_by_id_.at(i);
-    }
+		}
 
     std::unordered_map <std::string /*class_name*/, classification *>* classification_by_name()
-    {return &classification_by_name_;}
-    classification *  cbn(string cname){
-        return classification_by_name_.at(cname);
-    }
+		{return &classification_by_name_;}
+    classification *  cbn(string cname){  return classification_by_name_.at(cname); }
 
 private:
     // Copy and assignment declared private and not defined to prevent from copying
@@ -738,6 +757,7 @@ private:
     int num_observations_;//! total num of observations we are going to read
     int num_classifications_;//! total num of classifications we have read
     int num_street_objects_;
+	int num_slopes_; /*total number of target slopes*/
 
     int numConstraintsWritten_;
 
@@ -746,6 +766,7 @@ private:
     observation* observations_;//! an array of observations
     classification* classifications_; //! an array of classification class.
     street_object * street_objects_;
+	slope* slopes_;
 
     const string input_file_path_;//! name of the file containing the input data
     const string output_file_path_;//! name of the file where to write results
