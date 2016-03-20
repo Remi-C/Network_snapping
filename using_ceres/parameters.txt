@@ -25,6 +25,7 @@ K_obj = 5 ;
 
 K_obs_width = 1 ;
 K_obj_width = 50 ;
+K_slope = 10 ;
 
 #what constraints to use?
 #regularisation
@@ -36,6 +37,7 @@ use_manual_initial_width_constraint = true ;
 #change position of axis
 use_manual_distance_to_proj_constraint = true ;
 use_manual_Surf_Dist_To_Objects_constraint = true ;
+use_manual_target_slope = true ;
 
 #change width of roads?
 use_manual_distance_to_proj_constraint_width = false ;

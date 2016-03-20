@@ -70,6 +70,7 @@ void Parameter::setParameters(std::string key, std::string value){
     key.compare("K_obj")==0?K_obj=atof(value.c_str()):0;
     key.compare("K_obs_width")==0?K_obs_width=atof(value.c_str()):0;
     key.compare("K_obj_width")==0?K_obj_width=atof(value.c_str()):0;
+	key.compare("K_slope")==0?K_slope=atof(value.c_str()):0;
 
     key.compare("use_manual_initial_position_constraint")==0?use_manual_initial_position_constraint=bool(value.compare("false")):false;
     key.compare("use_manual_distance_to_original_angle")==0?use_manual_distance_to_original_angle=bool(value.compare("false")):false;
@@ -79,6 +80,7 @@ void Parameter::setParameters(std::string key, std::string value){
 
     key.compare("use_manual_distance_to_proj_constraint")==0?use_manual_distance_to_proj_constraint=bool(value.compare("false")):false;
     key.compare("use_manual_Surf_Dist_To_Objects_constraint")==0?use_manual_Surf_Dist_To_Objects_constraint=bool(value.compare("false")):false;
+	key.compare("use_manual_target_slope")==0?use_manual_target_slope=bool(value.compare("false")):false;
 
     key.compare("use_manual_distance_to_proj_constraint_width")==0?use_manual_distance_to_proj_constraint_width=bool(value.compare("false")):false;
     key.compare("use_manual_Surf_Dist_To_Objects_constraint_width")==0?use_manual_Surf_Dist_To_Objects_constraint_width=bool(value.compare("false")):false;
@@ -122,6 +124,7 @@ std::string Parameter::printParameters(){
             << " K_obj : " << K_obj  << std::endl
             << " K_obs_width : " << K_obs_width  << std::endl
             << " K_obj_width : " << K_obj_width  << std::endl
+            << " K_slope : " << K_slope  << std::endl
 
             << " use_manual_initial_position_constraint : " << use_manual_initial_position_constraint  << std::endl
             << " use_manual_distance_to_original_angle : "
@@ -135,6 +138,8 @@ std::string Parameter::printParameters(){
             << use_manual_distance_to_proj_constraint  << std::endl
             << " use_manual_Surf_Dist_To_Objects_constraint : "
             << use_manual_Surf_Dist_To_Objects_constraint_width << std::endl
+            << " use_manual_target_slope : "
+            << use_manual_target_slope << std::endl
             << " use_manual_distance_to_proj_constraint_width : "
             << use_manual_distance_to_proj_constraint_width << std::endl
             << " use_manual_Surf_Dist_To_Objects_constraint_width : "

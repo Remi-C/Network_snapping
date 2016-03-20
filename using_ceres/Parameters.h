@@ -41,6 +41,8 @@ public :
         K_obj = 0;
         K_obs_width= 0; //1 ;
         K_obj_width= 0; //1 ;
+		K_slope = 0 ;
+		
         use_manual_initial_position_constraint =false; // false;
         use_manual_distance_to_original_angle = false ;
         use_manual_initial_spacing_constraint = false ;
@@ -49,6 +51,7 @@ public :
 
         use_manual_distance_to_proj_constraint = false;// false;
         use_manual_Surf_Dist_To_Objects_constraint = false ;
+		use_manual_target_slope = false ; 
         use_manual_distance_to_proj_constraint_width = false;// false;
         use_manual_Surf_Dist_To_Objects_constraint_width = false ;
         useLoss = false;//true;
@@ -90,7 +93,8 @@ public :
     double K_obj ; /// this param'eter scale the cost of surfacique distance between an object and the edge
     double K_obs_width ; //! this parameter scale the chzange of road width based on sidewalk observation
     double K_obj_width ; /// this param'eter scale the cost of surfacique distance between an object and the edge to change width
-
+	double K_slope; 
+	
     bool use_manual_initial_position_constraint;
     bool use_manual_distance_to_original_angle;
     bool use_manual_initial_spacing_constraint;
@@ -99,6 +103,7 @@ public :
 
     bool use_manual_distance_to_proj_constraint;
     bool use_manual_Surf_Dist_To_Objects_constraint;
+	bool use_manual_target_slope ; 
     bool use_manual_distance_to_proj_constraint_width;
     bool use_manual_Surf_Dist_To_Objects_constraint_width;
 
