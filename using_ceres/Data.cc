@@ -25,6 +25,7 @@ DataStorage::DataStorage(const string i_filename, const string o_filename )
     edges_ = 0x0;
     observations_ = 0x0;
     classifications_ = 0x0;
+	street_objects_ = 0x0;
 
     numConstraintsWritten_ = 0;
 
