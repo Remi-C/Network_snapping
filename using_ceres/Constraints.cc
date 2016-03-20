@@ -49,6 +49,10 @@ int addAllConstraints(DataStorage * data, ceres::Problem * problem, Parameter* p
     if(param->use_manual_Surf_Dist_To_Objects_constraint == true){
         addManualConstraintsOnSurfDistToObjects(data, problem);
     }
+	
+	if(param->use_manual_target_slope == true){
+		addManualTargetSlope(data, problem);
+	}
 
     // constraints based on observation for width : oth distance from observation to segment
     if(param->use_manual_distance_to_proj_constraint_width == true){
@@ -425,7 +429,30 @@ int addManualConstraintsOnSurfDistToObjects(DataStorage * data, Problem * proble
     }
 }
 
-
+/* adding constraint to meet the target slope*/
+int addManualTargetSlope(DataStorage * data, Problem * problem){
+	for (int i = 0; i < data->num_slopes(); ++i) {
+		//for each target slope, adding a constraint
+		slope*  slo = data->slopes(i) ;
+		edge * relativ_edge = data->ebe(slo->edge_id) ;
+        node * start_node = data->nbn(relativ_edge->start_node)  ;
+        node * end_node = data->nbn(relativ_edge->end_node)  ;
+		//K_slope
+		CostFunction* distance_cost_function=
+                new  Distance_target_slope(i, data) ;
+				
+		LossFunction* loss = NULL;
+        loss = new ceres::ScaledLoss( g_param->useLoss?(new ceres::CauchyLoss(g_param->lossScale)):NULL
+                                                       ,g_param->K_slope,ceres::DO_NOT_TAKE_OWNERSHIP) ;
+		
+		problem->AddResidualBlock(
+                    distance_cost_function
+                    ,loss
+                    ,start_node->position
+                    ,end_node->position 
+                    );  
+	}
+};
 
 
 

@@ -46,6 +46,7 @@ int addManualConstraintsOnInitialWidth(DataStorage *, ceres::Problem * );
 
 int addManualConstraintsOnOrthDistToObservation(DataStorage * , Problem * ) ;
 int addManualConstraintsOnSurfDistToObjects(DataStorage * , Problem * ) ;
+int addManualTargetSlope(DataStorage * , Problem * ) ;
 int addManualConstraintsOnOrthDistToObservation_width(DataStorage * , Problem * ) ;
 int addManualConstraintsOnSurfDistToObjects_width(DataStorage * , Problem * ) ;
 
@@ -799,6 +800,64 @@ private:
     ///  @TODO : should be const
 };
 
+
+class Distance_target_slope : public ceres::SizedCostFunction<1,3,3> {
+	public :
+		//! this is the constructor, it expects the index of the target slope
+		Distance_target_slope(const unsigned int index, DataStorage * data) :
+			slope_index_(index)
+			, slo_ (data->slopes(index)) ;
+			
+			
+		virtual bool Evaluate(double const* const* parameters,
+			double* residuals,
+			double** jacobians) const {
+			/*returns the distance between actual slope and target slope, use jacobian to correct it*/ 
+			
+			//map the input array into 2 eigen vectors, nodei and nodej 
+			ConstVectorRef Ni( parameters[0],3 );
+			ConstVectorRef Nj( parameters[1],3 );
+			Eigen::Vector3d Vy = Eigen::Vector3d::UnitY();
+			
+			/*compute current slope : vector product with vector (0,1,0), then arcsin*/
+			double theta_rad = std::asin((Nj-Ni).normalized().cross(Vy)) ; 
+			int theta_deg = static_cast<int>(theta_rad* (180.0 / M_PI)) % 180;
+			
+			/*comparing the distance between the target value and the actual value, adding 90 degrees to avoi à 0= 180 ° prob*/
+			double d = ((slo_->slope + 90 )%180) - ((theta_deg + 90 )%180)  ; 
+			double d_scaled = std:abs(d )/ 90.0 ; //between 0 and 1
+			residuals[0] = d_scaled * slo_->confidence * slo_->weight ; 
+			 
+			
+			//applying the rotationaxis = Z, with angle found previously, so as to correct the seg slope
+			Eigen::Affine3d rz = Eigen::Affine3d(Eigen::AngleAxisd(d, Eigen::Vector3d::UnitZ() )); 
+			Eigen::Affine3d t(Eigen::Translation3d( (Ni+Nj)/2.0));
+			Eigen::Vector3d transformed = (t * rz ) * (Nj-Ni) ; // transformed is the vector rotated around its centre, with correct slope
+			
+			Eigen::Vector3d Njprime = (Ni+Nj)/2.0 + transformed / 2.0 ; 
+			Eigen::Vector3d Niprime = (Ni+Nj)/2.0 - transformed / 2.0 ; 
+			
+			//applying the change
+			if (jacobians == NULL) { 
+				return 1;
+			} 
+			if (jacobians != NULL && jacobians[0] != NULL) { 
+				jacobians[0][0] =  Njprime[0]-Nj[0] ; 
+				jacobians[0][1] =  Njprime[1]-Nj[1] ; 
+				jacobians[0][2]=  0 ;// Ji(2); 
+			}
+			if (jacobians != NULL && jacobians[1] != NULL) { 
+				jacobians[1][0] =  Niprime[0]-Ni[0] ; 
+				jacobians[1][1] =  Niprime[1]-Ni[1] ; 
+				jacobians[1][2]=  0 ;// Jj(2);
+			}
+			return true;
+		}
+						  
+	private :
+		const int slope_index_ ; /*store the index of slope */
+		const slope* slo_ ; //link to the target_slope, for easy use of confidence and weight.
+}
 
 
 
