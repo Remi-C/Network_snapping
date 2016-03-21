@@ -641,13 +641,13 @@ public :
 
         //the jacobian should be in the plan normal to Z vector
         // we can't correct Z because of the variety of possible objects. Some may not be at road height
-        Eigen::Vector3d Np = Eigen::Vector3d::UnitZ() ;
+        //Eigen::Vector3d Np = Eigen::Vector3d::UnitZ() ;
 
         //compute director vector of (NiNj) ie : NiNj/norm(NiNj) = u
-        Eigen::Vector3d U = (Nj-Ni)/(Nj-Ni).norm();
+        //Eigen::Vector3d U = (Nj-Ni)/(Nj-Ni).norm();
 
         //the direction of change should be :
-        Eigen::Vector3d Vja = (U.cross(Np)).normalized();
+        //Eigen::Vector3d Vja = (U.cross(Np)).normalized();
 
         //compute the cost using the geometric distance
         double cost = shared_area_cost(classification_->road_surface_relation
@@ -661,13 +661,13 @@ public :
         residuals[0] =pow(d,2)  ;
         //residuals[0] = pow(std::abs(cost/obj_->geom_border_area),2) ; /// @FIXME @TODO @DEBUG warning : should put the confidence here
 
-        int sign =-1* Geometry::orientationIndex(parameters[0],parameters[1],centroid2D_);//depends on left or right !
+        //int sign =-1* Geometry::orientationIndex(parameters[0],parameters[1],centroid2D_);//depends on left or right !
 
         //compute Jacobian norm for Ni
-        Eigen::Vector3d Ji =  sign * Vja * SIGN(cost)*  ceres::sqrt(residuals[0]) ;
+            //Eigen::Vector3d Ji =  sign * Vja * SIGN(cost)*  ceres::sqrt(residuals[0]) ;
         //Eigen::Vector3d Ji =  sign * Vja * cost / obj_->geom_border_area;
         //compute Jacobian norm for Nj
-        Eigen::Vector3d Jj =  Ji ;
+            //Eigen::Vector3d Jj =  Ji ;
         if (jacobians == NULL) {
             //cout << "JACOBIAN NULL" <<endl;
             return 1;
