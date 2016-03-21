@@ -24,7 +24,7 @@ SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, p
 /*
 DROP TABLE IF EXISTS network_limit ;
 CREATE TABLE network_limit(
-gid serial,
+gid serial PRIMARY KEY,
 limit_geom geometry(polygon,932011)) ;
 INSERT INTO network_limit (limit_geom) VALUES (ST_GeomFromtext('POLYGON((2065 21785,1458 21241,1838 20694,2403 20590,2597 20765,2594 21393,2406 21757,2065 21785))',932011)); 
 */
@@ -185,10 +185,26 @@ DROP TABLE IF EXISTS def_zone_export;
 	CREATE INDEX ON weighted_sidewalk_observation_point (weight) ; 
 	CREATE INDEX ON weighted_sidewalk_observation_point USING GIST  (ST_Transform(geom,932011) ); 
 
-	
-	
+
+
+	DROP TABLE IF EXISTS weighted_sidewalk_observation_line ;
+	CREATE TABLE weighted_sidewalk_observation_line AS 
+	SELECT *
+	FROM public.dblink( 
+		 'hostaddr=127.0.0.1 port=5433 dbname=TerraMobilita user=postgres password=postgres'::text
+		, '	SELECT row_number() over() as gid, area_id,  dmp.geom AS geom   
+			FROM cmm.filtered_lines_final, ST_Dump(ST_Transform(area_skeleton,932011) ) AS dmp
+			'::text
+		,TRUE)  AS   f( 
+			observation_id bigint, 
+			  area_id bigint,
+			  geom geometry(linestring, 932011)  
+			 ) ; 
+	ALTER TABLE weighted_sidewalk_observation_line ADD PRIMARY KEY (observation_id ); 
+	CREATE INDEX ON weighted_sidewalk_observation_line USING GIST  (geom ); 
+  
 */
-		
+	-------------------------
 	DROP TABLE IF EXISTS trottoir_cut_into_pieces ;  
 	CREATE TABLE trottoir_cut_into_pieces AS 
 	WITH trottoir AS ( --filtering to keep only ground cornerstones
@@ -212,7 +228,7 @@ DROP TABLE IF EXISTS def_zone_export;
 
 
 
-	DROP TABLE IF EXISTS edges_for_output_in_export_area; 
+	DROP TABLE IF EXISTS edges_for_output_in_export_area CASCADE; 
 	CREATE TABLE edges_for_output_in_export_area AS 
 		--we keep only the edges whose both ends are exported nodes.
 	SELECT DISTINCT edge_id
@@ -224,7 +240,7 @@ DROP TABLE IF EXISTS def_zone_export;
 	FROM edges_for_output as eou ,  def_zone_export as dfz
 	WHERE ST_Intersects(eou.geom, ST_Transform((dfz.geom),932011)  ) 
 		AND edge_id is not null;
-	CREATE INDEX ON edges_for_output_in_export_area (edge_id);
+	ALTER TABLE edges_for_output_in_export_area ADD PRIMARY KEY (edge_id) ;  
 	CREATE INDEX ON edges_for_output_in_export_area (start_node);
 	CREATE INDEX ON edges_for_output_in_export_area (end_node);
 	CREATE INDEX ON edges_for_output_in_export_area USING GIST(geom);
@@ -287,19 +303,19 @@ DROP TABLE IF EXISTS def_zone_export;
 	DROP TABLE IF EXISTS obs_for_output_in_export_area; 
 	CREATE TABLE obs_for_output_in_export_area AS  
 	WITH map AS (--for each edge, we get observation closer than 5 meters 
--- 		(SELECT DISTINCT ON (oia.qgis_id) qgis_id, area_id, seg_id, oia.geom, weight, eg.edge_id
--- 		FROM def_zone_export as dfz , weighted_sidewalk_observation_point  as oia , edges_for_output_in_export_area AS eg
--- 		WHERE ST_DWithin( ST_Transform(oia.geom,932011), eg.geom,4+width)=TRUE
--- 			AND ST_DWithin( ST_Transform(oia.geom,932011), eg.geom,20)=TRUE
--- 			AND ST_WITHIN( ST_Transform(oia.geom,932011),  ST_Transform(dfz.geom,932011) ) = TRUE 
--- 			AND NOT EXISTS (
--- 				SELECT 1
--- 				FROM street_amp.result_intersection as ri
--- 				WHERE ST_DWithin(ri.intersection_surface,ST_Transform(oia.geom,932011),1)=TRUE
--- 			)
--- 		ORDER BY oia.qgis_id ASC, ST_Distance(ST_Transform(oia.geom,932011),eg.geom ) ASC )
--- 
--- 		UNION ALL 
+		(SELECT DISTINCT ON (oia.qgis_id) qgis_id, area_id, seg_id, oia.geom, weight, eg.edge_id
+		FROM def_zone_export as dfz , weighted_sidewalk_observation_point  as oia , edges_for_output_in_export_area AS eg
+		WHERE ST_DWithin( ST_Transform(oia.geom,932011), eg.geom,4+width)=TRUE
+			AND ST_DWithin( ST_Transform(oia.geom,932011), eg.geom,20)=TRUE
+			AND ST_WITHIN( ST_Transform(oia.geom,932011),  ST_Transform(dfz.geom,932011) ) = TRUE 
+			AND NOT EXISTS (
+				SELECT 1
+				FROM street_amp.result_intersection as ri
+				WHERE ST_DWithin(ri.intersection_surface,ST_Transform(oia.geom,932011),1)=TRUE
+			)
+		ORDER BY oia.qgis_id ASC, ST_Distance(ST_Transform(oia.geom,932011),eg.geom ) ASC )
+
+		UNION ALL 
 
 		(SELECT DISTINCT ON (oia.gid) oia.gid + (SELECT max(qgis_id) FROM weighted_sidewalk_observation_point),NULL, NULL, user_point AS geom , weight, eg.edge_id
 		FROM def_zone_export as dfz , sidewalk_override  as oia , edges_for_output_in_export_area AS eg
@@ -313,19 +329,19 @@ DROP TABLE IF EXISTS def_zone_export;
 			)
 		ORDER BY oia.gid ASC, ST_Distance( oia.user_point ,eg.geom ) ASC) 
 
--- 		UNION ALL
--- 		(SELECT DISTINCT ON (oia.qgis_id) oia.qgis_id + (SELECT max(qgis_id) FROM weighted_sidewalk_observation_point) +  (SELECT count(*) FROM sidewalk_override) 
--- 			,NULL, NULL,  oia.geom , weight, eg.edge_id
--- 		FROM def_zone_export as dfz , trottoir_cut_into_pieces  as oia , edges_for_output_in_export_area AS eg
--- 		WHERE ST_DWithin(  oia.geom , eg.geom,4+width)=TRUE
--- 			AND ST_DWithin( oia.geom , eg.geom,20)=TRUE
--- 			AND ST_WITHIN(  oia.geom ,  ST_Transform(dfz.geom,932011) ) = TRUE 
--- 			AND NOT EXISTS (
--- 				SELECT 1
--- 				FROM street_amp.result_intersection as ri
--- 				WHERE ST_DWithin(ri.intersection_surface, oia.geom ,3)=TRUE
--- 			)
--- 		ORDER BY oia.qgis_id ASC, ST_Distance( oia.geom ,eg.geom ) ASC) 
+		UNION ALL
+		(SELECT DISTINCT ON (oia.qgis_id) oia.qgis_id + (SELECT max(qgis_id) FROM weighted_sidewalk_observation_point) +  (SELECT count(*) FROM sidewalk_override) 
+			,NULL, NULL,  oia.geom , weight, eg.edge_id
+		FROM def_zone_export as dfz , trottoir_cut_into_pieces  as oia , edges_for_output_in_export_area AS eg
+		WHERE ST_DWithin(  oia.geom , eg.geom,4+width)=TRUE
+			AND ST_DWithin( oia.geom , eg.geom,20)=TRUE
+			AND ST_WITHIN(  oia.geom ,  ST_Transform(dfz.geom,932011) ) = TRUE 
+			AND NOT EXISTS (
+				SELECT 1
+				FROM street_amp.result_intersection as ri
+				WHERE ST_DWithin(ri.intersection_surface, oia.geom ,3)=TRUE
+			)
+		ORDER BY oia.qgis_id ASC, ST_Distance( oia.geom ,eg.geom ) ASC) 
 	)
 	SELECT row_number() over() AS obs_id 
 		, edge_id
@@ -389,6 +405,83 @@ DROP TABLE IF EXISTS def_zone_export;
 		,ST_SetSRID(ST_MakePoint(X::float,Y::float,Z::float),932011) AS sgeom 
 		INNER JOIN  street_amp.result_axis as ra ON ST_DWithin(ra.section2_surface, sgeom, 5)   
 	ORDER BY obs_id , ST_Distance(ra.section2_surface, sgeom) ASC ;
+
+
+
+-- computing target slope information
+ 
+	
+	DROP TABLE IF EXISTS slope_for_output_in_export_area CASCADE; 
+	CREATE TABLE slope_for_output_in_export_area AS  
+	WITH map AS (  
+		SELECT DISTINCT ON (oia.observation_id, dmp.path) 
+			 observation_id, dmp.geom AS seg_geom
+			, dmp.path as seg_order
+			, eg.edge_id
+		
+		FROM def_zone_export as dfz , weighted_sidewalk_observation_line   AS oia  , 
+			edges_for_output_in_export_area AS eg
+			--,edge_geom AS eg
+			,rc_lib.rc_DumpSegments(ST_Segmentize(oia.geom, 2.0)) as dmp  
+		WHERE ST_DWithin(oia.geom, ST_transform(dfz.geom ,932011),30 ) = TRUE
+			AND ST_DWithin(oia.geom,eg.geom,30 ) = TRUE
+			AND ST_DWithin( dmp.geom, eg.geom,30)=TRUE
+			AND ST_DWithin( dmp.geom, eg.geom,4+width)=TRUE 
+			AND ST_WITHIN(dmp.geom,  ST_transform(dfz.geom ,932011)) = TRUE 
+			AND NOT EXISTS (
+				SELECT 1
+				FROM street_amp.result_intersection as ri
+				WHERE ST_DWithin(ri.intersection_surface,dmp.geom,3)=TRUE
+			)
+		ORDER BY oia.observation_id, dmp.path, ST_Distance(dmp.geom,eg.geom ) ASC 
+	)
+	, angles AS (
+		SELECT map.*
+			, CASE WHEN degrees >180-20 THEN degrees  - 180 ELSE degrees END AS angle
+			, degrees
+			, ST_Length(seg_geom) as weight
+		FROM map
+			, mod(CAST(degrees(ST_Azimuth(ST_StartPoint(seg_geom), ST_EndPoint(seg_geom)))AS INT),180) as degrees
+	)
+	, weighted_median AS (
+		SELECT edge_id
+			, rc_py_weighted_median(
+				array_agg(angle order by observation_id, seg_order )
+				,array_agg(weight order by observation_id, seg_order ) 
+			)::int as weighted_median
+		FROM angles
+		GROUP BY edge_id
+	) 
+	, angle_and_median AS (
+		SELECT edge_id, angle, weight, abs(angle - weighted_median) < 20 AS to_be_used
+			-- ,  sum(angle* weight) / (SELECT sum(weight) FROM angles) AS target_slope 
+			-- , diff, mod
+		FROM angles
+			LEFT OUTER JOIN weighted_median USING (edge_id)  
+		-- WHERE --  abs(angle - weighted_median) < 20 = TRUE AND
+		-- edge_id = 1000080
+	)
+	, filtered AS (
+		SELECT edge_id, sum(angle*weight) / sum(weight) AS target_slope
+			, variance(angle) AS variance
+			, sum(weight) AS weights
+		FROM angle_and_median
+		WHERE to_be_used = TRUE
+		GROUP BY edge_id 
+	)	 
+	SELECT edge_id,mod(target_slope::int+180,180) AS target_slope, 1 - sqrt(variance) / (180 ) as confidence, weights AS weight
+	FROM filtered 
+	WHERE variance IS NOT NULL  ;-- remove case with only one observation;  
+	
+	ALTER TABLE slope_for_output_in_export_area ADD CONSTRAINT distfk FOREIGN KEY (edge_id) REFERENCES edges_for_output_in_export_area (edge_id) MATCH FULL;
+
+	DROP VIEW IF EXISTS slope_for_output_in_export_area_v ; 
+	CREATE VIEW slope_for_output_in_export_area_v AS
+	SELECT edge_id, ST_Centroid(eg.geom)::geometry(point,932011) AS geom, target_slope, confidence, weight
+	FROM slope_for_output_in_export_area AS fa
+		LEFT OUTER JOIN edges_for_output_in_export_area AS eg USING(edge_id)  ; 
+
+
 		 
 
 ---test to export the whole file complete, no 3 separated files :
@@ -400,7 +493,8 @@ COPY (
 		UNION ALL 
 	 SELECT (SELECT count(*) FROM nodes_for_output_in_export_area) || ';' 
 		||  (SELECT count(*) FROM edges_for_output_in_export_area) || ';' 
-		|| (SELECT count(*) FROM obs_for_output_in_export_area)
+		|| (SELECT count(*) FROM obs_for_output_in_export_area) || ';'
+		|| (SELECT count(*) FROM slope_for_output_in_export_area)
 		UNION ALL 
 	 SELECT '#node_id::int;X::double;Yi_filename::double;Z::double;is_in_intersection::int'
 		UNION ALL 
@@ -416,10 +510,31 @@ COPY (
 		UNION ALL 
 	SELECT obs_id ||';'||edge_id||';'||x||';'||y||';'||z||';'||confidence||';'||weight
 	FROM obs_for_output_in_export_area
+		UNION ALL 
+	SELECT '#edge_id::int;slope::double;confidence::double;weight::double'
+		UNION ALL 
+	SELECT edge_id||';'|| target_slope||';'|| confidence||';'||weight
+	FROM slope_for_output_in_export_area
 )
 TO '/media/sf_USB_storage/PROJETS/snapping/data/data_in_reduced_export_area/full_area.csv' ;
 
 
+SELECT degrees(ST_Azimuth(st_startpoint(geom), st_endpoint(geom)))
+FROM edges_for_output_in_export_area
+WHERE edge_id = 1000041 ; 
+
+SELECT degrees(-0.15708)
+
+DROP TABLE IF EXISTS tem ;
+CREATE TABLE tem (
+gid serial PRIMARY KEY,
+geom geometry(point,932011)) ;  
+
+TRUNCATE tem ;
+INSERT INTO tem (geom) VALUES  
+	(ST_GeomFromtext('POINT(1957.73  21288)',932011))
+	, (ST_GeomFromtext('POINT(1961.52 21342.1)',932011)) ; 
+ 
 
 
  
