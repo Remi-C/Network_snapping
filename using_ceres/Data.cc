@@ -269,7 +269,7 @@ void DataStorage::readData(){
     //std::cout << "header1 : "<< line ;
     //reading data parameter : how much we have to read after this.
     fgets(line, sizeof line, i_fptr);
-    if (	sscanf(line, "%d;%d;%d",&num_nodes_,&num_edges_,&num_observations_, &num_slopes_) != 4) {
+    if (	sscanf(line, "%d;%d;%d;%d",&num_nodes_,&num_edges_,&num_observations_, &num_slopes_) != 4) {
         std::cerr<< "error when trying to read the numbero of nodes, number of edges, number of observations, number of target_slopes wrong format" ;
     }
 
@@ -339,6 +339,9 @@ void DataStorage::readData(){
         }
     }
 	
+    //reading the slope commentary :
+    fgets(line, sizeof line, i_fptr);
+
 	slopes_ = new slope[num_slopes()];//! @TOOO
 	//#edge_id::int;slope::double;confidence::double;weight::double
     for (int i = 0; i < num_slopes_ ; ++i) {
@@ -359,8 +362,8 @@ void DataStorage::readData(){
 	
 	
 
-    std::cout << num_nodes() <<" nodes, " << num_edges() << " edges, " << num_observations() << " observations readed from file " << input_file_path_ << " \n" 
-	<< " target slopes read: " << num_slopes() ;
+    std::cout << num_nodes() <<" nodes, " << num_edges() << " edges, " << num_observations() << " observations "
+    << num_slopes()  << " target slopes read, " <<"  from file " << input_file_path_ << " \n" ;
     fclose(i_fptr);
     return;
 }
@@ -465,7 +468,7 @@ void DataStorage::setMap(){
 void DataStorage::writeConstraints(int iteration){
     //opening files
     FILE* o_fptr ;
-    string output_file_path_ = "../../data/data_in_reduced_export_area/snapping_constraints.csv" ; /// @todo : put a parameter here
+    string output_file_path_ = "../data/data_in_reduced_export_area/snapping_constraints.csv" ; /// @todo : put a parameter here
 
     if(iteration == 1){ //we clean the file at first writting, after we append
         o_fptr = fopen(output_file_path_.c_str(), "w");
