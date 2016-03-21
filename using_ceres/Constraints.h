@@ -761,6 +761,7 @@ public :
         Eigen::Vector3d Vja = (U.cross(Np)).normalized();
 
         //compute the cost using the geometric distance
+
         double cost = shared_area_cost(classification_->road_surface_relation
                                        ,parameters[0]
                                        ,parameters[1]
@@ -769,6 +770,7 @@ public :
                                        ,obj_->geom_border_area
                                        ,obj_->geom_centroid);
         double d =   1.0 * cost /obj_->geom_border_area ;
+
         residuals[0] =pow(d,2)  ; /// @FIXME @TODO @DEBUG warning : should put the confidence here
 
         int sign =-1* Geometry::orientationIndex(parameters[0],parameters[1],centroid2D_);//depends on left or right !
