@@ -15,13 +15,13 @@ optimisation_type = POSITION ;
 optimisation_method = TRUST_REGION ;
 
 #realtiv weight of constraints
-K_origin = 10 ;
-K_spacing = 20;
-K_angle = 50 ;
+K_origin = 5;
+K_spacing = 5;
+K_angle = 100;
 K_original_width = 0.2 ;
 
 K_obs = 1 ;
-K_obj = 5 ;
+K_obj = 2 ;
 
 K_obs_width = 1 ;
 K_obj_width = 50 ;
@@ -45,13 +45,13 @@ use_manual_Surf_Dist_To_Objects_constraint_width = false ;
 
 #about loss function : how shall we remove the outliers?
 useLoss = true ;
-lossScale = 4 ;
+lossScale = 1 ;
 
 #about the  bounding of optimisation variable : the position/width are limited in variation to this
-geom_bound = 5 ;
+geom_bound = 3 ;
 width_bound_minimal = 2 ;
 width_bound_maximal = 20 ;
-width_bound_range = 5 ;
+width_bound_range = 8 ;
 
 #should not be used, buggy :
 use_initial_spacing_constraint = false ; //buggy
