@@ -102,16 +102,16 @@ public:
 
         double * temp= new double[dims];
         // Initialize all elements to zero.
-        for (int i=0; i<dims; ++i) {
+        for (unsigned int i=0; i<dims; ++i) {
             temp[i] = 0;
         }
-        for(int i=0;i<dims;i++){//writing x, y, z
+        for(unsigned int i=0;i<dims;i++){//writing x, y, z
             GEOSCoordSeq_getOrdinate(s,0,i,&temp[i]);
         }
         //std::cout << temp[0] << " " << temp[1] << std::endl;
         //std::cout  << dims << std::endl ;
 
-        for (int i=0; i<dims; ++i) {
+        for (unsigned int i=0; i<dims; ++i) {
             coordinates[i] = temp[i];
         }
         return dims;
