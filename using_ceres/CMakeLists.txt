@@ -12,7 +12,7 @@ INCLUDE_DIRECTORIES(${GEOS_INCLUDE_DIR})
 
 # simple_snapping
 
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Wall -Wno-long-long -pedantic -O3")
 
 #SET(CMAKE_BUILD_TYPE "Debug")
 #SET(CMAKE_BUILD_TYPE "Release")
