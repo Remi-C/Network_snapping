@@ -127,14 +127,18 @@ int activate_desactivate_ParameterBlocks(DataStorage * data, ceres::Problem * pr
 //                        problem->SetParameterBlockVariable(&data->nodes(i)->position[j])
 //                      :problem->SetParameterBlockConstant(&data->nodes(i)->position[j]) ;
         //}
-        param->optimisation_type==SnapEnums::POSITION?
-                    problem->SetParameterBlockVariable(data->nodes(i)->position )
-                  :problem->SetParameterBlockConstant(data->nodes(i)->position ) ;
+        if(param->optimisation_type == SnapEnums::POSITION || param->optimisation_type == SnapEnums::MIXED){
+                    problem->SetParameterBlockVariable(data->nodes(i)->position );
+        }else{
+        problem->SetParameterBlockConstant(data->nodes(i)->position ) ;
+    }
     }
     for(int i=0;i<data->num_edges();++i){
-        param->optimisation_type==SnapEnums::WIDTH?
-                    problem->SetParameterBlockVariable(data->edges(i)->width)
-                  :problem->SetParameterBlockConstant(data->edges(i)->width) ;
+        if(param->optimisation_type==SnapEnums::WIDTH || param->use_manual_distance_to_proj_constraint_width == true || param->use_manual_Surf_Dist_To_Objects_constraint_width == true ){
+           problem->SetParameterBlockVariable(data->edges(i)->width);
+        }else{
+           problem->SetParameterBlockConstant(data->edges(i)->width) ;
+    }
     }
     return 0;
 }
