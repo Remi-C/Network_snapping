@@ -146,7 +146,6 @@ int activate_desactivate_ParameterBlocks(DataStorage * data, ceres::Problem * pr
 //setting constraint on initial position for each node.
 int addManualConstraintsOnInitialPosition(DataStorage * data, Problem * problem){
     double* neg = new double(-1);
-    double* pos = new double(+1);
     for(const auto& element : data->nodes_by_node_id()){
         //std::cout << element.second->end_node << std::endl;
         node * n = element.second;
