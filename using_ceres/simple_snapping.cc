@@ -152,12 +152,12 @@ int main(int argc, char** argv) {
     options.minimizer_progress_to_stdout = true;
 
     options.minimizer_type = g_param->optimisation_method ; //can also be : TRUST_REGION or LINE_SEARCH
-    options.num_threads = 2; /// @todo : handy for speed, but makes it hard to understand cout
+    options.num_threads = 1; /// @todo : handy for speed, but makes it hard to understand cout
 
     options.line_search_direction_type = ceres::BFGS ;//   BFGS and LBFGS
     options.trust_region_strategy_type = ceres::DOGLEG ;
     options.dogleg_type = ceres::SUBSPACE_DOGLEG ;
-    options.use_inner_iterations =true ;
+    options.use_inner_iterations = true ;
     options.use_approximate_eigenvalue_bfgs_scaling = true;
 
     //when stop the solver :
@@ -182,12 +182,29 @@ int main(int argc, char** argv) {
     g_data_pointer->writeData(1);
     g_data_pointer->writeConstraints(1);
 
+    bool mixed_optim = g_param->optimisation_type==SnapEnums::MIXED ;
+    if(mixed_optim==true)
+         g_param->optimisation_type = SnapEnums::WIDTH;
+
+    int stop_optim = 0;
+    int n_loop = 0 ;
     do{
+        std::cout << "\n optimizing on " << g_param->optimisation_type << "\n" ;
         activate_desactivate_ParameterBlocks( data,&problem,g_param);
         Solve(options, &problem, &summary);
-        g_param->optimisation_type = g_param->optimisation_type==SnapEnums::WIDTH?SnapEnums::POSITION:SnapEnums::WIDTH ;
-        n_iter +=summary.iterations.size()-1 ;
-    }while((summary.iterations.size()-1)>=2 && n_iter < 250);
+        n_iter +=summary.iterations.size();
+        if(summary.final_cost == summary.initial_cost) // this solving hasn't solved anything!
+            stop_optim ++ ;
+
+        if(mixed_optim == true)
+            g_param->optimisation_type = g_param->optimisation_type==SnapEnums::WIDTH?SnapEnums::POSITION:SnapEnums::WIDTH ;
+        std::cout << " summary.iterations.size() " << summary.iterations.size() << " n_iter " <<n_iter << " stop_optim " << stop_optim << " nlopp "  << n_loop << "\n" ;
+        n_loop ++ ;
+    }while((summary.iterations.size()-1)<=250
+           && n_iter < 600
+           && (stop_optim <2 || g_param->use_manual_distance_to_proj_constraint_width !=true)
+           && n_loop < 25
+          );
     // std::cout << summary.BriefReport() << "\n";
     std::cout << summary.FullReport() << "\n";
 
