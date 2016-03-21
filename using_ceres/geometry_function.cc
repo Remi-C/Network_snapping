@@ -335,7 +335,7 @@ double shared_area_cost(SnapEnums::road_relation_enum road_relation, const doubl
             //         << " , intersects? "<< intersects
 //         <<endl ;
 
-    return sign* (cost_surface+cost_distance) ;
+    return sign * (cost_surface+cost_distance) ;
 
 }
 
