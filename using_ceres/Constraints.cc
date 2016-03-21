@@ -37,9 +37,6 @@ int addAllConstraints(DataStorage * data, ceres::Problem * problem, Parameter* p
         addManualConstraintsOnInitialWidth(data, problem) ;
     }
 
-
-
-
     // constraints based on observation : oth distance from observation to segment
     if(param->use_manual_distance_to_proj_constraint == true){
         addManualConstraintsOnOrthDistToObservation(data, problem);
@@ -63,6 +60,7 @@ int addAllConstraints(DataStorage * data, ceres::Problem * problem, Parameter* p
     if(param->use_manual_Surf_Dist_To_Objects_constraint_width == true){
         addManualConstraintsOnSurfDistToObjects_width(data, problem);
     }
+    return 0;
 }
 
 /** create bounds for optimisation parameter
@@ -131,14 +129,14 @@ int activate_desactivate_ParameterBlocks(DataStorage * data, ceres::Problem * pr
                     problem->SetParameterBlockVariable(data->nodes(i)->position );
         }else{
         problem->SetParameterBlockConstant(data->nodes(i)->position ) ;
-    }
+        }
     }
     for(int i=0;i<data->num_edges();++i){
         if(param->optimisation_type==SnapEnums::WIDTH || param->use_manual_distance_to_proj_constraint_width == true || param->use_manual_Surf_Dist_To_Objects_constraint_width == true ){
            problem->SetParameterBlockVariable(data->edges(i)->width);
         }else{
            problem->SetParameterBlockConstant(data->edges(i)->width) ;
-    }
+        }
     }
     return 0;
 }
@@ -174,6 +172,7 @@ int addManualConstraintsOnInitialPosition(DataStorage * data, Problem * problem)
                     ) ;
         data->constraints()->push_back(n_constraint);
     }
+    return 0;
 }
 
 
@@ -182,7 +181,9 @@ int addManualConstraintsOnInitialPosition(DataStorage * data, Problem * problem)
 int addManualConstraintsOnInitialspacing(DataStorage * data, Problem * problem){
     double* neg = new double(-1);
     double* pos = new double(+1);
+    int i = 0 ;
     for(const auto& element : data->edges_by_edge_id()){
+        i++;
         //std::cout << element.second->end_node << std::endl;
 
         edge * edge_to_output = element.second;
@@ -232,11 +233,13 @@ int addManualConstraintsOnInitialspacing(DataStorage * data, Problem * problem){
         data->constraints()->push_back(n_constraint);
         data->constraints()->push_back(n_constraint2);
     }
+    return i;
 }
 
 //! manual constraint based original angles in network
 int addManualConstraintsOnDistanceToOriginalAngle(DataStorage * data, Problem * problem){
     double * zer = new double(0);
+    int count = 0 ;
     for (int i = 0 ; i< data->num_nodes(); ++i){//for every node,
         int current_node_id = data->nodes(i)->node_id ;
         //std::cout << "curr node " << current_node_id <<std::endl;
@@ -250,6 +253,7 @@ int addManualConstraintsOnDistanceToOriginalAngle(DataStorage * data, Problem * 
 
 
             for (auto it2 = it; it2 != range.second; it2++) {//generating all unique pair of edges for a node
+
                 if(it->second->edge_id!=it2->second->edge_id) {
                     //std::cout << "curr edge " << it->second->edge_id <<", sec edge pair : " << it2->second->edge_id <<std::endl;
 
@@ -300,16 +304,17 @@ int addManualConstraintsOnDistanceToOriginalAngle(DataStorage * data, Problem * 
 
                     //adding it to list of constraints
                     data->constraints()->push_back(n_constraint);
+                    count++;
                 }
             }
         }
     }
+    return count ;
 }
 
 //setting constraint on initial position for each node.
 int addManualConstraintsOnInitialWidth(DataStorage * data, Problem * problem){
-    double* neg = new double(-1);
-    double* pos = new double(+1);
+    int count = 0;
     for(const auto& element : data->edges_by_edge_id()){
         //std::cout << element.second->end_node << std::endl;
         edge * e = element.second;
@@ -336,12 +341,15 @@ int addManualConstraintsOnInitialWidth(DataStorage * data, Problem * problem){
                     ,data->nbn(e->start_node)->position
                     ) ;
         data->constraints()->push_back(n_constraint);
+        count++;
     }
+    return count;
 }
 
 
 //! manual constraint based on distance between observation and edges
 int addManualConstraintsOnOrthDistToObservation(DataStorage * data, Problem * problem){
+    int count = 0;
     for (int i = 0; i < data->num_observations(); ++i) {
 
         //finding the 2 nodes concerned by this observations
@@ -377,7 +385,9 @@ int addManualConstraintsOnOrthDistToObservation(DataStorage * data, Problem * pr
                     ,data->observations(i)->position) ;
         //adding it to list of constraints
         data->constraints()->push_back(n_constraint);
+        count++;
     }
+    return count ;
 }
 
 
@@ -385,10 +395,12 @@ int addManualConstraintsOnOrthDistToObservation(DataStorage * data, Problem * pr
 
 //! manual constraint based on surf distance between object and and edge
 int addManualConstraintsOnSurfDistToObjects(DataStorage * data, Problem * problem){
+    int count = 0;
     for (int i = 0; i < data->num_street_objects(); ++i) {
 
         //finding the street_object
         //finding the 2 nodes concerned by this observations
+
         street_object * obj = data->street_objects(i) ;
 
         edge * relativ_edge = data->ebe(obj->edge_id) ;
@@ -427,9 +439,10 @@ int addManualConstraintsOnSurfDistToObjects(DataStorage * data, Problem * proble
                     ,obj_centroid_double) ;
         //adding it to list of constraints
         data->constraints()->push_back(n_constraint);
-
+        count++;
 
     }
+    return count ;
 }
 
 /* adding constraint to meet the target slope*/
@@ -462,6 +475,7 @@ int addManualTargetSlope(DataStorage * data, Problem * problem){
 
 //! manual constraint based on distance between observation and edges
 int addManualConstraintsOnOrthDistToObservation_width(DataStorage * data, Problem * problem){
+    int count = 0;
     for (int i = 0; i < data->num_observations(); ++i) {
 
         //finding the 2 nodes concerned by this observations
@@ -495,7 +509,9 @@ int addManualConstraintsOnOrthDistToObservation_width(DataStorage * data, Proble
                     ,data->observations(i)->position) ;
         //adding it to list of constraints
         data->constraints()->push_back(n_constraint);
+        count ++ ;
     }
+    return count;
 }
 
 
@@ -503,6 +519,7 @@ int addManualConstraintsOnOrthDistToObservation_width(DataStorage * data, Proble
 
 //! manual constraint based on surf distance between object and and edge
 int addManualConstraintsOnSurfDistToObjects_width(DataStorage * data, Problem * problem){
+    int count = 0;
     for (int i = 0; i < data->num_street_objects(); ++i) {
 
         //finding the street_object
@@ -545,6 +562,8 @@ int addManualConstraintsOnSurfDistToObjects_width(DataStorage * data, Problem * 
                     ,obj_centroid_double) ;
         //adding it to list of constraints
         data->constraints()->push_back(n_constraint);
+        count ++;
     }
+    return count ;
 }
 
