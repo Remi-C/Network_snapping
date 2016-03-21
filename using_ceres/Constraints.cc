@@ -447,6 +447,7 @@ int addManualConstraintsOnSurfDistToObjects(DataStorage * data, Problem * proble
 
 /* adding constraint to meet the target slope*/
 int addManualTargetSlope(DataStorage * data, Problem * problem){
+    int count = 0;
 	for (int i = 0; i < data->num_slopes(); ++i) {
 		//for each target slope, adding a constraint
 		slope*  slo = data->slopes(i) ;
@@ -467,8 +468,10 @@ int addManualTargetSlope(DataStorage * data, Problem * problem){
                     ,start_node->position
                     ,end_node->position 
                     );  
+        count ++;
 	}
-};
+    return count ;
+}
 
 
 
