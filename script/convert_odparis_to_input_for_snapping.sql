@@ -31,11 +31,11 @@ WITH trottoir AS ( --filtering to keep only ground cornerstones
 		AND ST_Length( t.geom) >14
 		AND ST_INtersects( ST_Transform(t.geom,932011), ST_Transform(dfz.geom,932011))=TRUE 
 )
-SELECT row_number() over() as qgis_id, 1.0 as weight, 1.0 as confidence, gid, dmp.geom  as geom
-FROM trottoir,ST_DumpPoints(ST_Segmentize(ST_SimplifyPreserveTopology(ST_Segmentize( geom, 4.0),0.5), 4.0)) AS dmp ; 
+SELECT row_number() over() as qgis_id, 1.0 as weight, 1.0 as confidence, gid, dmp.geom::geometry(point,932011)  as geom
+FROM trottoir,ST_DumpPoints(ST_Transform(ST_Segmentize(ST_SimplifyPreserveTopology(ST_Segmentize( geom, 4.0),0.5), 4.0),932011)) AS dmp ; 
 
 CREATE INDEX ON trottoir_cut_into_pieces USING GIST (geom) ;
-CREATE INDEX ON  trottoir_cut_into_pieces USING GIST (ST_Transform( geom,932011)) ; 
+-- CREATE INDEX ON  trottoir_cut_into_pieces USING GIST (ST_Transform( geom,932011)) ; 
 CREATE INDEX ON trottoir_cut_into_pieces (gid); 
 --qgis_id,geom, weight ;
  

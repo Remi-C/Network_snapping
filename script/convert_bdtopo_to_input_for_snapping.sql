@@ -19,8 +19,18 @@ CREATE SCHEMA IF NOT EXISTS network_for_snapping;
 
 SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, public; 
 
+--creating a table to limit the amount of computing to a given part of the network
 
 /*
+DROP TABLE IF EXISTS network_limit ;
+CREATE TABLE network_limit(
+gid serial,
+limit_geom geometry(polygon,932011)) ;
+INSERT INTO network_limit (limit_geom) VALUES (ST_GeomFromtext('POLYGON((2065 21785,1458 21241,1838 20694,2403 20590,2597 20765,2594 21393,2406 21757,2065 21785))',932011)); 
+*/
+
+
+
 --break edges into pair of succesive points
 --we give new node_id over 1000000 to nodes resulting from breaking
 
@@ -28,15 +38,16 @@ SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, p
 	CREATE TABLE new_successive_points AS 
 	WITH  segmentize AS (
 		SELECT  edge_id
-			, geom --  ST_Segmentize(geom ,5) AS geom
-			, start_node, end_node, ST_NumPoints(geom)  AS num_points
-		 FROM edge_data 
+			, edge_data.geom --  ST_Segmentize(geom ,5) AS geom
+			, start_node, end_node, ST_NumPoints(edge_data.geom)  AS num_points
+		 FROM edge_data  , network_limit AS ref_area
+		WHERE ST_DWITHIN(geom,limit_geom,40)
 	)
 	,input_data AS ( --getting all the edges we are going to break into segments .
 		--no need to break edge if edge is already a segment and not a polyline!  (hence the tetst on point number)
 		SELECT  edge_id, geom , start_node, end_node, ST_NumPoints(geom)  AS num_points
 		 FROM segmentize
-		 WHERE ST_NumPoints(geom) >2 
+		 WHERE num_points >2 
 		--LIMIT  100 
 	)
 	 ,points AS ( --we break each edge into successiv points
@@ -61,7 +72,7 @@ SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, p
 	)
 	SELECT *
 	FROM getting_old_node_id ;
-
+ 
 
 	DROP TABLE IF EXISTS nodes_for_output ; 
 	CREATE TABLE nodes_for_output AS  
@@ -69,17 +80,22 @@ SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, p
 			SELECT node_id
 				,  ST_X( geom) AS X, ST_Y(geom) AS Y, ST_Z(geom) AS Z
 				, 1 AS is_in_intersection
-			FROM bdtopo_topological.node
+				, geom::geometry(pointZ,932011) AS node_geom
+			FROM bdtopo_topological.node , network_limit AS ref_area
+			WHERE ST_DWITHIN(geom,limit_geom,40)
 		UNION ALL --in theory , we can use UNION ALL. This is a security to enforce no duplicates. We don't care about performance here
 			SELECT new_node_id as node_id
 				, ST_X( geom) AS X, ST_Y(geom) AS Y, ST_Z(geom) AS Z
 				, 0 AS is_in_intersection
+				,geom::geometry(pointZ,932011) AS node_geom
 			FROM new_successive_points
 			WHERE node_in_intersection = FALSE;
 			--60 k lines
 
 	CREATE INDEX ON  nodes_for_output USING GIST(ST_SetSRID(ST_MakePoint(X,Y,Z),932011));
+	CREATE INDEX ON  nodes_for_output USING GIST(node_geom) ; 
 	CREATE INDEX ON nodes_for_output (node_id) ;
+
 
 	DROP TABLE IF EXISTS edges_for_output ; 
 	CREATE TABLE edges_for_output AS  
@@ -119,40 +135,37 @@ SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, p
 				, end_node 
 				, width 
 				,old_edge_id
-				, ST_SetSRID(ST_MakeLine(ST_MakePoint(nou1.X,nou1.Y,nou1.Z),ST_MakePoint(nou2.X,nou2.Y,nou2.Z)),932011) AS geom
+				, ST_SetSRID(ST_MakeLine(ST_MakePoint(nou1.X,nou1.Y,nou1.Z),ST_MakePoint(nou2.X,nou2.Y,nou2.Z)),932011)::geometry(linestringZ,932011) AS geom
 	FROM edges AS eou
 		LEFT OUTER JOIN nodes_for_output AS nou1 ON (eou.start_node = nou1.node_id)
-		LEFT OUTER JOIN nodes_for_output AS nou2 ON (eou.end_node = nou2.node_id)
-			;
+		LEFT OUTER JOIN nodes_for_output AS nou2 ON (eou.end_node = nou2.node_id) ;
+		
 	CREATE INDEX ON edges_for_output USING GIST(geom) ;
 	 CREATE INDEX ON edges_for_output (edge_id) ;
 	 CREATE INDEX ON edges_for_output (start_node) ;
 	  CREATE INDEX ON edges_for_output (end_node) ;
-
+ 
 
 --now we restrain ourselve to an area for test :
 	--this is delimitated by the table def_zone_export
 
-	-- DROP TABLE IF EXISTS def_zone_export; 
--- 	CREATE TABLE def_zone_export 
--- 	( 	gid SERIAL PRIMARY KEY
--- 		,id bigint
--- 		,geom geometry(POLYGON,931008)
--- 		, center_in_RGF93 geometry(POINT,932011)
--- 	);   
--- 	INSERT INTO def_zone_export (id, geom) 
--- 		VALUES( 1 , ST_GeomFromText('POLYGON((650907.6  6860870.6 ,650956.9  6860895.8 ,651036.0  6860757.1 ,650983.7  6860736.6 ,650907.6  6860870.6 ))',931008) );
--- 
---  	INSERT INTO def_zone_export (id, geom)  --all_of_acquisition
---  		VALUES( 1 , ST_GeomFromText('POLYGON((650637.4 6861097.2,650909.8 6861534.1,651068.6 6861638.3,651365.1 6861697.3,651410.3 6861270.3,651544.3 6861218.2,651498.6 6861178.5,651288.1 6861198.7,650863.3 6861051.6,651004.5 6860830.8,651063.1 6860739.1,651421.5 6860706.1,651347.3 6860611.3,651030.6 6860666.2,650657 6861002.8,650637.4 6861097.2))',931008) );
--- 	UPDATE def_zone_export SET center_in_RGF93 = ST_Centroid(ST_Transform(geom,932011)) ;
+/*
+DROP TABLE IF EXISTS def_zone_export; 
+	CREATE TABLE def_zone_export 
+	( 	gid SERIAL PRIMARY KEY
+		,id bigint
+		,geom geometry(POLYGON,931008)
+		, center_in_RGF93 geometry(POINT,932011) );   
+	INSERT INTO def_zone_export (id, geom) 
+		VALUES( 1 , ST_GeomFromText('POLYGON((650907.6  6860870.6 ,650956.9  6860895.8 ,651036.0  6860757.1 ,650983.7  6860736.6 ,650907.6  6860870.6 ))',931008) );
 
--- 	SELECT ST_AsText(ST_SnapToGrid(geom,0.1))
--- 	FROM def_zone_export
-
+ 	INSERT INTO def_zone_export (id, geom)  --all_of_acquisition
+ 		VALUES( 1 , ST_GeomFromText('POLYGON((650637.4 6861097.2,650909.8 6861534.1,651068.6 6861638.3,651365.1 6861697.3,651410.3 6861270.3,651544.3 6861218.2,651498.6 6861178.5,651288.1 6861198.7,650863.3 6861051.6,651004.5 6860830.8,651063.1 6860739.1,651421.5 6860706.1,651347.3 6860611.3,651030.6 6860666.2,650657 6861002.8,650637.4 6861097.2))',931008) );
+	UPDATE def_zone_export SET center_in_RGF93 = ST_Centroid(ST_Transform(geom,932011)) ; 
+*/
 
 		--importing the sidewalk observation (weighted points ) here
-	
+/*
 	DROP MATERIALIZED VIEW IF EXISTS weighted_sidewalk_observation_point ;
 	CREATE MATERIALIZED VIEW weighted_sidewalk_observation_point AS 
 	SELECT *
@@ -173,7 +186,30 @@ SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, p
 	CREATE INDEX ON weighted_sidewalk_observation_point USING GIST  (ST_Transform(geom,932011) ); 
 
 	
+	
 */
+		
+	DROP TABLE IF EXISTS trottoir_cut_into_pieces ;  
+	CREATE TABLE trottoir_cut_into_pieces AS 
+	WITH trottoir AS ( --filtering to keep only ground cornerstones
+		SELECT t.gid, t.geom 
+		FROM odparis_corrected.trottoir as t  , def_zone_export as dfz 
+		WHERE niveau = 'Surface'
+			AND libelle = 'Bordure'  
+			AND ST_Area( Box2D(t.geom) ) >20
+			AND ST_Length( t.geom) >14
+			AND ST_INtersects( ST_Transform(t.geom,932011), ST_Transform(dfz.geom,932011))=TRUE 
+	)
+	SELECT row_number() over() as qgis_id, 1.0 as weight, 1.0 as confidence, gid, dmp.geom::geometry(point,932011)  as geom
+	FROM trottoir,ST_DumpPoints(ST_Transform(ST_Segmentize(ST_SimplifyPreserveTopology(ST_Segmentize( geom, 4.0),0.5), 4.0),932011)) AS dmp ; 
+
+	CREATE INDEX ON trottoir_cut_into_pieces USING GIST (geom) ;
+	-- CREATE INDEX ON  trottoir_cut_into_pieces USING GIST (ST_Transform( geom,932011)) ; 
+	CREATE INDEX ON trottoir_cut_into_pieces (gid); 
+	--qgis_id,geom, weight ;
+	 
+
+
 
 
 	DROP TABLE IF EXISTS edges_for_output_in_export_area; 
@@ -183,18 +219,21 @@ SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, p
 				, start_node
 				, end_node 
 				, width 
-				,old_edge_id 
+				, old_edge_id 
+				, eou.geom::geometry(linestringZ,932011)
 	FROM edges_for_output as eou ,  def_zone_export as dfz
-	WHERE ST_Intersects(eou.geom, ST_Transform((dfz.geom),932011)  )  ;
+	WHERE ST_Intersects(eou.geom, ST_Transform((dfz.geom),932011)  ) 
+		AND edge_id is not null;
 	CREATE INDEX ON edges_for_output_in_export_area (edge_id);
 	CREATE INDEX ON edges_for_output_in_export_area (start_node);
 	CREATE INDEX ON edges_for_output_in_export_area (end_node);
-
+	CREATE INDEX ON edges_for_output_in_export_area USING GIST(geom);
+  
 	
-	DROP TABLE IF EXISTS nodes_for_output_in_export_area; 
+	DROP TABLE IF EXISTS nodes_for_output_in_export_area CASCADE; 
 	CREATE TABLE nodes_for_output_in_export_area AS 
 		--we keep only the nodes inside the export area
-	with node_id AS (SELECT start_node  AS node_id
+	WITH node_id AS (SELECT start_node  AS node_id
 	FROM edges_for_output_in_export_area
 	UNION
 	SELECT end_node  AS node_id
@@ -205,50 +244,107 @@ SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, p
 		,nfo.Y AS Y 
 		,COALESCE(nfo.Z,0) AS Z
 		,nfo.is_in_intersection 
+		, ST_SetSRID(ST_MakePoint(X,Y,Z),932011)::geometry(POINTZ,932011) as node_geom
 	FROM node_id
 		NATURAL JOIN nodes_for_output AS nfo;
-  
+
+/*
+	-- small trigger on node for output so XYZ are always in sync
+	DROP FUNCTION IF EXISTS rc_update_XYZ_when_geom_change(  ) CASCADE; 
+	CREATE OR REPLACE FUNCTION rc_update_XYZ_when_geom_change(  ) RETURNS  trigger  AS $BODY$  
+	DECLARE  
+		BEGIN 
+			IF geometry_eq(NEW.node_geom, OLD.node_geom) THEN NEW.node_geom :=ST_SetSRID(ST_MakePoint(NEW.X,NEW.Y,NEW.Z),932011) ; 
+			ELSE
+			NEW.X := ST_X(node_geom) ;  NEW.Y := ST_Y(node_geom) ;  NEW.Z := ST_Z(node_geom) ; END IF;
+			RETURN NEW;
+		END ;
+	$BODY$ LANGUAGE plpgsql VOLATILE;
+	DROP VIEW IF EXISTS nodes_for_output_in_export_area_qgis ; 
+	CREATE VIEW   nodes_for_output_in_export_area_qgis AS
+	SELECT node_id, X,Y,Z,is_in_intersection, ST_Force2D(node_geom)::geometry(point,932011) as node_geom FROM nodes_for_output_in_export_area; 
+
+	DROP TRIGGER IF EXISTS  rc_update_XYZ_when_geom_change ON nodes_for_output_in_export_area; 
+	CREATE  TRIGGER rc_update_XYZ_when_geom_change   BEFORE  UPDATE   ON nodes_for_output_in_export_area FOR EACH ROW  
+	EXECUTE PROCEDURE rc_update_XYZ_when_geom_change(); 
+*/
+
+	-- creating a tbale for user override 
+	-- DROP TABLE IF EXISTS sidewalk_override ; 
+	CREATE TABLE IF NOT EXISTS sidewalk_override  (
+	gid serial primary key,
+	user_point geometry(POINT,932011) ,
+	weight float DEFAULT 10
+	);
+	--TRUNCATE sidewalk_override ; 
+	-- INSERT INTO sidewalk_override (user_point) VALUES (ST_GeomFromText('POINT(1950 2140)',932011)) ; 
+ 
+	-- CREATE INDEX ON sidewalk_override USING GIST(user_point) ; 
+	--UPDATE sidewalk_override SET weight = 50; 
 
 	--getting the observations inside the area 
- 
+  
 	DROP TABLE IF EXISTS obs_for_output_in_export_area; 
 	CREATE TABLE obs_for_output_in_export_area AS  
-	WITH edge_geom AS ( -- we reconstruct the edge geom to be able to assign observation to edges
-		SELECT efo.*, ST_SetSRID(ST_MakeLine(ST_MakePoint(nfo1.X,nfo1.Y,nfo1.Z) ,ST_MakePoint(nfo2.X,nfo2.Y,nfo2.Z)  ),932011) as edge_geom
-		FROM edges_for_output_in_export_area as efo
-			LEFT JOIN nodes_for_output_in_export_area AS nfo1 ON (efo.start_node = nfo1.node_id)
-			LEFT JOIN nodes_for_output_in_export_area AS nfo2 ON (efo.end_node = nfo2.node_id)
-	)
-	,map AS (--for each edge, we get observation closer than 5 meters
-		SELECT DISTINCT ON (oia.qgis_id) oia.*, eg.edge_id
-		FROM weighted_sidewalk_observation_point   AS oia  , def_zone_export as dfz ,edge_geom AS eg
-		WHERE ST_DWithin( ST_Transform(oia.geom,932011), eg.edge_geom,4+width)=TRUE
-			AND ST_WITHIN(oia.geom,  dfz.geom ) = TRUE 
+	WITH map AS (--for each edge, we get observation closer than 5 meters 
+-- 		(SELECT DISTINCT ON (oia.qgis_id) qgis_id, area_id, seg_id, oia.geom, weight, eg.edge_id
+-- 		FROM def_zone_export as dfz , weighted_sidewalk_observation_point  as oia , edges_for_output_in_export_area AS eg
+-- 		WHERE ST_DWithin( ST_Transform(oia.geom,932011), eg.geom,4+width)=TRUE
+-- 			AND ST_DWithin( ST_Transform(oia.geom,932011), eg.geom,20)=TRUE
+-- 			AND ST_WITHIN( ST_Transform(oia.geom,932011),  ST_Transform(dfz.geom,932011) ) = TRUE 
+-- 			AND NOT EXISTS (
+-- 				SELECT 1
+-- 				FROM street_amp.result_intersection as ri
+-- 				WHERE ST_DWithin(ri.intersection_surface,ST_Transform(oia.geom,932011),1)=TRUE
+-- 			)
+-- 		ORDER BY oia.qgis_id ASC, ST_Distance(ST_Transform(oia.geom,932011),eg.geom ) ASC )
+-- 
+-- 		UNION ALL 
+
+		(SELECT DISTINCT ON (oia.gid) oia.gid + (SELECT max(qgis_id) FROM weighted_sidewalk_observation_point),NULL, NULL, user_point AS geom , weight, eg.edge_id
+		FROM def_zone_export as dfz , sidewalk_override  as oia , edges_for_output_in_export_area AS eg
+		WHERE ST_DWithin(  oia.user_point , eg.geom,4+width)=TRUE
+			AND ST_DWithin( oia.user_point , eg.geom,20)=TRUE
+			AND ST_WITHIN(  oia.user_point ,  ST_Transform(dfz.geom,932011) ) = TRUE 
 			AND NOT EXISTS (
 				SELECT 1
 				FROM street_amp.result_intersection as ri
-				WHERE ST_DWithin(ri.intersection_surface,ST_Transform(oia.geom,932011),10)=TRUE
+				WHERE ST_DWithin(ri.intersection_surface, oia.user_point ,1)=TRUE
 			)
-		ORDER BY oia.qgis_id ASC, ST_Distance(ST_Transform(oia.geom,932011),eg.edge_geom ) ASC
-			
+		ORDER BY oia.gid ASC, ST_Distance( oia.user_point ,eg.geom ) ASC) 
+
+-- 		UNION ALL
+-- 		(SELECT DISTINCT ON (oia.qgis_id) oia.qgis_id + (SELECT max(qgis_id) FROM weighted_sidewalk_observation_point) +  (SELECT count(*) FROM sidewalk_override) 
+-- 			,NULL, NULL,  oia.geom , weight, eg.edge_id
+-- 		FROM def_zone_export as dfz , trottoir_cut_into_pieces  as oia , edges_for_output_in_export_area AS eg
+-- 		WHERE ST_DWithin(  oia.geom , eg.geom,4+width)=TRUE
+-- 			AND ST_DWithin( oia.geom , eg.geom,20)=TRUE
+-- 			AND ST_WITHIN(  oia.geom ,  ST_Transform(dfz.geom,932011) ) = TRUE 
+-- 			AND NOT EXISTS (
+-- 				SELECT 1
+-- 				FROM street_amp.result_intersection as ri
+-- 				WHERE ST_DWithin(ri.intersection_surface, oia.geom ,3)=TRUE
+-- 			)
+-- 		ORDER BY oia.qgis_id ASC, ST_Distance( oia.geom ,eg.geom ) ASC) 
 	)
-	SELECT row_number() over() AS obs_id , edge_id
-		, ST_X(tgeom) AS X
-		, ST_Y(tgeom) AS Y
-		, COALESCE(ST_Z(tgeom),0) AS Z 
+	SELECT row_number() over() AS obs_id 
+		, edge_id
+		, X,Y,Z
 		, 1::float AS confidence, COALESCE(weight,0) AS weight
-	FROM map,(SELECT * FROM def_zone_export LIMIT 1 ) AS dfz, ST_Transform( map.geom,932011) As tgeom ; 
+		, ST_SetSRID(ST_MakePoint(X,Y), 932011)::geometry(point,932011) AS geom
+	FROM map, ST_Transform( map.geom,932011) As tgeom
+		 , ST_X(tgeom) AS X
+			, ST_Y(tgeom) AS Y
+			, COALESCE(ST_Z(tgeom),0) AS Z ;
  
+	ALTER TABLE obs_for_output_in_export_area ADD  PRIMARY KEY (obs_id) ; 
 
-
-
--- 	COPY  nodes_for_output_in_export_area TO '/media/sf_E_RemiCura/PROJETS/snapping/data/data_in_reduced_export_area/nodes_for_output_in_export_area.csv'
--- 	 (FORMAT CSV, DELIMITER   ';') ;
--- 	 COPY  edges_for_output_in_export_area TO '/media/sf_E_RemiCura/PROJETS/snapping/data/data_in_reduced_export_area/edges_for_output_in_export_area.csv'
--- 	 (FORMAT CSV, DELIMITER   ';') ;
--- 	 COPY  obs_for_output_in_export_area TO '/media/sf_E_RemiCura/PROJETS/snapping/data/data_in_reduced_export_area/obs_for_output_in_export_area.csv'
--- 	 (FORMAT CSV, DELIMITER   ';') ;
-	
+/*
+ 	COPY  nodes_for_output_in_export_area TO '/media/sf_USB_storage/PROJETS/snapping/data/data_in_reduced_export_area/nodes_for_output_in_export_area.csv'	 (FORMAT CSV, DELIMITER   ';') ;
+ 	 COPY( SELECT edge_id, start_node, end_node , width,old_edge_id FROM  edges_for_output_in_export_area )TO '/media/sf_USB_storage/PROJETS/snapping/data/data_in_reduced_export_area/edges_for_output_in_export_area.csv'	 (FORMAT CSV, DELIMITER   ';') ;
+	COPY ( SELECT  obs_id , edge_id , X , Y , Z  , confidence, weightobs_for_output_in_export_area) 
+	TO '/media/sf_USB_storage/PROJETS/snapping/data/data_in_reduced_export_area/obs_for_output_in_export_area.csv' (FORMAT CSV, DELIMITER   ';') ;
+*/
 
 	
 --visualization
@@ -280,7 +376,7 @@ SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, p
 	FROM obs_for_output_in_export_area AS obf
 		LEFT JOIN edges_for_visu_in_export_area AS ed USING(edge_id)
 		,ST_SetSRID(ST_MakePoint(X::float,Y::float,Z::float),932011) AS sgeom;  
-
+ 
 
 	--visualize observation relating to street gen
 	DROP TABLE IF EXISTS obs_r_street_gen_in_export_area; 
@@ -321,7 +417,9 @@ COPY (
 	SELECT obs_id ||';'||edge_id||';'||x||';'||y||';'||z||';'||confidence||';'||weight
 	FROM obs_for_output_in_export_area
 )
-TO '/media/sf_E_RemiCura/PROJETS/snapping/data/data_in_reduced_export_area/full_area.csv' ;
+TO '/media/sf_USB_storage/PROJETS/snapping/data/data_in_reduced_export_area/full_area.csv' ;
 
- 
+
+
+
  
