@@ -175,7 +175,7 @@ double shared_area_cost(SnapEnums::road_relation_enum road_relation, const doubl
 
     geometry street_rectangle;
     geometry axis;
-    int intersects ; // 1 = true
+    int intersects = 0 ; // 1 = true
     double distance_to_shell =  100 ;
     SnapEnums::attractive_repulsive attractive ;
     if(road_relation==SnapEnums::IN || road_relation==SnapEnums::BORDER_IN ){attractive = SnapEnums::ATTRACTIVE;}
@@ -205,7 +205,6 @@ double shared_area_cost(SnapEnums::road_relation_enum road_relation, const doubl
 
     //need to compute dist_to_axis : NOTE : could be done only when half within
     GEOSDistance(axis, street_rectangle, &dist_to_axis);
-
     intersects = GEOSIntersects(street_rectangle , object_snapping_surface) ;
 
     //this is a shortcut trick to avoid computing intersection and/or distance when not necessary
@@ -333,11 +332,16 @@ double shared_area_cost(SnapEnums::road_relation_enum road_relation, const doubl
 
 }
 
+static void notice(const char *fmt, ...)
+{
+    std::cout << " error with geos \n ";
+}
 
 void initialize_geom_computation(){
-    GEOSMessageHandler notice_function;
-    GEOSMessageHandler error_function;
-    initGEOS(notice_function,error_function);
+
+    //GEOSMessageHandler notice_function;
+    //GEOSMessageHandler error_function;
+    initGEOS(notice,notice);
 }
 void finish_geom_computation(){
     finishGEOS();
