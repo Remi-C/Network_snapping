@@ -534,6 +534,16 @@ public :
         double d = (Np.norm()/(Nj-Ni).norm()-  parameters[2][0]/2.0) ;
         residuals[0]= std::pow(d,2)* obs_->confidence * obs_->weight ;
 
+        double x = (Ob-Ni).dot(Nj-Ni);
+        double n = (Nj-Ni).norm() ;
+        double hi, hj ;
+        if( x == 0 || x == n ){
+            hi = d ;
+            hj = d ;
+        }else{
+            hi = d / (1 + x/n * (x/n-1));
+            hj = hi * x / n ;
+        }
 
         //compute Jacobian director vector : vect(u,n)
         Eigen::Vector3d Vja = U.cross(Np/Np.norm());
@@ -541,11 +551,13 @@ public :
         //else{Vja << +0.7,+0.7,0;}
 
         //compute Jacobian norm for Ni : for test simply take d
-        Eigen::Vector3d Ji = -1 * Vja * ceres::sqrt(residuals[0])*SIGN(d); ;
+       // Eigen::Vector3d Ji = -1 * Vja * ceres::sqrt(residuals[0])*SIGN(d);
+         Eigen::Vector3d Ji = -1 * Vja *hi*SIGN(d)/2.0 ;
         //compute Jacobian norm for Nj : for test simply take d
-        Eigen::Vector3d Jj = Ji ;
+        //Eigen::Vector3d Jj = Ji ;
+          Eigen::Vector3d Jj = -1 * Vja *hj*SIGN(d)/2.0;
 
-        double t = std::sqrt( std::pow((Ob-Ni).norm(),2) - std::pow(Np.norm()/(Nj-Ni).norm(),2) )/(Nj-Ni).norm() ;
+        //double t = std::sqrt( std::pow((Ob-Ni).norm(),2) - std::pow(Np.norm()/(Nj-Ni).norm(),2) )/(Nj-Ni).norm() ;
 
 
         if (jacobians == NULL) {
@@ -555,15 +567,15 @@ public :
 
         if (jacobians != NULL && jacobians[0] != NULL) {
             //note: null jacobian means end of computation?
-            jacobians[0][0] = Ji(0)/2 * t * 0;
-            jacobians[0][1] = -Ji(1)/2 * t * 0 ;
-            jacobians[0][2] = 0;// -Ji(2);
+            jacobians[0][0] = 0 ;
+            jacobians[0][1] = 0 ;
+            jacobians[0][2] = 0 ;// -Ji(2);
         }
         if (jacobians != NULL && jacobians[1] != NULL) {
             //note: null jacobian means end of computation?
-            jacobians[1][0] =  Jj(0)/2 * (1-t) * 0 ;
-            jacobians[1][1] =  Jj(1)/2 * (1-t) * 0;
-            jacobians[1][2] = 0;// -Jj(2);
+            jacobians[1][0] = 0 ;
+            jacobians[1][1] = 0 ;
+            jacobians[1][2] = 0 ;// -Jj(2);
         }
         if (jacobians != NULL && jacobians[2] != NULL) {
             //note: null jacobian means end of computation?
