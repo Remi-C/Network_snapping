@@ -148,11 +148,11 @@ int main(int argc, char** argv) {
 
 
     options.max_num_iterations = 500;
-    options.linear_solver_type = ceres::DENSE_QR;
+    options.linear_solver_type = ceres::SPARSE_NORMAL_CHOLESKY;
     options.minimizer_progress_to_stdout = true;
 
     options.minimizer_type = g_param->optimisation_method ; //can also be : TRUST_REGION or LINE_SEARCH
-    options.num_threads = 1; /// @todo : handy for speed, but makes it hard to understand cout
+    options.num_threads = 6; /// @todo : handy for speed, but makes it hard to understand cout
 
     options.line_search_direction_type = ceres::BFGS ;//   BFGS and LBFGS
     options.trust_region_strategy_type = ceres::DOGLEG ;
@@ -202,8 +202,8 @@ int main(int argc, char** argv) {
         n_loop ++ ;
     }while((summary.iterations.size()-1)<=250
            && n_iter < 600
-           && (stop_optim <2 || g_param->use_manual_distance_to_proj_constraint_width !=true)
-           && n_loop < 25
+           && (stop_optim <2 || g_param->use_manual_distance_to_proj_constraint_width !=true )
+           && n_loop < 1
           );
     // std::cout << summary.BriefReport() << "\n";
     std::cout << summary.FullReport() << "\n";
