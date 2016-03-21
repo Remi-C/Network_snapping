@@ -142,9 +142,8 @@ struct slope{
         //#edge_id::int;slope::double;confidence::double;weight::double
         std::ostringstream nstring;
         //nstring.precision(10);
-        nstring << "(edge_id : " << edge_id  << "  
-                << " , slope : (" << slope[0] << 
-                << "), confidence : " << confidence << ", weight : " << weight <<")";
+        nstring << "(edge_id : " << edge_id  << " \t  , slope : (" << slope[0]
+                << "), confidence : " << confidence << ", weight : " << weight <<")" << "\n" ;
         return nstring.str() ;
     } 
 };
