@@ -184,6 +184,13 @@ double shared_area_cost(SnapEnums::road_relation_enum road_relation, const doubl
     //{IN=1 ,OUT=-1 ,BORDER=0, BORDER_IN = 10, BORDER_OUT= -10, UNDEF=-110 } ;
     double object_width = 0;
 
+    /*
+    double x =0; double y = 0;
+    GEOSGeomGetX(centroid, &x) ;
+    GEOSGeomGetY(centroid, &y) ;
+    std::cout << "pt1 : " << pt1[0] << " " <<pt1[1] << "pt2 : " << pt2[0] << " " <<pt2[1] << "\n";
+    std::cout << "object centroid : " << x << " ," << y << "\n" ;
+    std::cout << "\n" ; */
     object_width = geometry_width_regarding_axis(pt1,pt2,object_snapping_surface,centroid) ;
 
     //compute the rectangle from pts
