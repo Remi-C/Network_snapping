@@ -422,18 +422,33 @@ public :
         //compute director vector of (NiNj) ie : NiNj/norm(NiNj) = u
         Eigen::Vector3d U = (Nj-Ni)/(Nj-Ni).norm();
         //compute residual = distance from O to NiNj : norm(vect(NiO,NiNj))/norm(NiNj)
-        double d = (Np.norm()/(Nj-Ni).norm()-  parameters[2][0]/2.0) ;
+        double d = (Np.norm()/(Nj-Ni).norm() - parameters[2][0]/2.0) ;
 
+        //project O on NiNj, we want to break the symmetry and move one point more than the other
+        double x = (Ob-Ni).dot(Nj-Ni);
+        double n = (Nj-Ni).norm() ;
+        double hi, hj ;
+        if( x == 0 || x == n || true ){
+            hi = d ;
+            hj = d ;
+        }else{
+            float reducing_factor = 0.5;
+            if( (Ob-Ni).norm() >= (Ob-Nj).norm() ){
+                hi = d / (1 + x/n * (x/n-1)) * reducing_factor;
+                hj = hi * x / n /reducing_factor;
+            }
+            else{
+                hi = d / (1 + x/n * (x/n-1)) ;
+                hj = hi * x / n * reducing_factor;
+            }
+        }
 
-        residuals[0]=  ceres::pow(d ,2)* obs_->confidence * obs_->weight;
+        residuals[0]=  std::abs(d) * obs_->confidence * obs_->weight;
         //compute Jacobian director vector : vect(u,n)
         Eigen::Vector3d Vja = U.cross(Np/Np.norm());
         //if(obs_->obs_id ==1 ) {Vja << -0.7,-0.7,0;}
         //else{Vja << +0.7,+0.7,0;}
 
-        double t = std::sqrt( std::pow((Ob-Ni).norm(),2) - std::pow(Np.norm()/(Nj-Ni).norm(),2) )/(Nj-Ni).norm() ;
-        double coeff_i = 1 ;
-        double coeff_j = 1 ;
 //        if(t > 0.5 ){
 //            //obs is closer to Nj
 //            coeff_i =  t ;
@@ -445,9 +460,11 @@ public :
 //        }
         //compute the direction of movement : - = toward the obs, + = away from point
         //compute Jacobian norm for Ni : for test simply take d
-        Eigen::Vector3d Ji = - 1 *  Vja *  d * (coeff_i) * (1-is_width);
+        //Eigen::Vector3d Ji = - 1 *  Vja *  d * (coeff_i) * (1-is_width);
+        Eigen::Vector3d Ji = - 1 *  Vja *  hi *   (1-is_width) ;
         //compute Jacobian norm for Nj : for test simply take d
-        Eigen::Vector3d Jj = - 1 *  Vja *  d *(coeff_j) * (1-is_width);
+        //Eigen::Vector3d Jj = - 1 *  Vja *  d *  (1-is_width);
+        Eigen::Vector3d Jj = - 1 *  Vja *  hj *  (1-is_width) ;
 
 
         //        cout << "  Observation_id : " <<  obs_->obs_id <<std::endl;
