@@ -835,7 +835,7 @@ class Distance_target_slope : public ceres::SizedCostFunction<1,3,3> {
 		//! this is the constructor, it expects the index of the target slope
 		Distance_target_slope(const unsigned int index, DataStorage * data) :
 			slope_index_(index)
-			, slo_ (data->slopes(index)) ;
+            , slo_ (data->slopes(index)) {};
 			
 			
 		virtual bool Evaluate(double const* const* parameters,
@@ -848,24 +848,54 @@ class Distance_target_slope : public ceres::SizedCostFunction<1,3,3> {
 			ConstVectorRef Nj( parameters[1],3 );
 			Eigen::Vector3d Vy = Eigen::Vector3d::UnitY();
 			
+            /**** DISPLAY information *********
+
+            std::cout << " slo_ : " << "\n" ;
+            std::cout << "(edge_id : " << slo_->edge_id  << " \t  , slope : (" << slo_->slope[0]
+                    << "), confidence : " << slo_->confidence << ", weight : " << slo_->weight <<")" << "\n" ;
+            std::cout << "Ni : " << "\n" ;
+            std::cout << Ni ;
+            std::cout << "Nj : " << "\n" ;
+            std::cout << Nj ;
+            **********************************/
+
+            //Ni[2] = 0.0 ;
+            //Nj[2] = 0.0 ; /*removing Z*/
 			/*compute current slope : vector product with vector (0,1,0), then arcsin*/
-			double theta_rad = std::asin((Nj-Ni).normalized().cross(Vy)) ; 
+            double theta_rad = std::asin(
+                        ((Nj-Ni).normalized().cross(Vy)).dot(Eigen::Vector3d::UnitZ())
+                    );
+
 			int theta_deg = static_cast<int>(theta_rad* (180.0 / M_PI)) % 180;
 			
+            //std::cout << " current slope theta_deg " << theta_deg << "\n";
+
 			/*comparing the distance between the target value and the actual value, adding 90 degrees to avoi à 0= 180 ° prob*/
-			double d = ((slo_->slope + 90 )%180) - ((theta_deg + 90 )%180)  ; 
-			double d_scaled = std:abs(d )/ 90.0 ; //between 0 and 1
-			residuals[0] = d_scaled * slo_->confidence * slo_->weight ; 
+            int d = static_cast<int>(slo_->slope[0] + 90 )%180 - static_cast<int>(theta_deg + 90 )%180 ;
+            double d_rad = d * M_PI / 180 ;
+            double d_scaled = std::abs(d )/ 90.0 ; //between 0 and 1
+
+            /*
+            std::cout << " d_scaled " << d_scaled << "\n";
+            std::cout << " d_rad " << d_rad << "\n";
+            */
+
+            residuals[0] = std::abs(d) ; //* slo_->confidence * slo_->weight ;
 			 
 			
 			//applying the rotationaxis = Z, with angle found previously, so as to correct the seg slope
-			Eigen::Affine3d rz = Eigen::Affine3d(Eigen::AngleAxisd(d, Eigen::Vector3d::UnitZ() )); 
-			Eigen::Affine3d t(Eigen::Translation3d( (Ni+Nj)/2.0));
-			Eigen::Vector3d transformed = (t * rz ) * (Nj-Ni) ; // transformed is the vector rotated around its centre, with correct slope
-			
-			Eigen::Vector3d Njprime = (Ni+Nj)/2.0 + transformed / 2.0 ; 
-			Eigen::Vector3d Niprime = (Ni+Nj)/2.0 - transformed / 2.0 ; 
-			
+            Eigen::Affine3d rz = Eigen::Affine3d(Eigen::AngleAxisd( - d_rad, Eigen::Vector3d::UnitZ() ));
+            Eigen::Affine3d t(Eigen::Translation3d( -(Nj + Ni)/2.0));
+            Eigen::Vector3d Njprime = t.inverse() * rz * t * Nj ; // transformed is the vector rotated around its centre, with correct slope
+            Eigen::Vector3d Niprime = t.inverse() * rz * t * Ni ;
+
+            /*
+            std::cout << "Niprime : " << "\n" ;
+            std::cout << Niprime ;
+            std::cout << "Njprime : " << "\n" ;
+            std::cout << Njprime ;
+            */
+
 			//applying the change
 			if (jacobians == NULL) { 
 				return 1;
@@ -880,13 +910,14 @@ class Distance_target_slope : public ceres::SizedCostFunction<1,3,3> {
 				jacobians[1][1] =  Niprime[1]-Ni[1] ; 
 				jacobians[1][2]=  0 ;// Jj(2);
 			}
-			return true;
+            //exit(1) ;
+            return true;
 		}
 						  
 	private :
 		const int slope_index_ ; /*store the index of slope */
 		const slope* slo_ ; //link to the target_slope, for easy use of confidence and weight.
-}
+};
 
 
 
