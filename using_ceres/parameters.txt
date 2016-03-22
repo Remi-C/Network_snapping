@@ -25,7 +25,7 @@ K_obj = 2 ;
 
 K_obs_width = 1 ;
 K_obj_width = 50 ;
-K_slope = 100 ;
+K_slope = 10 ;
 
 #what constraints to use?
 #regularisation
