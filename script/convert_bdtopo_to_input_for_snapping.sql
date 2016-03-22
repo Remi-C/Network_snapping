@@ -17,7 +17,7 @@
 
 CREATE SCHEMA IF NOT EXISTS network_for_snapping; 
 
-SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology, public; 
+SET search_path TO network_for_snapping, bdtopo_topological, bdtopo, topology,rc_lib, public; 
 
 --creating a table to limit the amount of computing to a given part of the network
 
@@ -217,12 +217,21 @@ DROP TABLE IF EXISTS def_zone_export;
 			AND ST_INtersects( ST_Transform(t.geom,932011), ST_Transform(dfz.geom,932011))=TRUE 
 	)
 	SELECT row_number() over() as qgis_id, 1.0 as weight, 1.0 as confidence, gid, dmp.geom::geometry(point,932011)  as geom
-	FROM trottoir,ST_DumpPoints(ST_Transform(ST_Segmentize(ST_SimplifyPreserveTopology(ST_Segmentize( geom, 4.0),0.5), 4.0),932011)) AS dmp ; 
+	FROM trottoir,ST_DumpPoints(ST_Transform(ST_Segmentize(ST_SimplifyPreserveTopology(  geom ,0.5), 4.0),932011)) AS dmp ; 
 
 	CREATE INDEX ON trottoir_cut_into_pieces USING GIST (geom) ;
 	-- CREATE INDEX ON  trottoir_cut_into_pieces USING GIST (ST_Transform( geom,932011)) ; 
-	CREATE INDEX ON trottoir_cut_into_pieces (gid); 
+	ALTER TABLE trottoir_cut_into_pieces ADD PRIMARY KEY (qgis_id) ; 
+	CREATE INDEX ON trottoir_cut_into_pieces (qgis_id); 
 	--qgis_id,geom, weight ;
+
+	DELETE FROM trottoir_cut_into_pieces AS tc
+	WHERE EXISTS (
+		SELECT 1
+		FROM trottoir_cut_into_pieces AS tc2
+		WHERE ST_DWithin(tc.geom, tc2.geom,3)=TRUE
+		AND tc.qgis_id != tc2.qgis_id
+	) ; 
 	 
 
 
@@ -354,6 +363,7 @@ DROP TABLE IF EXISTS def_zone_export;
 			, COALESCE(ST_Z(tgeom),0) AS Z ;
  
 	ALTER TABLE obs_for_output_in_export_area ADD  PRIMARY KEY (obs_id) ; 
+	CREATE INDEX ON obs_for_output_in_export_area USING GIST(geom) ; 
 
 /*
  	COPY  nodes_for_output_in_export_area TO '/media/sf_USB_storage/PROJETS/snapping/data/data_in_reduced_export_area/nodes_for_output_in_export_area.csv'	 (FORMAT CSV, DELIMITER   ';') ;
@@ -433,7 +443,7 @@ DROP TABLE IF EXISTS def_zone_export;
 				FROM street_amp.result_intersection as ri
 				WHERE ST_DWithin(ri.intersection_surface,dmp.geom,3)=TRUE
 			)
-		ORDER BY oia.observation_id, dmp.path, ST_Distance(dmp.geom,eg.geom ) ASC 
+		ORDER BY oia.observation_id, dmp.path, abs(ST_Distance(dmp.geom,eg.geom ) - width/2.0) ASC 
 	)
 	, angles AS (
 		SELECT map.*
@@ -482,6 +492,122 @@ DROP TABLE IF EXISTS def_zone_export;
 		LEFT OUTER JOIN edges_for_output_in_export_area AS eg USING(edge_id)  ; 
 
 
+/* -- computing slope for odparis 
+
+	DROP TABLE IF EXISTS trottoir_translated_segmentized ; 
+	CREATE TABLE trottoir_translated_segmentized  AS  
+		SELECT row_number() over() as qgis_id, t.gid
+			, dmp.path ,dmp.geom::geometry(linestring,932011) AS geom
+		FROM def_zone_export as dfz ,  odparis_corrected.trottoir as t  
+			, ST_Dump(t.geom) AS line
+			, ST_transform(line.geom,932011) as line2
+			, rc_DumpSegments(ST_Segmentize(line2,10)) AS dmp 
+		WHERE 
+			 niveau = 'Surface'
+			AND libelle = 'Bordure'  
+			AND ST_Area( Box2D(t.geom) ) >20
+			AND ST_Length( t.geom) >14  
+			AND ST_INtersects( ST_Transform(t.geom,932011), ST_Transform(dfz.geom,932011))=TRUE  ;
+	ALTER TABLE trottoir_translated_segmentized ADD PRIMARY KEY (qgis_id) ; 
+	CREATE INDEX ON trottoir_translated_segmentized USING GIST(geom) ;  
+
+	DROP TABLE IF EXISTS slope_odparis_map ;
+	CREATE TABLE slope_odparis_map AS
+	--WITH map AS (  
+		SELECT DISTINCT ON (oia.qgis_id ) 
+			 oia.gid AS observation_id
+			 , qgis_id AS seg_order
+			 , edge_id
+			 , oia.geom AS seg_geom
+			 
+		FROM def_zone_export as dfz , trottoir_translated_segmentized  AS oia  , 
+			edges_for_output_in_export_area AS eg
+		  
+		WHERE ST_DWithin( oia.geom , ST_transform(dfz.geom ,932011),30 ) = TRUE
+			AND ST_DWithin( oia.geom ,eg.geom,30 ) = TRUE 
+			AND ST_DWithin(  oia.geom, eg.geom,5+width)=TRUE  
+			AND NOT EXISTS (
+				SELECT 1
+				FROM street_amp.result_intersection as ri
+				WHERE ST_DWithin(ri.intersection_surface,oia.geom,3)=TRUE
+			) 
+		ORDER BY oia.qgis_id,  abs( ST_Distance(oia.geom,eg.geom ) -width/2.0)ASC 
+	)
+
+	
+
+
+
+		DROP FUNCTION IF EXISTS rc_find_target_angle_for_edge_id(i_edge_id int);
+	CREATE OR REPLACE FUNCTION rc_find_target_angle_for_edge_id(   i_edge_id int , out target_slope float, out confidence float, out weight float) 
+	 AS 
+		$BODY$
+			DECLARE      
+			BEGIN 
+			WITH map AS (
+				SELECT *
+				FROM slope_odparis_map
+				WHERE edge_id = i_edge_id
+			)
+			, angles AS (
+				SELECT map.*
+					, CASE WHEN degrees >180-20 THEN degrees  - 180 ELSE degrees END AS angle
+					, degrees
+					, ST_Length(seg_geom) as weight
+				FROM map
+					, mod(CAST(degrees(ST_Azimuth(ST_StartPoint(seg_geom), ST_EndPoint(seg_geom)))AS INT),180) as degrees
+			)
+			, weighted_median AS (
+				SELECT edge_id
+					, rc_py_weighted_median(
+						array_agg(angle order by observation_id, seg_order )
+						,array_agg(angles.weight order by observation_id, seg_order ) 
+					)::int as weighted_median
+				FROM angles
+				GROUP BY edge_id
+			) 
+			, angle_and_median AS (
+				SELECT edge_id, angle, angles.weight, abs(angle - weighted_median) < 20 AS to_be_used
+					-- ,  sum(angle* angles.weight) / (SELECT sum(angles.weight) FROM angles) AS target_slope 
+					-- , diff, mod
+				FROM angles
+					LEFT OUTER JOIN weighted_median USING (edge_id)  
+				-- WHERE --  abs(angle - weighted_median) < 20 = TRUE AND
+				-- edge_id = 1000080
+			)
+			, filtered AS (
+				SELECT edge_id, sum(angle*angle_and_median.weight) / sum(angle_and_median.weight) AS target_slope
+					, variance(angle) AS variance
+					, sum(angle_and_median.weight) AS weights
+				FROM angle_and_median
+				WHERE to_be_used = TRUE
+				GROUP BY edge_id 
+			)
+			-- , to_be_inserted AS (
+				SELECT  mod(filtered.target_slope::int+180,180) AS target_slope_, 1 - sqrt(variance) / (180 ) as confidence_, weights AS weight_
+					INTO target_slope, confidence, weight
+				FROM filtered 
+				WHERE variance IS NOT NULL ;    -- remove case with only one observation
+				
+				RETURN ;
+			END ;  
+		$BODY$
+	LANGUAGE plpgsql VOLATILE ; 
+	
+	SELECT *
+	FROM rc_find_target_angle_for_edge_id(1005210) ; 
+
+	DROP TABLE IF EXISTS slope_odparis ; 
+	CREATE TABLE slope_odparis AS
+	WITH edge_id AS (
+	SELECT DISTINCT edge_id 
+	FROM slope_odparis_map 
+	)
+	SELECT edge_id, f.*
+	FROM edge_id,rc_find_target_angle_for_edge_id(1005210) as f ;
+ 
+
+*/
 		 
 
 ---test to export the whole file complete, no 3 separated files :
@@ -494,7 +620,7 @@ COPY (
 	 SELECT (SELECT count(*) FROM nodes_for_output_in_export_area) || ';' 
 		||  (SELECT count(*) FROM edges_for_output_in_export_area) || ';' 
 		|| (SELECT count(*) FROM obs_for_output_in_export_area) || ';'
-		|| (SELECT count(*) FROM slope_for_output_in_export_area)
+		|| (SELECT count(*) FROM slope_for_output_in_export_area) + (SELECT count(*) FROM slope_odparis) 
 		UNION ALL 
 	 SELECT '#node_id::int;X::double;Yi_filename::double;Z::double;is_in_intersection::int'
 		UNION ALL 
@@ -514,27 +640,112 @@ COPY (
 	SELECT '#edge_id::int;slope::double;confidence::double;weight::double'
 		UNION ALL 
 	SELECT edge_id||';'|| target_slope||';'|| confidence||';'||weight
-	FROM slope_for_output_in_export_area
+	FROM (SELECT * FROM slope_for_output_in_export_area UNION ALL SELECT * FROM slope_odparis) as sub
+	
 )
 TO '/media/sf_USB_storage/PROJETS/snapping/data/data_in_reduced_export_area/full_area.csv' ;
 
 
-SELECT degrees(ST_Azimuth(st_startpoint(geom), st_endpoint(geom)))
-FROM edges_for_output_in_export_area
-WHERE edge_id = 1000041 ; 
+/*
+ ----------------------------------------------------
+ -- LOAD RESULTS INTO THE DATABASE
 
-SELECT degrees(-0.15708)
+DROP TABLE IF EXISTS optimized_edges ;
+CREATE TABLE optimized_edges (
+	--#geom;width;cost;start_time;end_time;iteration
+	gid serial primary key
+	,geom geometry(linestringZ,0)
+	, width float
+	, cost_edge float
+	, start_time date
+	, end_time date
+	, iteration int
+) ; 
+COPY optimized_edges  ( geom, width, cost_edge, start_time, end_time, iteration)
+    FROM '/media/sf_USB_storage/PROJETS/snapping/data/data_in_reduced_export_area/snapping_output_full.csv' 
+     WITH DELIMITER ';' CSV HEADER ;
 
-DROP TABLE IF EXISTS tem ;
-CREATE TABLE tem (
-gid serial PRIMARY KEY,
-geom geometry(point,932011)) ;  
+ALTER TABLE optimized_edges ALTER COLUMN geom TYPE geometry(linestringZ,932011) USING ST_SetSRID(geom,932011) ;
+CREATE INDEX ON optimized_edges USING GIST(geom); 
 
-TRUNCATE tem ;
-INSERT INTO tem (geom) VALUES  
-	(ST_GeomFromtext('POINT(1957.73  21288)',932011))
-	, (ST_GeomFromtext('POINT(1961.52 21342.1)',932011)) ; 
- 
+
+------- find distance between observations and otpimized edges :
+
+DROP TABLE IF EXISTS dist_to_optimized_edges ; 
+CREATE TABLE dist_to_optimized_edges AS 
+	SELECT DISTINCT ON (ob.obs_id) obs_id, gid
+		, ST_Distance(eg.geom, ob.geom) - width/2.0 AS dist
+		, ob.geom::geometry(point,932011) AS geom
+	FROM optimized_edges AS eg
+		, obs_for_output_in_export_area as ob
+	WHERE ST_DWithin(eg.geom, ob.geom, 30) = TRUE 
+		AND ST_DWithin(eg.geom, ob.geom, 10 + width)
+		AND iteration = 2
+	ORDER BY obs_id,  abs(ST_Distance(eg.geom, ob.geom) -width/2.0) ASC ;
+	CREATE INDEX ON dist_to_optimized_edges USING GIST(geom) ; 
+	ALTER TABLE dist_to_optimized_edges ADD PRIMARY KEY (obs_id) ;
+
+---- for comparison : find distance between observation and regular edges: 
+	WITH dist AS (
+		SELECT st_distance(obs.geom, eg.geom) - width/2.0 AS dist
+		 FROM obs_for_visu_in_export_area AS obs
+			LEFT OUTER JOIN edges_for_output_in_export_area AS eg USING(edge_id)    
+	) 
+	SELECT round(avg(@dist),3) as avg,  round(rc_median(array_agg(@dist)),3) as med, round(stddev_samp(@dist) ,3) as var
+	FROM dist 
+	UNION ALL 
+	SELECT round(avg(@dist),3), round(rc_median(array_agg(@dist)),3), round(stddev_samp(@dist) ,3) as var
+	FROM dist_to_optimized_edges ;
+
+
+
+	WITH dist AS (
+		SELECT st_distance(obs.geom, eg.geom) - width/2.0 AS dist
+		 FROM obs_for_visu_in_export_area AS obs
+			LEFT OUTER JOIN edges_for_output_in_export_area AS eg USING(edge_id)    
+	) 
+	SELECT  rc_py_plot_hist(array_agg( dist )
+		 , '/media/sf_USB_storage/PROJETS/snapping/data/data_in_reduced_export_area/signed_distance_base.svg'
+		, ARRAY['signed_distance']
+		,100)
+		,  rc_py_fit_gaussian(  array_agg( dist )  ,ARRAY['signed_distance']
+			,  '/media/sf_USB_storage/PROJETS/snapping/data/data_in_reduced_export_area/signed_distance_base_gauss.svg') -- mean : 1.411446, var : 2.303391, score : -1.835913
+	FROM dist
+	WHERE dist between -6 and 6 ; 
+
+	 
+	SELECT  rc_py_plot_hist(array_agg( dist )
+		 , '/media/sf_USB_storage/PROJETS/snapping/data/data_in_reduced_export_area/signed_distance_optimized.svg'
+		, ARRAY['signed_distance']
+		,100)
+		,  rc_py_fit_gaussian(  array_agg( dist )  ,ARRAY['signed_distance'],
+			'/media/sf_USB_storage/PROJETS/snapping/data/data_in_reduced_export_area/signed_distance_optimized_gauss.svg') --mean : 0.042815, var : 0.642718, score : -1.197136
+		, 
+	FROM dist_to_optimized_edges
+	WHERE dist between -4 and 4 ; 
+
+
+	WITH base AS (
+		SELECT array_agg(st_distance(obs.geom, eg.geom) - width/2.0 ) AS dist_base
+		 FROM obs_for_visu_in_export_area AS obs
+			LEFT OUTER JOIN edges_for_output_in_export_area AS eg USING(edge_id) 
+			WHERE st_distance(obs.geom, eg.geom) - width/2.0  BETWEEN -2 AND 6   
+	)
+	,optimized AS (
+		SELECT array_agg(dist) AS dist_optimized
+		FROM dist_to_optimized_edges
+		WHERE dist BETWEEN -2 AND 6
+	)
+	SELECT rc_py_plot_2_hist(  
+		dist_base
+		, dist_optimized 
+		, '/media/sf_USB_storage/PROJETS/snapping/data/data_in_reduced_export_area/two_hist.svg'
+		, ARRAY['intial','optimised']
+		,70
+		, false )
+	FROM base, optimized ;
+	
+*/
 
 
  
