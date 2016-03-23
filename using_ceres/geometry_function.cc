@@ -53,8 +53,8 @@ char *write_WKT(const geometry input_geom,const int dim){
 }
 
 void EigenToCoordinate_Seq(Eigen::Vector3d tmp_point, GEOSCoordSequence GEOS_DLL * coor, int position){
-    GEOSCoordSeq_setX(coor,position, tmp_point.x() ) ;
-    GEOSCoordSeq_setY(coor,position, tmp_point.y() ) ;
+    GEOSCoordSeq_setX(coor,position, tmp_point[0] ) ;
+    GEOSCoordSeq_setY(coor,position, tmp_point[1] ) ;
     //GEOSCoordSeq_setZ(coor,position, tmp_point.z() ) ;
 }
 
@@ -96,10 +96,14 @@ double geometry_width_regarding_axis(const double* pt1,const double* pt2, geomet
     GEOSDistance(object, axisr, &distr);
     GEOSDistance(centroid,axis, &dista);
 
+
+    GEOSCoordSeq_destroy(axis_point);
+    GEOSCoordSeq_destroy(axisl_points);
+    GEOSCoordSeq_destroy(axisr_points);
     return  std::abs( 2.0*max_width - distl-distr);
 }
 
-geometry axis_to_rectangle(const double * pt1, const double * pt2, double axis_width, geometry * axis_to_be_filled){
+void axis_to_rectangle(const double * pt1, const double * pt2, double axis_width, geometry* axis_to_be_filled, geometry* rectangle){
 
     //cout << "computing the rectangle" << endl;
     //    GEOSMessageHandler notice_function;
@@ -109,15 +113,16 @@ geometry axis_to_rectangle(const double * pt1, const double * pt2, double axis_w
 
     ConstVectorRef Ni( pt1 ,3 );
     ConstVectorRef Nj( pt2 ,3 );
+    ConstVectorRef Nip( pt1 ,3 );
+    ConstVectorRef Njp( pt2 ,3 );
     GEOSCoordSequence GEOS_DLL * axis_points;
     GEOSCoordSequence GEOS_DLL * rectangle_points;
     Eigen::Vector3d tmp_point;
-    geometry rectangle;
 
     axis_points = GEOSCoordSeq_create(2,2);
 
-    EigenToCoordinate_Seq(Ni,axis_points,0);
-    EigenToCoordinate_Seq(Nj,axis_points,1);
+    EigenToCoordinate_Seq(Nip,axis_points,0);
+    EigenToCoordinate_Seq(Njp,axis_points,1);
     * axis_to_be_filled = GEOSGeom_createLineString(axis_points);
 
     Eigen::Vector3d u = (Ni-Nj).normalized(); //director vector of segment, normalized
@@ -133,28 +138,46 @@ geometry axis_to_rectangle(const double * pt1, const double * pt2, double axis_w
     //pts1 + n*width, pts2 + n*width, p2-n*width, p1-n*width
 
     rectangle_points = GEOSCoordSeq_create(5,2);
-
-    //(!rectangle_points)?printf("coordinate seq is null, wtf?\n"):printf("coordinate seq is not null\n");
-
+    if(!rectangle_points)
+        std::cout << "coordinate seq is null, wtf?\n";
+    int is_success = 0;
     tmp_point = Ni + axis_width*normal;
-    EigenToCoordinate_Seq(tmp_point,rectangle_points,0);
-    tmp_point = Nj + axis_width*normal;
-    EigenToCoordinate_Seq(tmp_point,rectangle_points,1);
-    tmp_point = Nj - axis_width*normal;
-    EigenToCoordinate_Seq(tmp_point,rectangle_points,2);
+    //std::cout << "tmp_point 1 " << tmp_point << "\n" ;
+    is_success += GEOSCoordSeq_setX(rectangle_points,0, tmp_point.x()) ;
+    is_success += GEOSCoordSeq_setY(rectangle_points,0, tmp_point.y()) ;
+    is_success += GEOSCoordSeq_setX(rectangle_points,4, tmp_point.x()) ;
+    is_success += GEOSCoordSeq_setY(rectangle_points,4, tmp_point.y()) ;
+
     tmp_point = Ni - axis_width*normal;
-    EigenToCoordinate_Seq(tmp_point,rectangle_points,3);
-    tmp_point = Ni + axis_width*normal;
-    EigenToCoordinate_Seq(tmp_point,rectangle_points,4);
+    //std::cout << "tmp_point 4 " << tmp_point << "\n";
+    is_success += GEOSCoordSeq_setX(rectangle_points,1, tmp_point.x()) ;
+    is_success += GEOSCoordSeq_setY(rectangle_points,1, tmp_point.y()) ;
 
-    rectangle = GEOSGeom_createPolygon(GEOSGeom_createLinearRing(rectangle_points)//shell
+    tmp_point = Nj - axis_width*normal;
+    //std::cout << "tmp_point 3 " << tmp_point << "\n";
+    is_success += GEOSCoordSeq_setX(rectangle_points,2, tmp_point.x()) ;
+    is_success += GEOSCoordSeq_setY(rectangle_points,2, tmp_point.y()) ;
+
+    tmp_point = Nj + axis_width*normal;
+    //std::cout << "tmp_point 2 " << tmp_point << "\n";
+    is_success += GEOSCoordSeq_setX(rectangle_points,3, tmp_point.x()) ;
+    is_success += GEOSCoordSeq_setY(rectangle_points,3, tmp_point.y()) ;
+
+    if(is_success < 10)
+        exit(1);
+    GEOSGeometry GEOS_DLL * ring;
+    ring = GEOSGeom_createLinearRing(rectangle_points);
+    //std::cout << "ring :" << write_WKT(ring,3) << "\n" ;
+    //write_WKT(ring,3);
+
+
+    *rectangle = GEOSGeom_createPolygon(ring //shell
                                        ,NULL//holes
                                        ,0// nholes
                                        );
     //cout << "rectangle created : " <<  write_WKT(rectangle,3) << endl ;
     //finishGEOS();
-    return rectangle;
-
+    return ;
 }
 
 
@@ -173,8 +196,8 @@ double shared_area_cost(SnapEnums::road_relation_enum road_relation, const doubl
     //    GEOSMessageHandler error_function;
     //    initGEOS(notice_function,error_function);
 
-    geometry street_rectangle;
-    geometry axis;
+    geometry street_rectangle = NULL;
+    geometry axis = NULL;
     int intersects = 0 ; // 1 = true
     double distance_to_shell =  100 ;
     SnapEnums::attractive_repulsive attractive ;
@@ -194,11 +217,26 @@ double shared_area_cost(SnapEnums::road_relation_enum road_relation, const doubl
     object_width = geometry_width_regarding_axis(pt1,pt2,object_snapping_surface,centroid) ;
 
     //compute the rectangle from pts
-    street_rectangle = axis_to_rectangle(pt1,pt2, axis_width/2.0,&axis) ;
+    //std::cout << "pt1 : " << pt1[0] << " " <<pt1[1] << "pt2 : " << pt2[0] << " " <<pt2[1] << "\n";
+    //std::cout << "axis_width " << axis_width << "\n" ;
+    axis_to_rectangle(pt1,pt2, axis_width/2.0,&axis, &street_rectangle) ;
+
+
+
     double dist_to_axis = 0;
     double cost_surface  = 0 ;
     double cost_distance = 0;
     double shared_area = 0 ;
+
+    /*
+    double a_l = 0 ;
+    GEOSLength(axis, &a_l) ;
+    //std::cout << a_l  << "\n";
+
+    double r_area = 0 ;
+    double o_area = 0 ;
+    GEOSArea(street_rectangle,&r_area);
+    GEOSArea(object_snapping_surface,&o_area); */
 
     //cout << "axis : " <<  write_WKT(axis,2) << endl;
     //cout << "working on geom : rectangle, obj : " << write_WKT(street_rectangle,3)
@@ -212,6 +250,7 @@ double shared_area_cost(SnapEnums::road_relation_enum road_relation, const doubl
 
     //need to compute dist_to_axis : NOTE : could be done only when half within
     GEOSDistance(axis, street_rectangle, &dist_to_axis);
+
     intersects = GEOSIntersects(street_rectangle , object_snapping_surface) ;
 
     //this is a shortcut trick to avoid computing intersection and/or distance when not necessary
@@ -380,7 +419,7 @@ double signed_dist_to_border(SnapEnums::road_relation_enum road_relation, const 
     //{IN=1 ,OUT=-1 ,BORDER=0, BORDER_IN = 10, BORDER_OUT= -10, UNDEF=-110 } ;
 
     //compute the rectangle from pts
-    street_rectangle = axis_to_rectangle(pt1,pt2, axis_width/2.0,&axis) ;
+    axis_to_rectangle(pt1,pt2, axis_width/2.0,&axis, &street_rectangle) ;
     double dist_to_axis = 0;
     double cost_surface  = 0 ;
     double cost_distance = 0;

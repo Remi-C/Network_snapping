@@ -375,7 +375,8 @@ public :
         //projecting the centroid on axis :
         //creating a geom for axis
         geometry axis ;
-        axis_to_rectangle(temp_parameters[0], temp_parameters[1], 1, &axis ) ;
+        geometry rectangle ;
+        axis_to_rectangle(temp_parameters[0], temp_parameters[1], 1, &axis, &rectangle ) ;
         //projecting the centroid on axis
         double* closest_on_axis = new double[3] ;
         for(int i = 0; i<3;++i){closest_on_axis[i]=0;}
@@ -655,7 +656,8 @@ public :
         //projecting the centroid on axis :
         //creating a geom for axis
         geometry axis ;
-        axis_to_rectangle(temp_parameters[0], temp_parameters[1], 1, &axis ) ;
+        geometry rectangle ;
+        axis_to_rectangle(temp_parameters[0], temp_parameters[1], 1, &axis, &rectangle ) ;
         //projecting the centroid on axis
         double* closest_on_axis = new double[3] ;
         for(int i = 0; i<3;++i){closest_on_axis[i]=0;}
