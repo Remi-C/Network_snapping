@@ -426,11 +426,11 @@ public :
         double x = (Ob-Ni).dot(Nj-Ni);
         double n = (Nj-Ni).norm() ;
         double hi, hj ;
-        if( x == 0 || x == n || true ){
+        if( x == 0 || x == n || true){
             hi = d ;
             hj = d ;
         }else{
-            float reducing_factor = 0.5;
+            float reducing_factor = 1;
             if( (Ob-Ni).norm() >= (Ob-Nj).norm() ){
                 hi = d / (1 + x/n * (x/n-1)) * reducing_factor;
                 hj = hi * x / n /reducing_factor;
@@ -481,12 +481,12 @@ public :
         if (jacobians != NULL && jacobians[0] != NULL) {
             jacobians[0][0] =  Ji(0);
             jacobians[0][1] =  Ji(1);
-            jacobians[0][2]= 0 ;
+            jacobians[0][2] = Ji(2) ;
         }
         if (jacobians != NULL && jacobians[1] != NULL) {
             jacobians[1][0] = Jj(0);
             jacobians[1][1] = Jj(1);
-            jacobians[1][2]= 0 ;
+            jacobians[1][2] = Jj(2) ;
         }
         if (jacobians != NULL && jacobians[2] != NULL) {
             jacobians[2][0] = -1 * SIGN(d) * std::abs(d) * is_width;
