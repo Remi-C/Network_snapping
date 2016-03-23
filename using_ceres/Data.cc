@@ -284,7 +284,7 @@ void DataStorage::readData(){
     nodes_ = new node[num_nodes_];  //! @TODO : do alligned memory allocation it's better
 
     //we try to write the following line format :
-    //node_id::int;X::double;Yi_filename::double;Z::double;is_in_intersection::int
+    //node_id::int;X::double;Y::double;Z::double;is_in_intersection::int
     for (int i = 0; i < num_nodes_; ++i) {
         fgets(line, sizeof line, i_fptr);
         if (sscanf(line, "%d;%lG;%lG;%lG;%hd",&nodes_[i].node_id,&nodes_[i].position[0],&nodes_[i].position[1],&nodes_[i].position[2],&nodes_[i].is_in_intersection) != 5) {
