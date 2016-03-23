@@ -299,7 +299,7 @@ DROP TABLE IF EXISTS def_zone_export;
 	CREATE TABLE IF NOT EXISTS sidewalk_override  (
 	gid serial primary key,
 	user_point geometry(POINT,932011) ,
-	weight float DEFAULT 10
+	weight float DEFAULT 3
 	);
 	--TRUNCATE sidewalk_override ; 
 	-- INSERT INTO sidewalk_override (user_point) VALUES (ST_GeomFromText('POINT(1950 2140)',932011)) ; 
@@ -338,19 +338,19 @@ DROP TABLE IF EXISTS def_zone_export;
 			)
 		ORDER BY oia.gid ASC, ST_Distance( oia.user_point ,eg.geom ) ASC) 
 
-		UNION ALL
-		(SELECT DISTINCT ON (oia.qgis_id) oia.qgis_id + (SELECT max(qgis_id) FROM weighted_sidewalk_observation_point) +  (SELECT count(*) FROM sidewalk_override) 
-			,NULL, NULL,  oia.geom , weight, eg.edge_id
-		FROM def_zone_export as dfz , trottoir_cut_into_pieces  as oia , edges_for_output_in_export_area AS eg
-		WHERE ST_DWithin(  oia.geom , eg.geom,4+width)=TRUE
-			AND ST_DWithin( oia.geom , eg.geom,20)=TRUE
-			AND ST_WITHIN(  oia.geom ,  ST_Transform(dfz.geom,932011) ) = TRUE 
-			AND NOT EXISTS (
-				SELECT 1
-				FROM street_amp.result_intersection as ri
-				WHERE ST_DWithin(ri.intersection_surface, oia.geom ,3)=TRUE
-			)
-		ORDER BY oia.qgis_id ASC, ST_Distance( oia.geom ,eg.geom ) ASC) 
+-- 		UNION ALL
+-- 		(SELECT DISTINCT ON (oia.qgis_id) oia.qgis_id + (SELECT max(qgis_id) FROM weighted_sidewalk_observation_point) +  (SELECT count(*) FROM sidewalk_override) 
+-- 			,NULL, NULL,  oia.geom , weight, eg.edge_id
+-- 		FROM def_zone_export as dfz , trottoir_cut_into_pieces  as oia , edges_for_output_in_export_area AS eg
+-- 		WHERE ST_DWithin(  oia.geom , eg.geom,4+width)=TRUE
+-- 			AND ST_DWithin( oia.geom , eg.geom,20)=TRUE
+-- 			AND ST_WITHIN(  oia.geom ,  ST_Transform(dfz.geom,932011) ) = TRUE 
+-- 			AND NOT EXISTS (
+-- 				SELECT 1
+-- 				FROM street_amp.result_intersection as ri
+-- 				WHERE ST_DWithin(ri.intersection_surface, oia.geom ,3)=TRUE
+-- 			)
+-- 		ORDER BY oia.qgis_id ASC, ST_Distance( oia.geom ,eg.geom ) ASC) 
 	)
 	SELECT row_number() over() AS obs_id 
 		, edge_id
@@ -364,7 +364,9 @@ DROP TABLE IF EXISTS def_zone_export;
  
 	ALTER TABLE obs_for_output_in_export_area ADD  PRIMARY KEY (obs_id) ; 
 	CREATE INDEX ON obs_for_output_in_export_area USING GIST(geom) ; 
-
+ 
+ 
+	-- TRUNCATE obs_for_output_in_export_area ; 
 /*
  	COPY  nodes_for_output_in_export_area TO '/media/sf_USB_storage/PROJETS/snapping/data/data_in_reduced_export_area/nodes_for_output_in_export_area.csv'	 (FORMAT CSV, DELIMITER   ';') ;
  	 COPY( SELECT edge_id, start_node, end_node , width,old_edge_id FROM  edges_for_output_in_export_area )TO '/media/sf_USB_storage/PROJETS/snapping/data/data_in_reduced_export_area/edges_for_output_in_export_area.csv'	 (FORMAT CSV, DELIMITER   ';') ;
@@ -481,16 +483,14 @@ DROP TABLE IF EXISTS def_zone_export;
 	)	 
 	SELECT edge_id,mod(target_slope::int+180,180) AS target_slope, 1 - sqrt(variance) / (180 ) as confidence, weights AS weight
 	FROM filtered 
-	WHERE variance IS NOT NULL  ;-- remove case with only one observation;  
+	WHERE variance IS NOT NULL ;
+	-- AND weights > 15 ;-- remove case with only one observation;  
 	
 	ALTER TABLE slope_for_output_in_export_area ADD CONSTRAINT distfk FOREIGN KEY (edge_id) REFERENCES edges_for_output_in_export_area (edge_id) MATCH FULL;
 
-	DROP VIEW IF EXISTS slope_for_output_in_export_area_v ; 
-	CREATE VIEW slope_for_output_in_export_area_v AS
-	SELECT edge_id, ST_Centroid(eg.geom)::geometry(point,932011) AS geom, target_slope, confidence, weight
-	FROM slope_for_output_in_export_area AS fa
-		LEFT OUTER JOIN edges_for_output_in_export_area AS eg USING(edge_id)  ; 
+	
 
+	--TRUNCATE slope_for_output_in_export_area ; 
 
 /* -- computing slope for odparis 
 
@@ -531,14 +531,13 @@ DROP TABLE IF EXISTS def_zone_export;
 				FROM street_amp.result_intersection as ri
 				WHERE ST_DWithin(ri.intersection_surface,oia.geom,3)=TRUE
 			) 
-		ORDER BY oia.qgis_id,  abs( ST_Distance(oia.geom,eg.geom ) -width/2.0)ASC 
-	)
+		ORDER BY oia.qgis_id,  abs( ST_Distance(oia.geom,eg.geom ) -width/2.0)ASC  ; 
 
 	
 
 
 
-		DROP FUNCTION IF EXISTS rc_find_target_angle_for_edge_id(i_edge_id int);
+	DROP FUNCTION IF EXISTS rc_find_target_angle_for_edge_id(i_edge_id int);
 	CREATE OR REPLACE FUNCTION rc_find_target_angle_for_edge_id(   i_edge_id int , out target_slope float, out confidence float, out weight float) 
 	 AS 
 		$BODY$
@@ -593,25 +592,32 @@ DROP TABLE IF EXISTS def_zone_export;
 			END ;  
 		$BODY$
 	LANGUAGE plpgsql VOLATILE ; 
-	
-	SELECT *
-	FROM rc_find_target_angle_for_edge_id(1005210) ; 
 
-	DROP TABLE IF EXISTS slope_odparis ; 
+ 	DROP TABLE IF EXISTS slope_odparis CASCADE ; 
 	CREATE TABLE slope_odparis AS
 	WITH edge_id AS (
-	SELECT DISTINCT edge_id 
-	FROM slope_odparis_map 
+		SELECT DISTINCT edge_id 
+		FROM slope_odparis_map  
 	)
 	SELECT edge_id, f.*
-	FROM edge_id,rc_find_target_angle_for_edge_id(1005210) as f ;
- 
+	FROM edge_id
+		LEFT OUTER JOIN edges_for_output_in_export_area AS eg USING (edge_id)
+		, rc_find_target_angle_for_edge_id(edge_id::int) as f 
+	WHERE f.confidence IS NOT NULL
+		AND ST_Length(eg.geom ) > 6 ; 
+		--AND target_slope BETWEEN 20 AND 160;
+
+	--TRUNCATE slope_odparis ; 
+	 
 
 */
 		 
-
+DROP VIEW IF EXISTS slope_for_output_in_export_area_v ; 
+	CREATE VIEW slope_for_output_in_export_area_v AS
+	SELECT edge_id, ST_Centroid(eg.geom)::geometry(point,932011) AS geom, target_slope, confidence, weight
+	FROM (SELECT * FROM slope_for_output_in_export_area UNION ALL SELECT * FROM slope_odparis) AS fa
+		LEFT OUTER JOIN edges_for_output_in_export_area AS eg USING(edge_id)  ; 
 ---test to export the whole file complete, no 3 separated files :
-
  
  
 COPY (
@@ -624,7 +630,7 @@ COPY (
 		UNION ALL 
 	 SELECT '#node_id::int;X::double;Yi_filename::double;Z::double;is_in_intersection::int'
 		UNION ALL 
-	SELECT node_id ||';'||x||';'||y||';'||z||';'||z||';'||is_in_intersection||';' 
+	SELECT node_id ||';'||x||';'||y||';'||0||';'||is_in_intersection||';' 
 	FROM nodes_for_output_in_export_area
 		UNION ALL 
 	 SELECT '#edge_id::int;start_node::int;end_node::int;width::double'
@@ -634,7 +640,7 @@ COPY (
 		UNION ALL 
 	 SELECT '#obs_id::int;edge_id::int;X::double;Y::double;Z::double;confidence::double;weight::double'
 		UNION ALL 
-	SELECT obs_id ||';'||edge_id||';'||x||';'||y||';'||z||';'||confidence||';'||weight
+	SELECT obs_id ||';'||edge_id||';'||x||';'||y||';'||0||';'||confidence||';'||weight
 	FROM obs_for_output_in_export_area
 		UNION ALL 
 	SELECT '#edge_id::int;slope::double;confidence::double;weight::double'
