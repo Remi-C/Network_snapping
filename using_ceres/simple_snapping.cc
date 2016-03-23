@@ -152,7 +152,7 @@ int main(int argc, char** argv) {
     options.minimizer_progress_to_stdout = true;
 
     options.minimizer_type = g_param->optimisation_method ; //can also be : TRUST_REGION or LINE_SEARCH
-    options.num_threads = 6; /// @todo : handy for speed, but makes it hard to understand cout
+    options.num_threads = 1; /// @todo : handy for speed, but makes it hard to understand cout
 
     options.line_search_direction_type = ceres::BFGS ;//   BFGS and LBFGS
     options.trust_region_strategy_type = ceres::DOGLEG ;
