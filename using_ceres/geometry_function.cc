@@ -100,6 +100,8 @@ double geometry_width_regarding_axis(const double* pt1,const double* pt2, geomet
     GEOSCoordSeq_destroy(axis_point);
     GEOSCoordSeq_destroy(axisl_points);
     GEOSCoordSeq_destroy(axisr_points);
+    //GEOSGeom_destroy(axisl);
+    //GEOSGeom_destroy(axisr);
     return  std::abs( 2.0*max_width - distl-distr);
 }
 
@@ -177,6 +179,7 @@ void axis_to_rectangle(const double * pt1, const double * pt2, double axis_width
                                        );
     //cout << "rectangle created : " <<  write_WKT(rectangle,3) << endl ;
     //finishGEOS();
+    //GEOSGeom_destroy(ring);
     return ;
 }
 
@@ -198,6 +201,7 @@ double shared_area_cost(SnapEnums::road_relation_enum road_relation, const doubl
 
     geometry street_rectangle = NULL;
     geometry axis = NULL;
+    geometry intersection = NULL;
     int intersects = 0 ; // 1 = true
     double distance_to_shell =  100 ;
     SnapEnums::attractive_repulsive attractive ;
@@ -255,9 +259,8 @@ double shared_area_cost(SnapEnums::road_relation_enum road_relation, const doubl
 
     //this is a shortcut trick to avoid computing intersection and/or distance when not necessary
     if(intersects==1){  //fully or half within
-
-        GEOSArea(GEOSIntersection(street_rectangle, object_snapping_surface)
-                 , &shared_area) ;
+        intersection = GEOSIntersection(street_rectangle, object_snapping_surface) ;
+        GEOSArea(intersection, &shared_area) ;
 
         if( TOLERANCY_EQUAL(object_snapping_surface_area,shared_area) ){//fully within, need to compute distance
 
@@ -373,7 +376,9 @@ double shared_area_cost(SnapEnums::road_relation_enum road_relation, const doubl
 //    cout << "\t \t distance_to_shell : " << distance_to_shell
             //         << " , intersects? "<< intersects
 //         <<endl ;
-
+    GEOSGeom_destroy(street_rectangle);
+    GEOSGeom_destroy(axis) ;
+    GEOSGeom_destroy(intersection) ;
     return sign * (cost_surface+cost_distance) ;
 
 }
@@ -408,8 +413,9 @@ double signed_dist_to_border(SnapEnums::road_relation_enum road_relation, const 
     //    GEOSMessageHandler error_function;
     //    initGEOS(notice_function,error_function);
 
-    geometry street_rectangle;
-    geometry axis;
+    geometry street_rectangle = NULL;
+    geometry axis = NULL;
+    geometry intersection= NULL;
     int intersects ; // 1 = true
     double distance_to_shell =  100 ;
     SnapEnums::attractive_repulsive attractive ;
@@ -463,14 +469,14 @@ double signed_dist_to_border(SnapEnums::road_relation_enum road_relation, const 
         sign=+1;
     }
 
-    /*
 
 
+    ////////should be commented?
 
     //this is a shortcut trick to avoid computing intersection and/or distance when not necessary
     if(intersects==1){  //fully or half within
-
-        GEOSArea(GEOSIntersection(street_rectangle, object_snapping_surface)
+        intersection = GEOSIntersection(street_rectangle, object_snapping_surface) ;
+        GEOSArea(intersection
                  , &shared_area) ;
 
         if( TOLERANCY_EQUAL(object_snapping_surface_area,shared_area) ){//fully within, need to compute distance
@@ -486,8 +492,8 @@ double signed_dist_to_border(SnapEnums::road_relation_enum road_relation, const 
         shared_area = 0 ;
         GEOSDistance( GEOSGetExteriorRing(street_rectangle) , object_snapping_surface, &distance_to_shell);
     }
-    int sign=0;
-
+    sign=0;
+    /////// shold be commented?
 
     //putting a cost based on shared area.
     //we take some shortcuts to avoid computing intersection if it's not necessary
@@ -552,7 +558,7 @@ double signed_dist_to_border(SnapEnums::road_relation_enum road_relation, const 
             cost_distance = (distance_to_shell) * object_snapping_surface_area ;
         }
     }
-    */
+
     /** we compute a sign that gives the direction into witch make the modification
 
         CASE(object left of axis) : A : object fully outside. B : object hlaf inside, C: object fully inside
@@ -581,6 +587,9 @@ double signed_dist_to_border(SnapEnums::road_relation_enum road_relation, const 
 //         <<endl ;
 
     //return sign* (cost_surface+cost_distance) ;
+    GEOSGeom_destroy(street_rectangle);
+    GEOSGeom_destroy(axis);
+    GEOSGeom_destroy(intersection);
 
     return sign*activating * intensity;
 
