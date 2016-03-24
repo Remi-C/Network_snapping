@@ -656,7 +656,7 @@ public :
                                        ,obj_->geom_border_area
                                        ,obj_->geom_centroid);
         double d =   1.0 * cost /obj_->geom_border_area ;
-        residuals[0] =pow(d,2)  ;
+        residuals[0] =std::abs(d) * classification_->importance * obj_->confidence ;
         //residuals[0] = pow(std::abs(cost/obj_->geom_border_area),2) ; /// @FIXME @TODO @DEBUG warning : should put the confidence here
 
         //int sign =-1* Geometry::orientationIndex(parameters[0],parameters[1],centroid2D_);//depends on left or right !
@@ -771,7 +771,7 @@ public :
                                        ,obj_->geom_centroid);
         double d =   1.0 * cost /obj_->geom_border_area ;
 
-        residuals[0] =pow(d,2)  ; /// @FIXME @TODO @DEBUG warning : should put the confidence here
+        residuals[0] =std::abs(d) * classification_->importance * obj_->confidence  ; /// @FIXME @TODO @DEBUG warning : should put the confidence here
 
         int sign =-1* Geometry::orientationIndex(parameters[0],parameters[1],centroid2D_);//depends on left or right !
         //compute Jacobian norm for Ni
