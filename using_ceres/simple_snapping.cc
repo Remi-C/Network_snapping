@@ -152,19 +152,24 @@ int main(int argc, char** argv) {
     options.minimizer_progress_to_stdout = true;
 
     options.minimizer_type = g_param->optimisation_method ; //can also be : TRUST_REGION or LINE_SEARCH
-    options.num_threads = 1; /// @todo : handy for speed, but makes it hard to understand cout
+    options.num_threads = 6; /// @todo : handy for speed, but makes it hard to understand cout
 
     options.line_search_direction_type = ceres::BFGS ;//   BFGS and LBFGS
     options.trust_region_strategy_type = ceres::DOGLEG ;
     options.dogleg_type = ceres::SUBSPACE_DOGLEG ;
     options.use_inner_iterations = true ;
-    options.use_approximate_eigenvalue_bfgs_scaling = true;
+    //options.use_approximate_eigenvalue_bfgs_scaling = true;
+
+    //options.use_nonmonotonic_steps = true ;
+
 
     //when stop the solver :
 
     //options.function_tolerance = 0.1;
     //options.gradient_tolerance= 0.001*0.001 ;
-    //options.parameter_tolerance = 0.005;//std::pow(10,-10) ; // stop when the improvment is less than a millimeter
+    //options.parameter_tolerance = std::pow(10,-10) ; // stop when the improvment is less than a millimeter
+    //options.max_num_consecutive_invalid_steps = 3;
+    //options.max_num_iterations = 8;
 
     ////output writing
     options.update_state_every_iteration= true ;
