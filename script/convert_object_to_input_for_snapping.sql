@@ -284,9 +284,10 @@ COPY (
 		  ST_Astext(geom) ||';'||
 		 confidence 
 	FROM obj_for_output_in_export_area 
-	ORDER BY object_id ASC )
+	ORDER BY object_id ASC
+	-- LIMIT 1
+	 )
 	) AS sub
 )
 TO '/media/sf_USB_storage/PROJETS/snapping/data/data_in_reduced_export_area/object_in_export_area.csv';
-
  
