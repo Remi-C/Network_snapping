@@ -106,7 +106,10 @@ double geometry_width_regarding_axis(const double* pt1,const double* pt2, geomet
 }
 
 void axis_to_rectangle(const double * pt1, const double * pt2, double axis_width, geometry* axis_to_be_filled, geometry* rectangle){
-
+    /**
+      WARNING @TODO @FIXME @bug
+      this function has massive memory leaks
+    */
     //cout << "computing the rectangle" << endl;
     //    GEOSMessageHandler notice_function;
     //    GEOSMessageHandler error_function;
@@ -180,6 +183,7 @@ void axis_to_rectangle(const double * pt1, const double * pt2, double axis_width
     //cout << "rectangle created : " <<  write_WKT(rectangle,3) << endl ;
     //finishGEOS();
     //GEOSGeom_destroy(ring);
+    //GEOSCoordSeq_destroy(rectangle_points);
     return ;
 }
 
