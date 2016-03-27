@@ -185,7 +185,7 @@ int main(int argc, char** argv) {
     //void Problem::SetParameterBlockConstant(double* values)
     //void Problem::SetParameterBlockVariable(double* values)
     g_data_pointer->writeData(1);
-    g_data_pointer->writeConstraints(1);
+    //g_data_pointer->writeConstraints(1);
 
     bool mixed_optim = g_param->optimisation_type==SnapEnums::MIXED ;
     if(mixed_optim==true)
@@ -216,11 +216,12 @@ int main(int argc, char** argv) {
     std::cout <<n_iter<< std::endl ;
 
     g_data_pointer->writeData(2);
+    /*
     g_param->optimisation_type = SnapEnums::POSITION ; //putting the position, so as to have vector in visu
     g_data_pointer->writeConstraints(2);
     g_param->optimisation_type = SnapEnums::WIDTH ; //putting the position, so as to have vector in visu
     g_data_pointer->writeConstraints(2);
-
+    */
 
 
     finish_geom_computation();
