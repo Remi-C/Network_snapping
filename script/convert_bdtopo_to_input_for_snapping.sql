@@ -74,7 +74,7 @@ INSERT INTO network_limit (limit_geom) VALUES (ST_GeomFromtext('POLYGON((2065 21
 	FROM getting_old_node_id ;
  
 
-	DROP TABLE IF EXISTS nodes_for_output ; 
+	DROP TABLE IF EXISTS nodes_for_output CASCADE; 
 	CREATE TABLE nodes_for_output AS  
 		--this is the sum of old nodes and newly created nodes. This should be output
 			SELECT node_id
@@ -91,7 +91,8 @@ INSERT INTO network_limit (limit_geom) VALUES (ST_GeomFromtext('POLYGON((2065 21
 			FROM new_successive_points
 			WHERE node_in_intersection = FALSE;
 			--60 k lines
-
+	
+	ALTER TABLE nodes_for_output ADD PRIMARY KEY (node_id); 
 	CREATE INDEX ON  nodes_for_output USING GIST(ST_SetSRID(ST_MakePoint(X,Y,Z),932011));
 	CREATE INDEX ON  nodes_for_output USING GIST(node_geom) ; 
 	CREATE INDEX ON nodes_for_output (node_id) ;
@@ -139,13 +140,32 @@ INSERT INTO network_limit (limit_geom) VALUES (ST_GeomFromtext('POLYGON((2065 21
 	FROM edges AS eou
 		LEFT OUTER JOIN nodes_for_output AS nou1 ON (eou.start_node = nou1.node_id)
 		LEFT OUTER JOIN nodes_for_output AS nou2 ON (eou.end_node = nou2.node_id) ;
-		
+	
+	ALTER TABLE edges_for_output ADD PRIMARY KEY (edge_id); 
+	DELETE FROM edges_for_output AS eo WHERE 
+	NOT EXISTS (SELECT 1 FROM nodes_for_output AS np WHERE eo.start_node = np.node_id )
+	AND NOT EXISTS  (SELECT 1 FROM nodes_for_output AS np WHERE eo.end_node = np.node_id ) ; 
+
+-- 	WITH map AS (
+-- 		SELECT eo.edge_id, no1.node_geom, no2.node_geom 
+-- 		FROM edges_for_output AS eo 
+-- 			LEFT OUTER JOIN nodes_for_output AS no1 ON (eo.start_node = no1.node_id)
+-- 			LEFT OUTER JOIN nodes_for_output AS no2 ON (eo.end_node = no2.node_id) 
+-- 		WHERE no1.node_geom IS  NULL OR no2.node_geom IS   NULL 
+-- 	)
+-- 	DELETE FROM edges_for_output AS eo
+-- 	USING map 
+-- 	WHERE map.edge_id = eo.edge_id ; 
+	
+	-- ALTER TABLE edges_for_output ADD  FOREIGN KEY (start_node) REFERENCES nodes_for_output (node_id) MATCH FULL ON DELETE CASCADE ; 
+	-- ALTER TABLE edges_for_output ADD  FOREIGN KEY (end_node) REFERENCES nodes_for_output (node_id) MATCH FULL ON DELETE CASCADE ; 
+	-- ALTER TABLE distributors ADD CONSTRAINT distfk FOREIGN KEY (address) REFERENCES addresses (address) MATCH FULL;
 	CREATE INDEX ON edges_for_output USING GIST(geom) ;
 	 CREATE INDEX ON edges_for_output (edge_id) ;
 	 CREATE INDEX ON edges_for_output (start_node) ;
 	  CREATE INDEX ON edges_for_output (end_node) ;
  
-
+	
 --now we restrain ourselve to an area for test :
 	--this is delimitated by the table def_zone_export
 
@@ -156,22 +176,29 @@ DROP TABLE IF EXISTS def_zone_export;
 		,id bigint
 		,geom geometry(POLYGON,931008)
 		, center_in_RGF93 geometry(POINT,932011) );   
+		INSERT INTO def_zone_export(id, geom) VALUES(1, ST_Transform('SRID=932011;POLYGON((2072 21505,1909 21517,1867 21479,1879 21292,2084 21320,2140 21371,2072 21505))'::geometry(polygon,932011),931008) )
 	INSERT INTO def_zone_export (id, geom) 
 		VALUES( 1 , ST_GeomFromText('POLYGON((650907.6  6860870.6 ,650956.9  6860895.8 ,651036.0  6860757.1 ,650983.7  6860736.6 ,650907.6  6860870.6 ))',931008) );
 
  	INSERT INTO def_zone_export (id, geom)  --all_of_acquisition
  		VALUES( 1 , ST_GeomFromText('POLYGON((650637.4 6861097.2,650909.8 6861534.1,651068.6 6861638.3,651365.1 6861697.3,651410.3 6861270.3,651544.3 6861218.2,651498.6 6861178.5,651288.1 6861198.7,650863.3 6861051.6,651004.5 6860830.8,651063.1 6860739.1,651421.5 6860706.1,651347.3 6860611.3,651030.6 6860666.2,650657 6861002.8,650637.4 6861097.2))',931008) );
 	UPDATE def_zone_export SET center_in_RGF93 = ST_Centroid(ST_Transform(geom,932011)) ; 
+
+	-- small area : 
+	-- "POLYGON((2072 21505,1909 21517,1867 21479,1879 21292,2084 21320,2140 21371,2072 21505))"
+
+	--large area :
+	-- "POLYGON((650865 6861482,650910 6861534,651069 6861638,651365 6861697,651410 6861270,651544 6861218,651499 6861178,651288 6861199,650863 6861052,650865 6861482))"
 */
 
 		--importing the sidewalk observation (weighted points ) here
 /*
-	DROP MATERIALIZED VIEW IF EXISTS weighted_sidewalk_observation_point ;
-	CREATE MATERIALIZED VIEW weighted_sidewalk_observation_point AS 
+	DROP MATERIALIZED VIEW IF EXISTS weighted_sidewalk_observation_point_2015 ;
+	CREATE MATERIALIZED VIEW weighted_sidewalk_observation_point_2015 AS 
 	SELECT *
 	FROM public.dblink( 
 		 'hostaddr=127.0.0.1 port=5433 dbname=TerraMobilita user=postgres password=postgres'::text
-		, 'SELECT * FROM cmm.lines_to_weighted_points '::text
+		, 'SELECT * FROM cmm_2015.lines_to_weighted_points '::text
 		,TRUE)  AS   f(
 			 qgis_id bigint,
 			  area_id bigint,
@@ -179,29 +206,29 @@ DROP TABLE IF EXISTS def_zone_export;
 			  geom geometry,
 			  weight numeric
 			 ) ; 
-	CREATE INDEX ON weighted_sidewalk_observation_point (qgis_id) ; 
-	CREATE INDEX ON weighted_sidewalk_observation_point (area_id) ; 
-	CREATE INDEX ON weighted_sidewalk_observation_point (seg_id) ; 
-	CREATE INDEX ON weighted_sidewalk_observation_point (weight) ; 
-	CREATE INDEX ON weighted_sidewalk_observation_point USING GIST  (ST_Transform(geom,932011) ); 
+	CREATE INDEX ON weighted_sidewalk_observation_point_2015 (qgis_id) ; 
+	CREATE INDEX ON weighted_sidewalk_observation_point_2015 (area_id) ; 
+	CREATE INDEX ON weighted_sidewalk_observation_point_2015 (seg_id) ; 
+	CREATE INDEX ON weighted_sidewalk_observation_point_2015 (weight) ; 
+	CREATE INDEX ON weighted_sidewalk_observation_point_2015 USING GIST  (ST_Transform(geom,932011) ); 
 
 
 
-	DROP TABLE IF EXISTS weighted_sidewalk_observation_line ;
-	CREATE TABLE weighted_sidewalk_observation_line AS 
+	DROP TABLE IF EXISTS weighted_sidewalk_observation_line_2015 ;
+	CREATE TABLE weighted_sidewalk_observation_line_2015 AS 
 	SELECT *
 	FROM public.dblink( 
 		 'hostaddr=127.0.0.1 port=5433 dbname=TerraMobilita user=postgres password=postgres'::text
 		, '	SELECT row_number() over() as gid, area_id,  dmp.geom AS geom   
-			FROM cmm.filtered_lines_final, ST_Dump(ST_Transform(area_skeleton,932011) ) AS dmp
+			FROM cmm_2015.filtered_lines_final, ST_Dump(ST_Transform(area_skeleton,932011) ) AS dmp
 			'::text
 		,TRUE)  AS   f( 
 			observation_id bigint, 
 			  area_id bigint,
 			  geom geometry(linestring, 932011)  
 			 ) ; 
-	ALTER TABLE weighted_sidewalk_observation_line ADD PRIMARY KEY (observation_id ); 
-	CREATE INDEX ON weighted_sidewalk_observation_line USING GIST  (geom ); 
+	ALTER TABLE weighted_sidewalk_observation_line_2015 ADD PRIMARY KEY (observation_id ); 
+	CREATE INDEX ON weighted_sidewalk_observation_line_2015 USING GIST  (geom ); 
   
 */
  
@@ -293,18 +320,30 @@ DROP TABLE IF EXISTS def_zone_export;
 	DROP TABLE IF EXISTS obs_for_output_in_export_area; 
 	CREATE TABLE obs_for_output_in_export_area AS  
  	WITH map AS (--for each edge, we get observation closer than 5 meters 
--- 		(SELECT DISTINCT ON (oia.qgis_id) qgis_id, area_id, seg_id, oia.geom, weight, eg.edge_id
--- 		FROM def_zone_export as dfz , weighted_sidewalk_observation_point  as oia , edges_for_output_in_export_area AS eg
--- 		WHERE ST_DWithin( ST_Transform(oia.geom,932011), eg.geom,4+width)=TRUE
--- 			AND ST_DWithin( ST_Transform(oia.geom,932011), eg.geom,20)=TRUE
--- 			AND ST_WITHIN( ST_Transform(oia.geom,932011),  ST_Transform(dfz.geom,932011) ) = TRUE 
--- 			AND NOT EXISTS (
--- 				SELECT 1
--- 				FROM street_amp.result_intersection as ri
--- 				WHERE ST_DWithin(ri.intersection_surface,ST_Transform(oia.geom,932011),1)=TRUE
--- 			)
--- 		ORDER BY oia.qgis_id ASC, ST_Distance(ST_Transform(oia.geom,932011),eg.geom ) ASC )
+		(SELECT DISTINCT ON (oia.qgis_id) qgis_id, area_id, seg_id, oia.geom, weight, eg.edge_id
+		FROM def_zone_export as dfz , weighted_sidewalk_observation_point  as oia , edges_for_output_in_export_area AS eg
+		WHERE ST_DWithin( ST_Transform(oia.geom,932011), eg.geom,4+width)=TRUE
+			AND ST_DWithin( ST_Transform(oia.geom,932011), eg.geom,20)=TRUE
+			AND ST_WITHIN( ST_Transform(oia.geom,932011),  ST_Transform(dfz.geom,932011) ) = TRUE 
+			AND NOT EXISTS (
+				SELECT 1
+				FROM street_amp.result_intersection as ri
+				WHERE ST_DWithin(ri.intersection_surface,ST_Transform(oia.geom,932011),1)=TRUE
+			)
+		ORDER BY oia.qgis_id ASC, ST_Distance(ST_Transform(oia.geom,932011),eg.geom ) ASC )
 
+		UNION ALL
+		(SELECT DISTINCT ON (oia.qgis_id) qgis_id, area_id, seg_id, oia.geom, weight, eg.edge_id
+		FROM def_zone_export as dfz , weighted_sidewalk_observation_point_2015  as oia , edges_for_output_in_export_area AS eg
+		WHERE ST_DWithin( ST_Transform(oia.geom,932011), eg.geom,4+width)=TRUE
+			AND ST_DWithin( ST_Transform(oia.geom,932011), eg.geom,20)=TRUE
+			AND ST_WITHIN( ST_Transform(oia.geom,932011),  ST_Transform(dfz.geom,932011) ) = TRUE 
+			AND NOT EXISTS (
+				SELECT 1
+				FROM street_amp.result_intersection as ri
+				WHERE ST_DWithin(ri.intersection_surface,ST_Transform(oia.geom,932011),1)=TRUE
+			)
+		ORDER BY oia.qgis_id ASC, ST_Distance(ST_Transform(oia.geom,932011),eg.geom ) ASC )
 -- 		UNION ALL 
 -- 
 -- 		(SELECT DISTINCT ON (oia.gid) oia.gid + (SELECT max(qgis_id) FROM weighted_sidewalk_observation_point),NULL, NULL, user_point AS geom , weight, eg.edge_id
@@ -318,20 +357,20 @@ DROP TABLE IF EXISTS def_zone_export;
 -- 				WHERE ST_DWithin(ri.intersection_surface, oia.user_point ,1)=TRUE
 -- 			)
 -- 		ORDER BY oia.gid ASC, ST_Distance( oia.user_point ,eg.geom ) ASC) 
--- 
+
 --		UNION ALL
-		(SELECT DISTINCT ON (oia.qgis_id) oia.qgis_id + (SELECT max(qgis_id) FROM weighted_sidewalk_observation_point) +  (SELECT count(*) FROM sidewalk_override) 
-			,NULL, NULL,  oia.geom , weight, eg.edge_id
-		FROM def_zone_export as dfz , trottoir_cut_into_pieces  as oia , edges_for_output_in_export_area AS eg
-		WHERE ST_DWithin(  oia.geom , eg.geom,4+width)=TRUE
-			AND ST_DWithin( oia.geom , eg.geom,20)=TRUE
-			AND ST_WITHIN(  oia.geom ,  ST_Transform(dfz.geom,932011) ) = TRUE 
-			AND NOT EXISTS (
-				SELECT 1
-				FROM street_amp.result_intersection as ri
-				WHERE ST_DWithin(ri.intersection_surface, oia.geom ,3)=TRUE
-			)
-		ORDER BY oia.qgis_id ASC, ST_Distance( oia.geom ,eg.geom ) ASC) 
+-- 		(SELECT DISTINCT ON (oia.qgis_id) oia.qgis_id + (SELECT max(qgis_id) FROM weighted_sidewalk_observation_point) +  (SELECT count(*) FROM sidewalk_override) 
+-- 			,NULL, NULL,  oia.geom , weight, eg.edge_id
+-- 		FROM def_zone_export as dfz , trottoir_cut_into_pieces  as oia , edges_for_output_in_export_area AS eg
+-- 		WHERE ST_DWithin(  oia.geom , eg.geom,4+width)=TRUE
+-- 			AND ST_DWithin( oia.geom , eg.geom,20)=TRUE
+-- 			AND ST_WITHIN(  oia.geom ,  ST_Transform(dfz.geom,932011) ) = TRUE 
+-- 			AND NOT EXISTS (
+-- 				SELECT 1
+-- 				FROM street_amp.result_intersection as ri
+-- 				WHERE ST_DWithin(ri.intersection_surface, oia.geom ,3)=TRUE
+-- 			)
+-- 		ORDER BY oia.qgis_id ASC, ST_Distance( oia.geom ,eg.geom ) ASC) 
 	)
 	SELECT row_number() over() AS obs_id 
 		, edge_id
@@ -345,8 +384,72 @@ DROP TABLE IF EXISTS def_zone_export;
  
 	ALTER TABLE obs_for_output_in_export_area ADD  PRIMARY KEY (obs_id) ; 
 	CREATE INDEX ON obs_for_output_in_export_area USING GIST(geom) ; 
- 
- 
+	ALTER TABLE obs_for_output_in_export_area ADD FOREIGN KEY (edge_id) REFERENCES edges_for_output_in_export_area (edge_id) MATCH FULL ON DELETE CASCADE ; 
+
+	DROP TABLE IF EXISTS edges_with_few_obs ;
+	CREATE TABLE edges_with_few_obs  AS 
+	WITH count_per_edge AS (
+		SELECT edge_id, side, count(*) AS n_obs_edge_side, 50 AS minimal_number_obs
+			
+		FROM obs_for_output_in_export_area AS oo
+			LEFT OUTER JOIN edges_for_output_in_export_area AS eo USING (edge_id)
+			,COALESCE(degrees(rc_angle(St_StartPoint(eo.geom),St_EndPoint(eo.geom),oo.geom) )>180 ,true) AS side
+		GROUP BY edge_id, side 
+	) SELECT *
+	FROM (
+	SELECT edge_id 
+	FROM count_per_edge
+	WHERE side = true AND n_obs_edge_side <minimal_number_obs
+	INTERSECT 
+	SELECT edge_id
+	FROM count_per_edge
+	WHERE side = false AND n_obs_edge_side <minimal_number_obs ) AS sub;  
+ -------- removing from optim roads with too few segments
+/*
+	WITH count_per_edge AS (
+		SELECT edge_id, side, count(*) AS n_obs_edge_side, 50 AS minimal_number_obs
+			
+		FROM obs_for_output_in_export_area AS oo
+			LEFT OUTER JOIN edges_for_output_in_export_area AS eo USING (edge_id)
+			,CAST(degrees(rc_angle(St_StartPoint(eo.geom),St_EndPoint(eo.geom),oo.geom) )>180  AS boolean) AS side
+		GROUP BY edge_id, side 
+	)
+	, to_delete AS (
+		SELECT edge_id
+		FROM count_per_edge
+		WHERE side = true AND n_obs_edge_side <minimal_number_obs
+		INTERSECT 
+		SELECT edge_id
+		FROM count_per_edge
+		WHERE side = false AND n_obs_edge_side <minimal_number_obs
+	)
+	DELETE FROM edges_for_output_in_export_area AS eo
+	USING to_delete AS cp
+	WHERE eo.edge_id = cp.edge_id ; 
+
+	WITH to_be_deleted AS ( --deleting node not used by edge
+		SELECT node_id
+		FROM nodes_for_output_in_export_area AS nf
+			LEFT OUTER JOIN edges_for_output_in_export_area AS eo1 ON (eo1.start_node = nf.node_id)
+			LEFT OUTER JOIN edges_for_output_in_export_area AS eo2 ON (eo2.end_node = nf.node_id)
+		WHERE eo1.geom IS NULL AND eo2.geom IS NULL
+	)
+	DELETE FROM nodes_for_output_in_export_area AS nf 
+	USING to_be_deleted AS td
+	WHERE td.node_id = nf.node_id ; 
+
+	
+	WITH to_be_deleted AS ( --deleting edge that dont have both nodes
+	SELECT eo.edge_id, no1.node_geom, no2.node_geom 
+	FROM edges_for_output_in_export_area AS eo 
+		LEFT OUTER JOIN nodes_for_output_in_export_area AS no1 ON (eo.start_node = no1.node_id)
+		LEFT OUTER JOIN nodes_for_output_in_export_area AS no2 ON (eo.end_node = no2.node_id) 
+	WHERE no1.node_geom IS  NULL OR no2.node_geom IS   NULL 
+	)
+	DELETE FROM edges_for_output_in_export_area AS eo
+	USING to_be_deleted AS td WHERE eo.edge_id = td.edge_id ; 
+  */
+	
 	-- TRUNCATE obs_for_output_in_export_area ; 
 /*
  	COPY  nodes_for_output_in_export_area TO '/media/sf_USB_storage/PROJETS/snapping/data/data_in_reduced_export_area/nodes_for_output_in_export_area.csv'	 (FORMAT CSV, DELIMITER   ';') ;
@@ -467,8 +570,10 @@ DROP TABLE IF EXISTS def_zone_export;
 	WHERE variance IS NOT NULL ;
 	-- AND weights > 15 ;-- remove case with only one observation;  
 	
-	ALTER TABLE slope_for_output_in_export_area ADD CONSTRAINT distfk FOREIGN KEY (edge_id) REFERENCES edges_for_output_in_export_area (edge_id) MATCH FULL;
+	ALTER TABLE slope_for_output_in_export_area ADD CONSTRAINT distfk FOREIGN KEY (edge_id) REFERENCES edges_for_output_in_export_area (edge_id) MATCH FULL ON DELETE CASCADE;
 	TRUNCATE slope_for_output_in_export_area ; 
+	DELETE FROM slope_for_output_in_export_area AS oo
+	WHERE NOT EXISTS (SELECT 1 FROM edges_for_output_in_export_area AS eo WHERE oo.edge_id = eo.edge_id ) ; 
 
 /* -- computing slope for odparis 
 
@@ -593,11 +698,29 @@ DROP TABLE IF EXISTS def_zone_export;
 DROP VIEW IF EXISTS slope_for_output_in_export_area_v ; 
 	CREATE VIEW slope_for_output_in_export_area_v AS
 	SELECT edge_id, ST_Centroid(eg.geom)::geometry(point,932011) AS geom, target_slope, confidence, weight
-	FROM (SELECT * FROM slope_for_output_in_export_area UNION ALL SELECT * FROM slope_odparis) AS fa
+	FROM (SELECT * FROM slope_for_output_in_export_area --UNION ALL SELECT * FROM slope_odparis
+	) AS fa
 		LEFT OUTER JOIN edges_for_output_in_export_area AS eg USING(edge_id)  ; 
 ---test to export the whole file complete, no 3 separated files :
- 
- 
+
+
+/* -- deleting obs and slope for unreliable edges
+ WITH to_delete AS (
+	SELECT obs_id 
+	FROM obs_for_output_in_export_area as oo
+	WHERE EXISTS (SELECT 1 FROM   edges_with_few_obs AS eo  WHERE eo.edge_id = oo.edge_id )  
+ )
+DELETE FROM obs_for_output_in_export_area as oo USING to_delete AS td WHERE td.obs_id = oo.obs_id ; 
+
+ WITH to_delete AS (
+	SELECT  edge_id
+	FROM slope_for_output_in_export_area as oo 
+	WHERE EXISTS (SELECT 1 FROM   edges_with_few_obs AS eo  WHERE eo.edge_id = oo.edge_id )  
+ )
+DELETE FROM slope_for_output_in_export_area as oo USING to_delete AS td WHERE td.edge_id = oo.edge_id ; 
+*/
+
+
 COPY (
 	 SELECT '#num nodes;num edge;num observation'
 		UNION ALL 
@@ -624,7 +747,8 @@ COPY (
 	SELECT '#edge_id::int;slope::double;confidence::double;weight::double'
 		UNION ALL 
 	SELECT edge_id||';'|| target_slope||';'|| confidence||';'||weight
-	FROM (SELECT * FROM slope_for_output_in_export_area UNION ALL SELECT * FROM slope_odparis) as sub
+	FROM (SELECT * FROM slope_for_output_in_export_area UNION ALL SELECT * FROM slope_odparis
+	) as sub
 	
 )
 TO '/media/sf_USB_storage/PROJETS/snapping/data/data_in_reduced_export_area/full_area.csv' ;
@@ -654,20 +778,26 @@ CREATE INDEX ON optimized_edges USING GIST(geom);
 
 
 ------- find distance between observations and otpimized edges :
+ 
 
 DROP TABLE IF EXISTS dist_to_optimized_edges ; 
 CREATE TABLE dist_to_optimized_edges AS 
-	SELECT DISTINCT ON (ob.obs_id) obs_id, gid
+	SELECT DISTINCT ON (ob.obs_id) obs_id, eg.gid
 		, ST_Distance(buf, ob.geom)  AS dist
 		, ob.geom::geometry(point,932011) AS geom
 		, St_SHortestLine(ob.geom,buf )::geometry(linestring,932011) AS sline
 	FROM optimized_edges AS eg
-		-- , obs_odparis as ob
-		, obs_for_output_in_export_area AS ob
+		, network_for_snapping.obs_odparis as ob
+		--, obs_for_output_in_export_area AS ob
 		, ST_ExteriorRing(ST_Buffer(eg.geom,width/2.0, 'endcap=flat')) as buf
+		, def_zone_export as dfz 
 	WHERE ST_DWithin(eg.geom, ob.geom, 30) = TRUE 
 		AND ST_DWithin(buf, ob.geom, 8)
 		AND iteration = 2
+		AND ST_Within (ST_Transform(ob.geom,932011), ST_Transform(dfz.geom,932011)) = true
+-- 		AND NOT EXISTS (
+-- 			SELECT 1 
+-- 			FROM edges_with_few_obs AS ef  WHERE ef.edge_id = ob.edge_id )
 	ORDER BY obs_id,  ST_Distance(buf, ob.geom)  ASC ;
 	CREATE INDEX ON dist_to_optimized_edges USING GIST(geom) ; 
 	ALTER TABLE dist_to_optimized_edges ADD PRIMARY KEY (obs_id) ;
@@ -675,12 +805,18 @@ CREATE TABLE dist_to_optimized_edges AS
 ---- for comparison : find distance between observation and regular edges: 
 	WITH dist AS (
 		SELECT st_distance(obs.geom, buf)  AS dist
-		 FROM  def_zone_export as dfz , obs_for_output_in_export_area AS obs
+		 FROM  def_zone_export as dfz 
+			, network_for_snapping.obs_odparis AS obs
+			-- , obs_for_output_in_export_area AS obs
 			LEFT OUTER JOIN edges_for_output_in_export_area AS eg USING(edge_id) 
 			,ST_ExteriorRing(ST_Buffer(eg.geom,width/2.0, 'endcap=flat')) as buf
 		WHERE width is not null
 			AND ST_Within (obs.geom, ST_Transform(dfz.geom,932011)) = true
 			AND st_distance(obs.geom, buf) < 10
+-- 			AND NOT EXISTS (
+-- 			SELECT 1 
+-- 			FROM edges_with_few_obs AS ef  WHERE ef.edge_id = obs.edge_id
+-- 			)
 	) 
 	SELECT round(avg(@dist),3) as avg,  round(rc_py_weighted_median(array_agg(@dist), array_agg(1)),3) as med, round(stddev_samp(@dist) ,3) as var
 	FROM dist 
@@ -688,8 +824,16 @@ CREATE TABLE dist_to_optimized_edges AS
 	SELECT round(avg(@dist),3), round(rc_py_weighted_median(array_agg(@dist),array_agg(1) ),3), round(stddev_samp(@dist) ,3) as var
 	FROM dist_to_optimized_edges ; 
 
+
+
+
+
+
+*
+
+
 	SELECT dist
-	FROM dist_to_optimized_edges
+	FROM dist_to_optimized_edges ;
 
 	WITH dist AS (
 		SELECT st_distance(obs.geom, eg.geom) - width/2.0 AS dist

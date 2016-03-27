@@ -133,29 +133,33 @@ SET search_path TO objects_for_snapping,network_for_snapping, bdtopo_topological
 -- 					--,'curb'
 -- 					,'potted plant' 
 -- 					])
--- 			UNION ALL
-			SELECT ao.gid ,  classification_id ,  classification 
-					,  ST_SnapToGrid(ST_SimplifyPreserveTopology(ST_Buffer(ST_Buffer(ao.geom ,2,'quad_segs=4'),-2, 'quad_segs=4'),0.1),0.001) AS geom
-					, weighted_confidence ,   should_be_used 
-			FROM ashaped_objects AS  ao, def_zone_export as dfz
-			WHERE ST_WITHIN(ao.geom,  ST_Transform(dfz.geom ,932011) )= TRUE 
-				AND classification = 'car'
-				AND (upper(z_range)-lower(z_range)) BETWEEN 0.2 AND 4 
-				AND ST_Area(ao.geom) BETWEEN 3.0 AND 12.0
-			UNION ALL 
+-- 			UNION ALL 
+-- 			SELECT ao.gid ,  classification_id ,  classification 
+-- 					,  ST_SnapToGrid(ST_SimplifyPreserveTopology(ST_Buffer(ST_Buffer(ao.geom ,2,'quad_segs=4'),-2, 'quad_segs=4'),0.1),0.001)::geometry(polygon,932011) AS geom
+-- 					, weighted_confidence ,   should_be_used 
+-- 			FROM ashaped_objects AS  ao, def_zone_export as dfz
+-- 			WHERE ST_WITHIN(ao.geom,  ST_Transform(dfz.geom ,932011) )= TRUE 
+-- 				AND classification = 'car'
+-- 				AND (upper(z_range)-lower(z_range)) BETWEEN 0.2 AND 4 
+-- 				AND ST_Area(ao.geom) BETWEEN 3.0 AND 12.0
+-- 			UNION ALL 
 -- 			SELECT gid, CASE WHEN class_id ILIKE 'pc' THEN 102 ELSE 101 END AS classification_id, class_id AS classification
 -- 				,ST_SnapToGrid(ST_SimplifyPreserveTopology(ST_Buffer(ST_Buffer(geom ,2,'quad_segs=4'),-2, 'quad_segs=4'),0.1),0.001) AS geom
 -- 				, 1 AS weighted_confidence , NULL AS should_be_used
 -- 			FROM markings_by_hand
 -- 			UNION ALL
-			SELECT gid, 22 AS classification_id, 'traffic sign' as classification, ST_Transform(ST_Buffer(geom,0.01),932011) AS geom
+			SELECT ao.gid, 22 AS classification_id, 'traffic sign' as classification, geom2 AS geom
 				, confidence AS  weighted_confidence  , NULL AS should_be_used
-			FROM road_sign
+			FROM road_sign ao, ST_Transform(ST_Buffer(ao.geom,0.01),932011) AS geom2, def_zone_export as dfz
+			WHERE ST_WITHIN(geom2,  ST_Transform(dfz.geom ,932011) )= TRUE 
 			UNION ALL
-			SELECT gid, CASE WHEN categorie ILIKE 'pc' THEN 102 ELSE 103 END AS classification_id , categorie AS classification, 
-				ST_GeometryN(ST_SnapToGrid(ST_SimplifyPreserveTopology(ST_Buffer(ST_Buffer(ST_Transform(geom ,932011),2,'quad_segs=4'),-2, 'quad_segs=4'),0.1),0.001),1) AS geom
+			SELECT ao.gid, CASE WHEN categorie ILIKE 'pc' THEN 102 ELSE 103 END AS classification_id , categorie AS classification  
+				,geom2 AS geom
 				, 1 AS weighted_confidence , NULL AS should_be_used
-			FROM road_mark_cleaned 
+			FROM road_mark_cleaned AS ao
+				,ST_GeometryN(ST_SnapToGrid(ST_SimplifyPreserveTopology(ST_Buffer(ST_Buffer(ST_Transform(geom ,932011),2,'quad_segs=4'),-2, 'quad_segs=4'),0.1),0.001),1) AS geom2
+				, def_zone_export as dfz
+			WHERE ST_WITHIN(geom2,  ST_Transform(dfz.geom ,932011) )= TRUE 
 			) AS sub
 			
 				
@@ -181,6 +185,7 @@ SET search_path TO objects_for_snapping,network_for_snapping, bdtopo_topological
 					AND classification = 'car'
 			)
 		ORDER BY oia.gid ASC, abs(ST_Distance(ST_Transform(oia.geom,932011),ST_Buffer(eg.edge_geom,width/2,'endcap=flat' ))) ASC 
+			, ST_Area(St_Intersection(ST_Transform(oia.geom,932011),ST_Buffer(eg.edge_geom,width/2,'endcap=flat' ))) DESC
 	)
 	--object_id;class_id;class_name;edge_id;geom;confidence;
 	SELECT  
