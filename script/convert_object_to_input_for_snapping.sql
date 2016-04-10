@@ -96,7 +96,26 @@ SET search_path TO objects_for_snapping,network_for_snapping, bdtopo_topological
 		SELECT row_number() over() as gid, categorie,
 			ST_GeometryN(ST_SnapToGrid(ST_SimplifyPreserveTopology(ST_Buffer(ST_Buffer(ST_Transform( geom_ ,932011),2,'quad_segs=4'),-2, 'quad_segs=4'),0.1),0.001),1)::geometry(polygon,932011) AS geom 
 		FROM unioned, ST_Dump(geom) AS dmp, ST_Multi(ST_Buffer(dmp.geom,-0.5))as geom_
-		LIMIT 10
+		LIMIT 10;
+
+
+
+		DROP TABLE IF EXISTS road_mark_rjmcmc ; 
+		CREATE TABLE road_mark_rjmcmc AS
+			SELECT *
+			FROM public.dblink('hostaddr=127.0.0.1 port=5433 dbname=TerraMobilita user=postgres password=postgres'::text
+			, 'SELECT rj.obj_id, rj.type_id, ST_Transform(rj.object_surface,932011) AS object_surface, cat_name, cat_short_name
+				FROM ign_road_marks_and_signs.road_marks_rjmcmc_cleaned AS rj
+					LEFT OUTER JOIN ign_road_marks_and_signs.nomenclature_rjmcmc USING(type_id)'::text
+			,TRUE) AS f(
+				 obj_id INT ,
+				  type_id int,
+				  object_surface geometry(polygon,932011),
+				  cat_name text ,
+				  cat_short_name text) ;
+		ALTER TABLE road_mark_rjmcmc ADD PRIMARY KEY (obj_id) ; 
+		CREATE INDEX ON road_mark_rjmcmc USING GIST(object_surface) ; 
+
  
 */
  
@@ -134,20 +153,20 @@ SET search_path TO objects_for_snapping,network_for_snapping, bdtopo_topological
 -- 					,'potted plant' 
 -- 					])
 -- 			UNION ALL 
--- 			SELECT ao.gid ,  classification_id ,  classification 
--- 					,  ST_SnapToGrid(ST_SimplifyPreserveTopology(ST_Buffer(ST_Buffer(ao.geom ,2,'quad_segs=4'),-2, 'quad_segs=4'),0.1),0.001)::geometry(polygon,932011) AS geom
--- 					, weighted_confidence ,   should_be_used 
--- 			FROM ashaped_objects AS  ao, def_zone_export as dfz
--- 			WHERE ST_WITHIN(ao.geom,  ST_Transform(dfz.geom ,932011) )= TRUE 
--- 				AND classification = 'car'
--- 				AND (upper(z_range)-lower(z_range)) BETWEEN 0.2 AND 4 
--- 				AND ST_Area(ao.geom) BETWEEN 3.0 AND 12.0
+			SELECT ao.gid ,  classification_id ,  classification 
+					,  ST_SnapToGrid(ST_SimplifyPreserveTopology(ST_Buffer(ST_Buffer(ao.geom ,2,'quad_segs=4'),-2, 'quad_segs=4'),0.1),0.001)::geometry(polygon,932011) AS geom
+					, weighted_confidence ,   should_be_used 
+			FROM ashaped_objects AS  ao, def_zone_export as dfz
+			WHERE ST_WITHIN(ao.geom,  ST_Transform(dfz.geom ,932011) )= TRUE 
+				AND classification = 'car'
+				AND (upper(z_range)-lower(z_range)) BETWEEN 0.2 AND 4 
+				AND ST_Area(ao.geom) BETWEEN 3.0 AND 12.0
 -- 			UNION ALL 
 -- 			SELECT gid, CASE WHEN class_id ILIKE 'pc' THEN 102 ELSE 101 END AS classification_id, class_id AS classification
 -- 				,ST_SnapToGrid(ST_SimplifyPreserveTopology(ST_Buffer(ST_Buffer(geom ,2,'quad_segs=4'),-2, 'quad_segs=4'),0.1),0.001) AS geom
 -- 				, 1 AS weighted_confidence , NULL AS should_be_used
 -- 			FROM markings_by_hand
--- 			UNION ALL
+			UNION ALL
 			SELECT ao.gid, 22 AS classification_id, 'traffic sign' as classification, geom2 AS geom
 				, confidence AS  weighted_confidence  , NULL AS should_be_used
 			FROM road_sign ao, ST_Transform(ST_Buffer(ao.geom,0.01),932011) AS geom2, def_zone_export as dfz
@@ -160,10 +179,21 @@ SET search_path TO objects_for_snapping,network_for_snapping, bdtopo_topological
 				,ST_GeometryN(ST_SnapToGrid(ST_SimplifyPreserveTopology(ST_Buffer(ST_Buffer(ST_Transform(geom ,932011),2,'quad_segs=4'),-2, 'quad_segs=4'),0.1),0.001),1) AS geom2
 				, def_zone_export as dfz
 			WHERE ST_WITHIN(geom2,  ST_Transform(dfz.geom ,932011) )= TRUE 
-			) AS sub
+			AND categorie ILIKE 'pc'
 			
-				
-		)
+			UNION ALL 
+			SELECT ao.obj_id, CASE WHEN cat_short_name = 'pc' THEN 102 ELSE 104 END AS classification_id,   cat_short_name as classification, object_surface AS geom
+				, 1 AS  weighted_confidence  , NULL AS should_be_used
+			FROM road_mark_rjmcmc AS ao,  def_zone_export as dfz
+			WHERE ST_WITHIN(object_surface,  ST_Transform(dfz.geom ,932011) )= TRUE  
+			AND NOT (ST_Area(object_surface) <10 AND cat_short_name = 'pc' ) 
+			AND cat_short_name ILIKE 'pc'
+
+
+
+			) AS sub
+-- 
+	)
 	,edge_geom AS ( -- we reconstruct the edge geom to be able to assign objects to edges
 		SELECT efo.*, ST_SetSRID(ST_MakeLine(ST_MakePoint(nfo1.X,nfo1.Y,nfo1.Z) ,ST_MakePoint(nfo2.X,nfo2.Y,nfo2.Z)  ),932011) as edge_geom
 		FROM edges_for_output_in_export_area as efo
