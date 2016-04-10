@@ -20,24 +20,24 @@ K_spacing = 5;
 K_angle = 10;
 K_original_width = 0.2 ;
 
-K_obs = 0.05;
+K_obs = 0.5;
 K_obj = 0.5 ;
 
-K_obs_width = 10 ;
+K_obs_width = 2 ;
 K_obj_width = 50 ;
 K_slope = 50 ;
 
 #what constraints to use?
 #regularisation
-use_manual_initial_position_constraint = true ;
-use_manual_initial_spacing_constraint = true ;
-use_manual_distance_to_original_angle = true ;
-use_manual_initial_width_constraint = true ;
+use_manual_initial_position_constraint = false ;
+use_manual_initial_spacing_constraint = false ;
+use_manual_distance_to_original_angle = false ;
+use_manual_initial_width_constraint = false ;
 
 #change position of axis
 use_manual_distance_to_proj_constraint = true ;
-use_manual_Surf_Dist_To_Objects_constraint = true ;
-use_manual_target_slope = true ;
+use_manual_Surf_Dist_To_Objects_constraint = false ;
+use_manual_target_slope = false ;
 
 #change width of roads?
 use_manual_distance_to_proj_constraint_width = true ;
@@ -45,7 +45,7 @@ use_manual_Surf_Dist_To_Objects_constraint_width = false ;
 
 #about loss function : how shall we remove the outliers?
 useLoss = true ;
-lossScale = 1 ;
+lossScale = 0.2 ;
 
 #about the  bounding of optimisation variable : the position/width are limited in variation to this
 geom_bound = 3 ;
