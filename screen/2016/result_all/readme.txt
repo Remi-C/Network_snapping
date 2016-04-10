@@ -113,6 +113,11 @@ edge node obs
 
 
 
+------------------------------
+very small area : rjmcmc markings
+1.652;1.592;0.906
+1.009;0.782;0.944
+
 
 
 
