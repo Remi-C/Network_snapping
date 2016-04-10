@@ -410,7 +410,8 @@ void DataStorage::writeData(int iteration){
         node * start_node = nbn(edge_to_output->start_node) ;
         node * end_node = nbn(edge_to_output->end_node) ;
         double cost = 10.0 ;
-        fprintf(o_fptr,"LINESTRINGZ(%.4lf %.4lf %.4lf, %.4lf %.4lf %.4lf);%lG;%lG;2014-08-30 %02d:%02d:%02d;2014-08-30 %02d:%02d:%02d;%d\n"
+        fprintf(o_fptr,"%d;LINESTRINGZ(%.4lf %.4lf %.4lf, %.4lf %.4lf %.4lf);%lG;%lG;2014-08-30 %02d:%02d:%02d;2014-08-30 %02d:%02d:%02d;%d\n"
+                , edge_to_output->edge_id
                 , start_node->position[0]
                 , start_node->position[1]
                 , start_node->position[2]
