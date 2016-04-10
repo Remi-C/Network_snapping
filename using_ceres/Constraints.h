@@ -361,23 +361,24 @@ public :
         //the parameters are as follow : parameter[0] = width
         //we also get the global parameter of this programm to swithc on/off this cost function
         Parameter * param = Parameter::instance() ;
-        if(param->optimisation_type!=SnapEnums::WIDTH){
+/*        if(param->optimisation_type!=SnapEnums::WIDTH){
             residuals[0] = 0 ;
             if ((jacobians != NULL) && (jacobians[0]!=NULL)){
                 jacobians[0][0] =  0 ;
             }
             return 1;
         }
+*/
         //compute the cost, that is the eucl dist to original width
         double cost =  initial_width_ - parameters[0][0];
-        residuals[0] = cost;
+        residuals[0] = std::abs(cost);
 
         if (jacobians == NULL) {
             //cout << "JACOBIAN NULL" <<endl;
             return 1;
         }
         if (jacobians != NULL && jacobians[0] != NULL) {
-            jacobians[0][0] =  cost;
+            jacobians[0][0] =  cost* SIGN(cost);
         }
         return true;
     }
