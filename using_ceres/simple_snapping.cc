@@ -172,7 +172,7 @@ int main(int argc, char** argv) {
     //options.max_num_iterations = 8;
 
     ////output writing
-    options.update_state_every_iteration= true ;
+    //options.update_state_every_iteration= true ;
     WritingTempResultCallback callback(data->output_file_path(),0);
     options.callbacks.push_back(&callback);
 
