@@ -27,6 +27,9 @@ CREATE TABLE network_limit(
 gid serial PRIMARY KEY,
 limit_geom geometry(polygon,932011)) ;
 INSERT INTO network_limit (limit_geom) VALUES (ST_GeomFromtext('POLYGON((2065 21785,1458 21241,1838 20694,2403 20590,2597 20765,2594 21393,2406 21757,2065 21785))',932011)); 
+INSERT INTO  network_limit (limit_geom) 
+SELECT ST_SnapToGrid(ST_Simplify(ST_Transform(ST_Buffer(geom,-100),932011),500 ),1)
+FROM def_zone_export 
 */
 
 
@@ -38,8 +41,8 @@ INSERT INTO network_limit (limit_geom) VALUES (ST_GeomFromtext('POLYGON((2065 21
 	CREATE TABLE new_successive_points AS 
 	WITH  segmentize AS (
 		SELECT  edge_id
-			, edge_data.geom 
-			-- , ST_Segmentize(geom ,10) AS geom
+			-- , edge_data.geom 
+			, ST_Segmentize(geom ,30) AS geom
 			, start_node, end_node, ST_NumPoints(edge_data.geom)  AS num_points
 		 FROM edge_data  , network_limit AS ref_area
 		WHERE ST_DWITHIN(geom,limit_geom,40)
@@ -478,7 +481,7 @@ DROP TABLE IF EXISTS def_zone_export;
 	
 --visualization
 	--we want to visualize edges, nodes and observations alongs with pairings
-
+/*
 	--visaulize node
 	DROP TABLE IF EXISTS nodes_for_visu_in_export_area; 
 	CREATE TABLE nodes_for_visu_in_export_area AS 
@@ -519,11 +522,12 @@ DROP TABLE IF EXISTS def_zone_export;
 		INNER JOIN  street_amp.result_axis as ra ON ST_DWithin(ra.section2_surface, sgeom, 5)   
 	ORDER BY obs_id , ST_Distance(ra.section2_surface, sgeom) ASC ;
 
+*/
 
 
 -- computing target slope information
  
-	
+/*	
 	DROP TABLE IF EXISTS slope_for_output_in_export_area CASCADE; 
 	CREATE TABLE slope_for_output_in_export_area AS  
 	WITH map AS (  
@@ -591,6 +595,7 @@ DROP TABLE IF EXISTS def_zone_export;
 	--TRUNCATE slope_for_output_in_export_area ; 
 	DELETE FROM slope_for_output_in_export_area AS oo
 	WHERE NOT EXISTS (SELECT 1 FROM edges_for_output_in_export_area AS eo WHERE oo.edge_id = eo.edge_id ) ; 
+*/
 
 /* -- computing slope for odparis 
 
@@ -808,8 +813,8 @@ CREATE TABLE dist_to_optimized_edges AS
 		, ob.geom::geometry(point,932011) AS geom
 		, St_SHortestLine(ob.geom,buf )::geometry(linestring,932011) AS sline
 	FROM optimized_edges AS eg
-		--, network_for_snapping.obs_odparis as ob
-		, obs_for_output_in_export_area AS ob
+		, network_for_snapping.obs_odparis as ob
+		--, obs_for_output_in_export_area AS ob
 		, ST_ExteriorRing(ST_Buffer(eg.geom,width/2.0, 'endcap=flat')) as buf
 		, def_zone_export as dfz 
 	WHERE ST_DWithin(eg.geom, ob.geom, 30) = TRUE 
@@ -832,8 +837,8 @@ CREATE TABLE dist_to_optimized_edges AS
 	WITH dist AS (
 		SELECT DISTINCT ON (obs_id) dist
 		 FROM  def_zone_export as dfz 
-			--, network_for_snapping.obs_odparis AS obs
-			, obs_for_output_in_export_area AS obs
+			, network_for_snapping.obs_odparis AS obs
+			--, obs_for_output_in_export_area AS obs
 			, edges_for_output_in_export_area AS eg  
 			,ST_ExteriorRing(ST_Buffer(eg.geom,width/2.0, 'endcap=flat')) as buf
 			,  st_distance(obs.geom, buf)  AS dist
